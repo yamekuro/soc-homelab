@@ -1,0 +1,15 @@
+# Never commit secrets, keys or raw evidence
+*.pem
+*.key
+*.kdbx
+.env
+*.tfstate
+*.tfstate.*
+.terraform/
+*.pcap
+*.pcapng
+*.evtx
+*.vmdk
+*.vmx
+*.ova
+.DS_Store

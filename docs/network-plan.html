@@ -1,0 +1,640 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style></head><body>
+<title>Plano de red soc-homelab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+:root{
+  --paper:#EEF1F0; --panel:#E4E9E8; --card:#F8FAF9; --ink:#13202B; --ink-2:#51606C; --ink-3:#7C8A94;
+  --rule:#C3CDD1; --grid:#DCE3E3; --grid-2:#CFD8D9;
+  --z-mgmt:#3E5A78; --z-users:#2463B0; --z-servers:#0E7C74; --z-dmz:#C24E1A; --z-soc:#5A46C2; --z-attack:#A3286A;
+  --z-wan:#66737F; --z-ai:#8E44AD; --z-ot:#7A6A2E; --z-host:#13202B;
+  --admin:#C27A0A; --allow:#1D7A4C; --deny:#B42318; --cond:#A86A00;
+  --allow-bg:#DCEFE4; --deny-bg:#F6E1DE; --cond-bg:#F5E9CF; --same-bg:#E4E9E8;
+  --disp:"Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#0D1316; --panel:#141C20; --card:#18222700; --ink:#E4EAEC; --ink-2:#A1AFB7; --ink-3:#6F7E87;
+    --rule:#2B383E; --grid:#162024; --grid-2:#1C282D;
+    --z-mgmt:#93AECB; --z-users:#6FA8EA; --z-servers:#45C0B4; --z-dmz:#F08A55; --z-soc:#A596F2; --z-attack:#E871AE;
+    --z-wan:#98A5AF; --z-ai:#C98DE2; --z-ot:#CBB870; --z-host:#E4EAEC;
+    --admin:#EBB04A; --allow:#55C68F; --deny:#F2766A; --cond:#E6B04A;
+    --allow-bg:#123124; --deny-bg:#3A1714; --cond-bg:#34280F; --same-bg:#172024;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#0D1316; --panel:#141C20; --card:#182227; --ink:#E4EAEC; --ink-2:#A1AFB7; --ink-3:#6F7E87;
+  --rule:#2B383E; --grid:#162024; --grid-2:#1C282D;
+  --z-mgmt:#93AECB; --z-users:#6FA8EA; --z-servers:#45C0B4; --z-dmz:#F08A55; --z-soc:#A596F2; --z-attack:#E871AE;
+  --z-wan:#98A5AF; --z-ai:#C98DE2; --z-ot:#CBB870; --z-host:#E4EAEC;
+  --admin:#EBB04A; --allow:#55C68F; --deny:#F2766A; --cond:#E6B04A;
+  --allow-bg:#123124; --deny-bg:#3A1714; --cond-bg:#34280F; --same-bg:#172024;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --card:#182227; } }
+
+*{box-sizing:border-box}
+body{background:var(--paper); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.5; margin:0}
+.sheet{max-width:1240px; margin:0 auto; padding-inline:20px; padding-block:24px 56px; display:grid; gap:40px}
+a{color:inherit}
+.mono{font-family:var(--mono)}
+h1,h2,h3{font-family:var(--disp); font-stretch:75%; margin:0; text-wrap:balance; letter-spacing:.005em}
+h2{font-size:30px; font-weight:750; line-height:1.05}
+h3{font-size:19px; font-weight:700}
+.eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-2)}
+.lede{color:var(--ink-2); max-width:68ch; margin:6px 0 0}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--admin); outline-offset:2px}
+
+/* ---------- title block ---------- */
+.titleblock{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:24px; align-items:end; border-bottom:2px solid var(--ink); padding-bottom:18px}
+.titleblock h1{font-size:clamp(40px,7vw,78px); font-weight:800; line-height:.92; letter-spacing:0; word-spacing:.14em}
+.titleblock h1 span{display:block; font-family:var(--body); font-size:clamp(16px,2.1vw,21px); font-weight:500; font-stretch:100%; letter-spacing:0; word-spacing:normal; color:var(--ink-2); margin-top:14px; line-height:1.35; max-width:52ch; text-wrap:balance}
+.tb-right{display:grid; gap:10px; justify-items:end}
+.tb-table{display:grid; grid-template-columns:repeat(3,auto); border:1.5px solid var(--ink); font-family:var(--mono); font-size:11px}
+.tb-table div{padding:5px 10px; border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); min-width:92px}
+.tb-table div:nth-child(3n){border-right:none}
+.tb-table div:nth-last-child(-n+3){border-bottom:none}
+.tb-table b{display:block; font-size:9.5px; letter-spacing:.12em; color:var(--ink-3); font-weight:600}
+.lang{display:inline-flex; border:1.5px solid var(--ink); border-radius:3px; overflow:hidden}
+.lang button{background:none; border:none; padding:4px 12px; font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.08em; cursor:pointer; color:var(--ink-2)}
+.lang button[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
+@media (max-width:760px){ .titleblock{grid-template-columns:1fr} .tb-right{justify-items:start} }
+@media (max-width:460px){ .tb-table{grid-template-columns:repeat(2,auto)} .tb-table div:nth-child(3n){border-right:1px solid var(--rule)} .tb-table div:nth-child(2n){border-right:none} .tb-table div:nth-last-child(-n+3){border-bottom:1px solid var(--rule)} .tb-table div:nth-last-child(-n+2){border-bottom:none} }
+
+/* ---------- diagram ---------- */
+.drawing{border:1.5px solid var(--ink); background:
+  linear-gradient(var(--grid) 1px, transparent 1px) 0 0/24px 24px,
+  linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/24px 24px, var(--paper); position:relative}
+.drawing-scroll{overflow-x:auto}
+.drawing svg{display:block; width:100%; min-width:960px; height:auto}
+.drawing-cap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:8px 12px; border-top:1.5px solid var(--ink); font-family:var(--mono); font-size:11px; color:var(--ink-2); background:var(--paper)}
+.scroll-hint{display:none}
+@media (max-width:980px){ .scroll-hint{display:inline} }
+
+svg text{fill:var(--ink); font-family:var(--body)}
+.t-disp{font-family:var(--disp); font-stretch:75%; font-weight:750}
+.t-mono{font-family:var(--mono)}
+.t-2{fill:var(--ink-2)}
+.t-3{fill:var(--ink-3)}
+.box-host{fill:none; stroke:var(--ink); stroke-width:2}
+.box-vm{fill:none; stroke:var(--ink-2); stroke-width:1.2; stroke-dasharray:6 4}
+.box-home{fill:var(--paper); stroke:var(--ink-2); stroke-width:1.2}
+.chip{fill:var(--card); stroke:var(--rule); stroke-width:1}
+.fw{fill:var(--ink)}
+.fw-t{fill:var(--paper)}
+.fw-t2{fill:var(--paper); opacity:.72}
+.panel{fill:var(--card); stroke:var(--rule); stroke-width:1}
+.vmcard{fill:var(--paper); stroke:var(--rule); stroke-width:1}
+.ghost{fill:none; stroke:var(--ink-3); stroke-width:1.2; stroke-dasharray:5 5}
+.sbx{fill:var(--card); stroke:var(--ink); stroke-width:1.6; stroke-dasharray:2 4}
+.link{fill:none; stroke-width:2.2}
+.link-ink{fill:none; stroke:var(--ink); stroke-width:2}
+.admin-path{fill:none; stroke:var(--admin); stroke-width:2.4; stroke-dasharray:7 6; animation:flow 1.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-26}}
+@media (prefers-reduced-motion: reduce){ .admin-path{animation:none} }
+.block-dot{fill:var(--deny)}
+.dim{opacity:.18; transition:opacity .2s}
+.hl{opacity:1}
+
+/* ---------- sections ---------- */
+.sec-head{display:grid; gap:4px; margin-bottom:16px}
+.two{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:32px}
+@media (max-width:900px){ .two{grid-template-columns:1fr} }
+
+/* ram */
+.ram-bar{display:flex; height:46px; border:1.5px solid var(--ink); overflow:hidden}
+.ram-seg{position:relative; display:flex; align-items:flex-end; padding:0 5px 4px; font-family:var(--mono); font-size:10.5px; font-weight:700; color:#fff; min-width:0; overflow:hidden; white-space:nowrap}
+.ram-seg.host{background:repeating-linear-gradient(135deg, var(--ink-3) 0 6px, var(--ink-2) 6px 12px)}
+.ram-seg.ondemand{background:repeating-linear-gradient(135deg, var(--z-attack) 0 5px, transparent 5px 10px); color:var(--ink)}
+.ram-seg + .ram-seg{border-left:1.5px solid var(--paper)}
+.ram-scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin-top:4px; font-variant-numeric:tabular-nums}
+.ram-legend{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:6px 16px; margin-top:14px; font-size:13px}
+.ram-legend span{display:flex; gap:8px; align-items:center}
+.sw{width:12px; height:12px; flex:none; border:1px solid var(--rule)}
+.verdict{margin-top:16px; padding:12px 14px; border-left:4px solid var(--cond); background:var(--cond-bg); font-size:14px}
+.verdict b{font-family:var(--mono)}
+.save-list{margin:10px 0 0; padding-left:18px; font-size:14px; color:var(--ink-2)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto; border-top:2px solid var(--ink)}
+table{width:100%; border-collapse:collapse; font-size:13.5px}
+th{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2); text-align:left; font-weight:600; padding:9px 10px; border-bottom:1px solid var(--ink)}
+td{padding:9px 10px; border-bottom:1px solid var(--rule); vertical-align:top}
+td.mono, .mono{font-variant-numeric:tabular-nums}
+.zdot{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:8px; vertical-align:-1px}
+.act{display:inline-block; font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.06em; padding:2px 7px; border-radius:2px; white-space:nowrap}
+.act.allow{background:var(--allow-bg); color:var(--allow)}
+.act.deny{background:var(--deny-bg); color:var(--deny)}
+.act.cond{background:var(--cond-bg); color:var(--cond)}
+.rid{font-family:var(--mono); font-weight:700}
+tr.is-hl td{background:var(--cond-bg)}
+
+/* matrix */
+.matrix-wrap{display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:24px; align-items:start}
+@media (max-width:980px){ .matrix-wrap{grid-template-columns:1fr} }
+.mx-scroll{overflow-x:auto}
+.mx{display:grid; grid-template-columns:120px repeat(8, minmax(74px,1fr)); gap:3px; min-width:760px}
+.mx .h{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; font-weight:700; padding:6px 4px; color:var(--ink-2); display:flex; align-items:flex-end; gap:6px}
+.mx .h.col{justify-content:center; text-align:center; border-bottom:3px solid var(--c, var(--ink-3))}
+.mx .h.row{border-left:3px solid var(--c, var(--ink-3)); padding-left:8px; align-items:center}
+.mx .corner{font-family:var(--mono); font-size:10px; color:var(--ink-3); align-self:end; padding:6px 4px}
+.cell{border:none; min-height:54px; padding:6px 5px; cursor:pointer; display:grid; place-items:center; text-align:center; font-family:var(--mono); font-size:10.5px; font-weight:600; line-height:1.25; border-radius:2px; transition:transform .12s}
+.cell:hover{transform:translateY(-1px)}
+.cell.allow{background:var(--allow-bg); color:var(--allow)}
+.cell.deny{background:var(--deny-bg); color:var(--deny)}
+.cell.cond{background:var(--cond-bg); color:var(--cond); outline:1.5px dashed var(--cond); outline-offset:-4px}
+.cell.same{background:var(--same-bg); color:var(--ink-3); cursor:default}
+.cell.na{background:transparent; color:var(--ink-3); cursor:default; border:1px dashed var(--rule)}
+.cell[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink); position:relative; z-index:1}
+.cell .sym{font-size:15px; display:block}
+.detail{border:1.5px solid var(--ink); padding:16px; background:var(--card); display:grid; gap:10px; position:sticky; top:calc(env(safe-area-inset-top,0px) + 12px)}
+.detail .route{font-family:var(--disp); font-stretch:75%; font-weight:750; font-size:26px; line-height:1}
+.detail p{margin:0; font-size:14px}
+.detail ul{margin:0; padding-left:0; list-style:none; display:grid; gap:8px}
+.detail li{font-size:13.5px; display:grid; grid-template-columns:auto 1fr; gap:8px}
+.mx-legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:12px; font-size:12.5px; color:var(--ink-2)}
+.mx-legend span{display:inline-flex; gap:7px; align-items:center}
+.mx-legend i{display:inline-block; width:16px; height:12px; border-radius:2px}
+
+/* notes */
+.notes{counter-reset:n; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px 28px; margin:0; padding:0; list-style:none}
+.notes li{counter-increment:n; display:grid; grid-template-columns:34px 1fr; gap:10px; font-size:14px; padding-top:10px; border-top:1px solid var(--rule)}
+.notes li::before{content:counter(n, decimal-leading-zero); font-family:var(--mono); font-weight:700; color:var(--admin)}
+.notes code{font-family:var(--mono); font-size:12.5px; background:var(--panel); padding:1px 4px; border-radius:2px}
+footer{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; border-top:2px solid var(--ink); padding-top:10px; font-family:var(--mono); font-size:11px; color:var(--ink-2)}
+</style>
+
+<div class="sheet" id="app">
+  <header class="titleblock">
+    <div>
+      <div class="eyebrow" id="t-eyebrow"></div>
+      <h1 id="t-title"></h1>
+    </div>
+    <div class="tb-right">
+      <div class="lang" role="group" aria-label="Idioma · Language">
+        <button type="button" data-lang="es" aria-pressed="true">ES</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <div class="tb-table" id="t-block"></div>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-diagram">
+    <div class="sec-head">
+      <div class="eyebrow" id="t-d-eyebrow"></div>
+      <h2 id="h-diagram"></h2>
+      <p class="lede" id="t-d-lede"></p>
+    </div>
+    <figure class="drawing" style="margin:0">
+      <div class="drawing-scroll"><svg id="dg" viewBox="0 0 1200 860" role="img"></svg></div>
+      <figcaption class="drawing-cap"><span id="t-d-cap"></span><span class="scroll-hint" id="t-d-hint"></span></figcaption>
+    </figure>
+  </section>
+
+  <section aria-labelledby="h-matrix">
+    <div class="sec-head">
+      <div class="eyebrow" id="t-m-eyebrow"></div>
+      <h2 id="h-matrix"></h2>
+      <p class="lede" id="t-m-lede"></p>
+    </div>
+    <div class="matrix-wrap">
+      <div>
+        <div class="mx-scroll"><div class="mx" id="mx"></div></div>
+        <div class="mx-legend" id="mx-legend"></div>
+      </div>
+      <aside class="detail" id="detail" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <div class="sec-head">
+      <div class="eyebrow" id="t-r-eyebrow"></div>
+      <h2 id="h-rules"></h2>
+      <p class="lede" id="t-r-lede"></p>
+    </div>
+    <div class="tbl-wrap"><table id="rules"></table></div>
+  </section>
+
+  <section class="two">
+    <div>
+      <div class="sec-head">
+        <div class="eyebrow" id="t-ram-eyebrow"></div>
+        <h2 id="h-ram"></h2>
+      </div>
+      <div class="ram-bar" id="ram-bar"></div>
+      <div class="ram-scale"><span>0</span><span>8</span><span>16</span><span>24</span><span>32 GB</span></div>
+      <div class="ram-legend" id="ram-legend"></div>
+      <div class="verdict" id="ram-verdict"></div>
+      <ul class="save-list" id="ram-save"></ul>
+    </div>
+    <div>
+      <div class="sec-head">
+        <div class="eyebrow" id="t-ip-eyebrow"></div>
+        <h2 id="h-ip"></h2>
+      </div>
+      <div class="tbl-wrap"><table id="addr"></table></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-notes">
+    <div class="sec-head">
+      <div class="eyebrow" id="t-n-eyebrow"></div>
+      <h2 id="h-notes"></h2>
+    </div>
+    <ol class="notes" id="notes"></ol>
+  </section>
+
+  <footer><span id="t-foot-l"></span><span id="t-foot-r"></span></footer>
+</div>
+
+<script>
+(() => {
+const Z = {
+  MGMT:{c:'--z-mgmt', net:'10.20.10.0/24', gw:'10.20.10.1', nic:'vmx1', ls:'LS-MGMT', ph:'P0'},
+  USERS:{c:'--z-users', net:'10.20.20.0/24', gw:'10.20.20.1', nic:'vmx2', ls:'LS-USERS', ph:'P1'},
+  SERVERS:{c:'--z-servers', net:'10.20.30.0/24', gw:'10.20.30.1', nic:'vmx3', ls:'LS-SERVERS', ph:'P1'},
+  DMZ:{c:'--z-dmz', net:'10.20.40.0/24', gw:'10.20.40.1', nic:'vmx4', ls:'LS-DMZ', ph:'P1'},
+  SOC:{c:'--z-soc', net:'10.20.50.0/24', gw:'10.20.50.1', nic:'vmx5', ls:'LS-SOC', ph:'P1'},
+  ATTACK:{c:'--z-attack', net:'10.20.60.0/24', gw:'10.20.60.1', nic:'vmx6', ls:'LS-ATTACK', ph:'P2'}
+};
+const ZORDER = ['MGMT','USERS','SERVERS','DMZ','SOC','ATTACK'];
+const VMS = {
+  MGMT:[{n:'mgmt-01', ip:'10.20.10.10', role:{es:'Bastión · Debian', en:'Bastion · Debian'}, cpu:1, ram:1, on:true}],
+  USERS:[{n:'win-01', ip:'10.20.20.10', role:{es:'Windows 11 + Sysmon', en:'Windows 11 + Sysmon'}, cpu:2, ram:4, on:true}],
+  SERVERS:[{n:'srv-01', ip:'10.20.30.10', role:{es:'Servidor · Debian', en:'Server · Debian'}, cpu:1, ram:1, on:true}],
+  DMZ:[{n:'web-01', ip:'10.20.40.10', role:{es:'Web · Debian + nginx', en:'Web · Debian + nginx'}, cpu:1, ram:1, on:true}],
+  SOC:[{n:'soc-wazuh', ip:'10.20.50.10', role:{es:'Wazuh todo en uno', en:'Wazuh all-in-one'}, cpu:4, ram:8, on:true},
+       {n:'soc-cases', ip:'10.20.50.20', role:{es:'Gestor de casos', en:'Case manager'}, cpu:2, ram:4, on:true},
+       {n:'soc-vuln', ip:'10.20.50.30', role:{es:'Escáner de vulns.', en:'Vuln. scanner'}, cpu:2, ram:4, on:false}],
+  ATTACK:[{n:'atk-01', ip:'10.20.60.10', role:{es:'Kali Linux', en:'Kali Linux'}, cpu:2, ram:4, on:false}]
+};
+
+const T = {
+es:{
+  eyebrow:'soc-homelab · diseño de bajo nivel · fases P0–P2',
+  title:'Plano de red<span>Un firewall, seis zonas y nueve máquinas en un sobremesa</span>',
+  block:[['PROYECTO','soc-homelab'],['PLANO','Red · P0–P2'],['REV','A'],['FECHA','24 SEP 2026'],['ESCALA','S/E'],['HOJA','1 / 1']],
+  dEyebrow:'Lámina 01 · topología física y lógica', dTitle:'Cómo se conecta todo',
+  dLede:'Todo el laboratorio vive dentro de VMware Workstation en tu sobremesa. OPNsense es la única puerta entre zonas: cada zona es un segmento aislado y solo sale a Internet por el NAT de VMware. Tu red de casa queda fuera de alcance.',
+  dCap:'Cotas en direcciones IPv4 · vmxN = interfaz de OPNsense · LS = LAN segment de VMware',
+  dHint:'Desliza para ver el plano completo →',
+  home:'Red de casa · 192.168.0.0/24', router:'Router', mac:'Tu Mac (admin)', macIp:'192.168.0.x', internet:'Internet',
+  host:'Sobremesa · Windows 11', hostSpec:'AMD Ryzen · 16 núcleos · 32 GB RAM · SSD 2 TB', nic:'NIC · 192.168.0.41',
+  vbox:'Adaptador VirtualBox', vboxIp:'192.168.56.1 · bloqueado',
+  vmw:'VMware Workstation Pro 26H1', vmnet:'VMnet8 · NAT de VMware · 10.20.254.0/24', natgw:'NAT .2',
+  wan:'vmx0 · WAN · 10.20.254.10', fwName:'fw-01', fwSpec:'OPNsense · 2 vCPU · 2 GB · siempre encendida', fwPolicy:'Denegar por defecto · reglas R01–R15',
+  block15:'R01 · hacia tu casa: bloqueado', adminTag:'SSH → host:2222',
+  sbx:'Sandbox de phishing', sbxSub:'LS-SANDBOX · sin puerta de enlace', sbxGap:'Sin enlace al firewall: aislamiento total',
+  sbxVm:{n:'sbx-01', ip:'red aislada', role:'Windows · detonación', cpu:2, ram:4},
+  reserved:'reservada', ai:'AI', ot:'OT',
+  legend:[['ink','Enlace de red'],['admin','Acceso de administración'],['deny','Bloqueado'],['ghost','Zona reservada'],['on','Siempre encendida'],['off','Bajo demanda']],
+  on:'siempre', off:'bajo demanda',
+  mEyebrow:'Lámina 02 · política entre zonas', mTitle:'Quién puede hablar con quién',
+  mLede:'Filas: origen. Columnas: destino. Pulsa una celda para ver qué regla la decide y por qué.',
+  rowAdmin:'Tu Mac', colNet:'Internet', colHome:'Casa', corner:'origen ↓ · destino →',
+  mxLegend:[['allow','Permitido'],['cond','Condicional (horario, ejercicio o temporal)'],['deny','Bloqueado'],['same','Misma zona: no pasa por el firewall']],
+  detailRules:'Reglas que aplican', stateTxt:{allow:'Permitido', deny:'Bloqueado', cond:'Condicional', same:'Misma zona', na:'Fuera del laboratorio'},
+  rEyebrow:'Lámina 03 · reglas de OPNsense', rTitle:'Reglas en orden de evaluación',
+  rLede:'Las flotantes se evalúan primero; después, las de cada interfaz de arriba abajo. La primera que coincide decide. Todo lo bloqueado queda registrado.',
+  rHead:['ID','Interfaz','Origen','Destino','Servicio','Acción','Fase','Motivo'],
+  ramEyebrow:'Lámina 04 · capacidad', ramTitle:'Presupuesto de RAM',
+  ramLegend:{host:'Windows 11 (host)', ondemand:'1 máquina bajo demanda'},
+  ramVerdict:'<b>21 GB</b> siempre encendidas + <b>4 GB</b> bajo demanda + <b>6–8 GB</b> de Windows = <b>31–33 GB</b> de 32. Cabe, pero sin margen: solo una máquina bajo demanda a la vez.',
+  ramSave:['Gestor de casos en plantillas Markdown en vez de una aplicación: −4 GB.','Apagar web-01 cuando no la uses: −1 GB.'],
+  ipEyebrow:'Lámina 05 · direccionamiento', ipTitle:'Plan de direcciones',
+  ipHead:['Zona','Segmento','Subred','Puerta de enlace','Interfaz'],
+  ipExtra:[['WAN','VMnet8 (NAT)','10.20.254.0/24','10.20.254.2 (NAT)','vmx0'],['AI','LS-AI','10.20.70.0/24','reservada · P5','vmx7'],['OT','LS-OT','10.20.80.0/24','reservada · P6','vmx8'],['SANDBOX','LS-SANDBOX','aislada','ninguna','—']],
+  ipNote:'En cada zona: .1 firewall · .10–.99 IP fijas · .100–.199 DHCP (solo USERS).',
+  nEyebrow:'Lámina 06 · notas de montaje', nTitle:'Detalles que no se ven en el plano',
+  notes:[
+    'En el <b>Editor de redes virtuales</b> de VMware, fija la subred de <code>VMnet8</code> a <code>10.20.254.0/24</code> y crea los LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> y <code>LS-SANDBOX</code>.',
+    'En los ajustes NAT de VMware, reenvía el puerto <code>2222</code> del host a <code>10.20.254.10:2222</code>. OPNsense lo traduce a <code>mgmt-01:22</code> (R02).',
+    'Permite el puerto <code>2222</code> en el firewall de Windows solo desde la IP de tu Mac.',
+    'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.20.254.0/24</code>, que es privada.',
+    'Usa tarjetas <code>vmxnet3</code>: OPNsense las verá como <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> y <code>vmx8</code> quedan para AI y OT (máximo 10 por máquina).',
+    'Dos máquinas de la misma zona se hablan sin pasar por el firewall. Esa visibilidad llega con los sensores de red en P4.'
+  ],
+  footL:'soc-homelab · plano de red · rev A', footR:'Diseño propuesto · sin construir'
+},
+en:{
+  eyebrow:'soc-homelab · low-level design · phases P0–P2',
+  title:'Network plan<span>One firewall, six zones and nine machines on one desktop</span>',
+  block:[['PROJECT','soc-homelab'],['SHEET','Network · P0–P2'],['REV','A'],['DATE','24 SEP 2026'],['SCALE','NTS'],['PAGE','1 / 1']],
+  dEyebrow:'Sheet 01 · physical and logical topology', dTitle:'How it all connects',
+  dLede:'The whole lab lives inside VMware Workstation on your desktop. OPNsense is the only door between zones: each zone is an isolated segment and only reaches the Internet through VMware NAT. Your home network stays out of reach.',
+  dCap:'Values are IPv4 addresses · vmxN = OPNsense interface · LS = VMware LAN segment',
+  dHint:'Swipe to see the full plan →',
+  home:'Home network · 192.168.0.0/24', router:'Router', mac:'Your Mac (admin)', macIp:'192.168.0.x', internet:'Internet',
+  host:'Desktop · Windows 11', hostSpec:'AMD Ryzen · 16 cores · 32 GB RAM · 2 TB SSD', nic:'NIC · 192.168.0.41',
+  vbox:'VirtualBox adapter', vboxIp:'192.168.56.1 · blocked',
+  vmw:'VMware Workstation Pro 26H1', vmnet:'VMnet8 · VMware NAT · 10.20.254.0/24', natgw:'NAT .2',
+  wan:'vmx0 · WAN · 10.20.254.10', fwName:'fw-01', fwSpec:'OPNsense · 2 vCPU · 2 GB · always on', fwPolicy:'Default deny · rules R01–R15',
+  block15:'R01 · to your home: blocked', adminTag:'SSH → host:2222',
+  sbx:'Phishing sandbox', sbxSub:'LS-SANDBOX · no gateway', sbxGap:'No link to the firewall: fully isolated',
+  sbxVm:{n:'sbx-01', ip:'isolated network', role:'Windows · detonation', cpu:2, ram:4},
+  reserved:'reserved', ai:'AI', ot:'OT',
+  legend:[['ink','Network link'],['admin','Administrative access'],['deny','Blocked'],['ghost','Reserved zone'],['on','Always on'],['off','On demand']],
+  on:'always on', off:'on demand',
+  mEyebrow:'Sheet 02 · inter-zone policy', mTitle:'Who can talk to whom',
+  mLede:'Rows: source. Columns: destination. Select a cell to see which rule decides it and why.',
+  rowAdmin:'Your Mac', colNet:'Internet', colHome:'Home', corner:'source ↓ · destination →',
+  mxLegend:[['allow','Allowed'],['cond','Conditional (schedule, exercise or temporary)'],['deny','Blocked'],['same','Same zone: does not cross the firewall']],
+  detailRules:'Rules that apply', stateTxt:{allow:'Allowed', deny:'Blocked', cond:'Conditional', same:'Same zone', na:'Outside the lab'},
+  rEyebrow:'Sheet 03 · OPNsense rules', rTitle:'Rules in evaluation order',
+  rLede:'Floating rules are evaluated first, then each interface’s rules from top to bottom. The first match decides. Everything blocked is logged.',
+  rHead:['ID','Interface','Source','Destination','Service','Action','Phase','Reason'],
+  ramEyebrow:'Sheet 04 · capacity', ramTitle:'RAM budget',
+  ramLegend:{host:'Windows 11 (host)', ondemand:'1 on-demand machine'},
+  ramVerdict:'<b>21 GB</b> always on + <b>4 GB</b> on demand + <b>6–8 GB</b> for Windows = <b>31–33 GB</b> of 32. It fits, with no headroom: only one on-demand machine at a time.',
+  ramSave:['Case manager as Markdown templates instead of an application: −4 GB.','Shut down web-01 when not in use: −1 GB.'],
+  ipEyebrow:'Sheet 05 · addressing', ipTitle:'Address plan',
+  ipHead:['Zone','Segment','Subnet','Gateway','Interface'],
+  ipExtra:[['WAN','VMnet8 (NAT)','10.20.254.0/24','10.20.254.2 (NAT)','vmx0'],['AI','LS-AI','10.20.70.0/24','reserved · P5','vmx7'],['OT','LS-OT','10.20.80.0/24','reserved · P6','vmx8'],['SANDBOX','LS-SANDBOX','isolated','none','—']],
+  ipNote:'In every zone: .1 firewall · .10–.99 static IPs · .100–.199 DHCP (USERS only).',
+  nEyebrow:'Sheet 06 · build notes', nTitle:'Details the drawing does not show',
+  notes:[
+    'In VMware’s <b>Virtual Network Editor</b>, set the <code>VMnet8</code> subnet to <code>10.20.254.0/24</code> and create LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> and <code>LS-SANDBOX</code>.',
+    'In VMware’s NAT settings, forward host port <code>2222</code> to <code>10.20.254.10:2222</code>. OPNsense translates it to <code>mgmt-01:22</code> (R02).',
+    'Allow port <code>2222</code> in the Windows firewall from your Mac’s IP only.',
+    'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.20.254.0/24</code>, which is private.',
+    'Use <code>vmxnet3</code> adapters: OPNsense sees them as <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> and <code>vmx8</code> are kept for AI and OT (10 per machine at most).',
+    'Two machines in the same zone talk without crossing the firewall. That visibility arrives with the network sensors in P4.'
+  ],
+  footL:'soc-homelab · network plan · rev A', footR:'Proposed design · not yet built'
+}};
+
+const RULES = [
+ {id:'R01', ifc:{es:'Flotante', en:'Floating'}, src:'LAB_NETS · 10.20.0.0/16', dst:'HOME_NETS · 192.168.0.0/24, 192.168.56.0/24', svc:'*', act:'deny', ph:'P0', why:{es:'Nada del laboratorio llega a tu red de casa ni al adaptador de VirtualBox.', en:'Nothing in the lab reaches your home network or the VirtualBox adapter.'}},
+ {id:'R02', ifc:{es:'WAN', en:'WAN'}, src:'10.20.254.0/24 (NAT)', dst:'mgmt-01 · 10.20.10.10', svc:'TCP 22 ← :2222', act:'allow', ph:'P0', why:{es:'Acceso de administración al bastión desde tu Mac, y solo al bastión.', en:'Administrative access from your Mac to the bastion, and only the bastion.'}},
+ {id:'R03', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'fw-01', svc:'TCP 443', act:'allow', ph:'P0', why:{es:'La consola web de OPNsense solo se abre desde el bastión.', en:'The OPNsense web console only opens from the bastion.'}},
+ {id:'R04', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'LAB_NETS', svc:'TCP 22 · 3389 · 443', act:'allow', ph:'P0', why:{es:'Administración de todas las máquinas desde un único punto auditado.', en:'Administration of every machine from a single audited point.'}},
+ {id:'R05', ifc:{es:'Todas las zonas', en:'All zones'}, src:{es:'red de la zona', en:'zone network'}, dst:'fw-01', svc:'UDP 53 · 123', act:'allow', ph:'P0', why:{es:'DNS y NTP los sirve el firewall: todos los logs comparten la misma hora.', en:'The firewall serves DNS and NTP, so every log shares the same clock.'}},
+ {id:'R06', ifc:{es:'USERS · SERVERS · DMZ', en:'USERS · SERVERS · DMZ'}, src:{es:'red de la zona', en:'zone network'}, dst:'soc-wazuh · 10.20.50.10', svc:'TCP 1514 · 1515', act:'allow', ph:'P1', why:{es:'Envío de eventos y registro de los agentes Wazuh.', en:'Wazuh agent events and enrolment.'}},
+ {id:'R07', ifc:{es:'fw-01 (local)', en:'fw-01 (local)'}, src:'fw-01', dst:'soc-wazuh', svc:'UDP 514', act:'allow', ph:'P1', why:{es:'Los logs del propio firewall llegan a Wazuh por syslog.', en:'The firewall’s own logs reach Wazuh over syslog.'}},
+ {id:'R08', ifc:{es:'USERS', en:'USERS'}, src:'USERS', dst:'srv-01 · web-01', svc:'TCP 80 · 443', act:'allow', ph:'P1', why:{es:'Actividad legítima: la línea base que el SOC tiene que conocer.', en:'Legitimate activity: the baseline the SOC needs to know.'}},
+ {id:'R09', ifc:{es:'DMZ', en:'DMZ'}, src:'DMZ', dst:'LAB_NETS', svc:'*', act:'deny', ph:'P1', why:{es:'La DMZ no inicia conexiones hacia dentro, salvo sus agentes (R06). Se comprueba con una prueba negativa.', en:'The DMZ never opens connections inwards, except its agents (R06). Verified with a negative test.'}},
+ {id:'R10', ifc:{es:'SOC', en:'SOC'}, src:'soc-vuln · 10.20.50.30', dst:'USERS · SERVERS · DMZ', svc:'*', act:'cond', ph:'P2', why:{es:'Escaneo autenticado solo dentro de la ventana horaria definida (horario de OPNsense).', en:'Authenticated scanning only inside the defined window (OPNsense schedule).'}},
+ {id:'R11', ifc:{es:'ATTACK', en:'ATTACK'}, src:'atk-01 · 10.20.60.10', dst:'TARGETS · win-01, srv-01, web-01', svc:'*', act:'cond', ph:'P2', why:{es:'Solo durante un ejercicio: la regla está desactivada por defecto y se activa a mano.', en:'Only during an exercise: the rule is disabled by default and enabled by hand.'}},
+ {id:'R12', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'MGMT · SOC', svc:'*', act:'deny', ph:'P2', why:{es:'El atacante nunca ve la administración ni el SOC.', en:'The attacker never sees administration or the SOC.'}},
+ {id:'R13', ifc:{es:'MGMT · USERS · SERVERS · DMZ · SOC', en:'MGMT · USERS · SERVERS · DMZ · SOC'}, src:{es:'red de la zona', en:'zone network'}, dst:'Internet (!RFC1918)', svc:'TCP 80 · 443', act:'allow', ph:'P0–P1', why:{es:'Actualizaciones, feeds de reglas y navegación del endpoint.', en:'Updates, rule feeds and endpoint browsing.'}},
+ {id:'R14', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'Internet (!RFC1918)', svc:'TCP 80 · 443', act:'cond', ph:'P2', why:{es:'Solo para actualizar Kali; desactivada durante los ejercicios.', en:'Only to update Kali; disabled during exercises.'}},
+ {id:'R15', ifc:{es:'Todas', en:'All'}, src:'*', dst:'*', svc:'*', act:'deny', ph:'P0', why:{es:'Lo que no está permitido arriba se bloquea y se registra.', en:'Anything not allowed above is blocked and logged.'}}
+];
+const ACT = {es:{allow:'PERMITIR', deny:'BLOQUEAR', cond:'CONDICIONAL'}, en:{allow:'ALLOW', deny:'BLOCK', cond:'CONDITIONAL'}};
+
+// matrix: rows = sources, cols = destinations
+const COLS = ['MGMT','USERS','SERVERS','DMZ','SOC','ATTACK','NET','HOME'];
+const ROWS = ['MGMT','USERS','SERVERS','DMZ','SOC','ATTACK','ADMIN'];
+const A = (s,l,r) => ({s,l,r});
+const MX = {
+ MGMT:   [A('same'), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 443',['R04']), A('allow','22',['R04']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
+ USERS:  [A('deny','',['R15']), A('same'), A('allow','80 · 443',['R08']), A('allow','80 · 443',['R08']), A('allow','1514 · 1515',['R06']), A('deny','',['R15']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
+ SERVERS:[A('deny','',['R15']), A('deny','',['R15']), A('same'), A('deny','',['R15']), A('allow','1514 · 1515',['R06']), A('deny','',['R15']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
+ DMZ:    [A('deny','',['R09']), A('deny','',['R09']), A('deny','',['R09']), A('same'), A('allow','1514 · 1515',['R06','R09']), A('deny','',['R09']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
+ SOC:    [A('deny','',['R15']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('same'), A('deny','',['R15']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
+ ATTACK: [A('deny','',['R12']), A('cond','ex',['R11']), A('cond','ex',['R11']), A('cond','ex',['R11']), A('deny','',['R12']), A('same'), A('cond','tmp',['R14']), A('deny','',['R01'])],
+ ADMIN:  [A('cond','SSH :2222',['R02']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('na'), A('na')]
+};
+const CELL_TXT = {es:{scan:'escaneo', ex:'ejercicio', tmp:'80 · 443 temporal'}, en:{scan:'scan', ex:'exercise', tmp:'80 · 443 temporary'}};
+const CELL_WHY = {
+ es:{
+  'SOC>USERS':'Solo soc-vuln, y solo dentro de la ventana de escaneo. El resto del SOC no inicia conexiones hacia los endpoints.',
+  'ATTACK>USERS':'Solo atk-01 hacia los objetivos del ejercicio, con la regla activada a mano durante la ventana.',
+  'ADMIN>MGMT':'Tu Mac entra por el puerto 2222 del sobremesa; VMware y OPNsense lo encaminan hasta el SSH del bastión. Desde ahí se administra todo lo demás.',
+  'DMZ>SOC':'La DMZ solo puede enviar eventos de su agente Wazuh. Cualquier otra conexión hacia dentro choca con R09.',
+  'MGMT>HOME':'Aunque el tráfico sale por tu sobremesa, ninguna zona puede dirigirse a direcciones de tu red de casa.'
+ },
+ en:{
+  'SOC>USERS':'Only soc-vuln, and only inside the scan window. The rest of the SOC never opens connections to endpoints.',
+  'ATTACK>USERS':'Only atk-01 towards the exercise targets, with the rule enabled by hand during the window.',
+  'ADMIN>MGMT':'Your Mac enters on port 2222 of the desktop; VMware and OPNsense route it to the bastion’s SSH. Everything else is administered from there.',
+  'DMZ>SOC':'The DMZ may only send its Wazuh agent’s events. Any other inward connection hits R09.',
+  'MGMT>HOME':'Although traffic leaves through your desktop, no zone can address your home network.'
+ }
+};
+
+let lang = 'es';
+try { const s = localStorage.getItem('plano-lang'); if (s === 'en' || s === 'es') lang = s; } catch(e) {}
+let sel = 'ADMIN>MGMT';
+let touched = false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const L = v => (v && typeof v === 'object' && 'es' in v) ? v[lang] : v;
+const zName = k => k === 'NET' ? T[lang].colNet : k === 'HOME' ? T[lang].colHome : k === 'ADMIN' ? T[lang].rowAdmin : k;
+const zColor = k => Z[k] ? `var(${Z[k].c})` : k === 'ADMIN' ? 'var(--admin)' : k === 'HOME' ? 'var(--deny)' : 'var(--z-wan)';
+
+/* ---------- SVG ---------- */
+function svgDiagram(){
+  const t = T[lang]; const o = [];
+  const tx = (x,y,s,cls='',anchor='start',extra='') => o.push(`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}" ${extra}>${esc(s)}</text>`);
+  const r = (x,y,w,h,cls,rx=4,extra='') => o.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" class="${cls}" ${extra}/>`);
+  const p = (d,cls,extra='') => o.push(`<path d="${d}" class="${cls}" ${extra}/>`);
+
+  // Internet
+  r(380,44,200,58,'chip',29);
+  tx(480,80,t.internet,'t-disp','middle','font-size="22"');
+  // home network box
+  r(700,16,484,112,'box-home',6);
+  tx(716,38,t.home,'t-mono t-2','start','font-size="11.5" letter-spacing="1"');
+  r(716,52,130,56,'chip',4); tx(730,76,t.router,'t-disp','start','font-size="17"'); tx(730,96,'192.168.0.0/24','t-mono t-3','start','font-size="10.5"');
+  r(862,52,168,56,'chip',4,'style="stroke:var(--admin)"'); tx(876,76,t.mac,'t-disp','start','font-size="17"'); tx(876,96,t.macIp,'t-mono t-3','start','font-size="10.5"');
+  tx(1044,76,t.adminTag,'t-mono','start','font-size="10.5" style="fill:var(--admin)"');
+  // links: internet <-> router
+  p('M580 73 H716','link-ink');
+  // host box
+  r(16,170,1168,676,'box-host',8);
+  tx(36,200,t.host,'t-disp','start','font-size="24"');
+  tx(36,221,t.hostSpec,'t-mono t-2','start','font-size="11.5"');
+  // router -> NIC
+  p('M781 108 V150 H1100 V170','link-ink');
+  r(1090,164,20,12,'fw',2);
+  tx(1084,192,t.nic,'t-mono','end','font-size="10.5"');
+  // vbox adapter chip
+  r(690,184,250,46,'chip',4);
+  tx(704,203,t.vbox,'t-disp','start','font-size="15"');
+  tx(704,221,t.vboxIp,'t-mono','start','font-size="10.5" style="fill:var(--deny)"');
+  // VMware box
+  r(32,244,1136,590,'box-vm',6);
+  tx(48,266,t.vmw,'t-mono t-2','start','font-size="11" letter-spacing="1"');
+  // VMnet8
+  p('M100 300 H1100','link-ink','style="stroke:var(--z-wan)" stroke-width="3"');
+  tx(100,292,t.vmnet,'t-mono','start','font-size="11" style="fill:var(--z-wan)"');
+  p('M1100 300 V176','link-ink','style="stroke:var(--z-wan)" stroke-width="3"');
+  r(1072,288,56,24,'chip',12); tx(1100,304,t.natgw,'t-mono','middle','font-size="10"');
+  // R01 block badge on NIC uplink
+  o.push(`<circle cx="1100" cy="238" r="11" class="block-dot"/>`);
+  p('M1094 232 L1106 244 M1106 232 L1094 244','link','style="stroke:var(--paper)" stroke-width="2.4"');
+  tx(1060,242,t.block15,'t-mono','end','font-size="10.5" style="fill:var(--deny)" font-weight="700"');
+  // fw-01
+  p('M600 300 V350','link-ink','stroke-width="3"');
+  tx(610,334,t.wan,'t-mono','start','font-size="11"');
+  r(44,350,1112,76,'fw',6);
+  tx(64,388,t.fwName,'t-disp fw-t','start','font-size="30"');
+  tx(64,410,t.fwSpec,'t-mono fw-t2','start','font-size="11"');
+  tx(1136,395,t.fwPolicy,'t-mono fw-t2','end','font-size="11"');
+  // zones
+  const X = i => 50 + i*186, CW = 170, PY = 470;
+  ZORDER.forEach((k,i) => {
+    const z = Z[k], cx = X(i)+CW/2, col = `var(${z.c})`;
+    const vms = VMS[k], ph = 80 + vms.length*88 + 4;
+    o.push(`<g class="zone" data-zone="${k}">`);
+    o.push(`<rect x="${cx-8}" y="420" width="16" height="11" rx="2" style="fill:${col}"/>`);
+    o.push(`<path d="M${cx} 431 V${PY}" class="link" style="stroke:${col}"/>`);
+    tx(cx+8,452,`${z.nic} · .1`,'t-mono t-2','start','font-size="10"');
+    r(X(i),PY,CW,ph,'panel',5);
+    o.push(`<rect x="${X(i)}" y="${PY}" width="${CW}" height="5" rx="2" style="fill:${col}"/>`);
+    tx(X(i)+12,PY+30,k,'t-disp','start',`font-size="21" style="fill:${col}"`);
+    tx(X(i)+CW-12,PY+28,z.ph,'t-mono t-3','end','font-size="10.5"');
+    tx(X(i)+12,PY+50,z.net,'t-mono','start','font-size="11.5" font-weight="700"');
+    tx(X(i)+12,PY+67,`${z.ls} · gw .1`,'t-mono t-3','start','font-size="10"');
+    vms.forEach((v,j) => {
+      const y = PY+80+j*88;
+      r(X(i)+8,y,CW-16,80,'vmcard',4);
+      tx(X(i)+18,y+20,v.n,'t-mono','start','font-size="12.5" font-weight="700"');
+      o.push(v.on ? `<circle cx="${X(i)+CW-22}" cy="${y+16}" r="5" style="fill:${col}"/>` : `<circle cx="${X(i)+CW-22}" cy="${y+16}" r="4.5" style="fill:none;stroke:${col};stroke-width:1.8"/>`);
+      tx(X(i)+18,y+38,v.ip,'t-mono','start',`font-size="11" style="fill:${col}"`);
+      tx(X(i)+18,y+55,L(v.role),'','start','font-size="11.5" class="t-2"');
+      tx(X(i)+18,y+71,`${v.cpu} vCPU · ${v.ram} GB · ${v.on ? t.on : t.off}`,'t-mono t-3','start','font-size="9.8"');
+    });
+    o.push('</g>');
+  });
+  // admin path overlay
+  const mgX = X(0)+CW/2 - 16;
+  o.push(`<path class="admin-path" d="M946 108 V142 H1072 V296 H614 V350 M614 350 V414 H${mgX} V${PY+80}"/>`);
+  o.push(`<circle cx="946" cy="108" r="4" style="fill:var(--admin)"/><circle cx="${mgX}" cy="${PY+80}" r="4" style="fill:var(--admin)"/>`);
+  // bottom row: sandbox, AI, OT, legend
+  const BY = 662;
+  r(X(0),BY,356,146,'sbx',5);
+  tx(X(0)+14,BY+28,t.sbx,'t-disp','start','font-size="20"');
+  tx(X(0)+14,BY+47,t.sbxSub,'t-mono t-3','start','font-size="10"');
+  const gap = t.sbxGap.split(': ');
+  tx(X(0)+200,BY+92,gap[0]+(gap[1]?':':''),'','start','font-size="11.5" class="t-2"');
+  if (gap[1]) tx(X(0)+200,BY+109,gap[1],'','start','font-size="11.5" class="t-2"');
+  const sv = t.sbxVm; r(X(0)+10,BY+56,172,80,'vmcard',4);
+  tx(X(0)+20,BY+76,sv.n,'t-mono','start','font-size="12.5" font-weight="700"');
+  o.push(`<circle cx="${X(0)+168}" cy="${BY+72}" r="4.5" style="fill:none;stroke:var(--ink);stroke-width:1.8"/>`);
+  tx(X(0)+20,BY+94,sv.ip,'t-mono t-2','start','font-size="11"');
+  tx(X(0)+20,BY+111,sv.role,'','start','font-size="11.5" class="t-2"');
+  tx(X(0)+20,BY+127,`${sv.cpu} vCPU · ${sv.ram} GB · ${t.off}`,'t-mono t-3','start','font-size="9.8"');
+  [['AI','10.20.70.0/24','P5','vmx7','--z-ai',2],['OT','10.20.80.0/24','P6','vmx8','--z-ot',3]].forEach(([n,net,ph,nic,c,i]) => {
+    r(X(i),BY,CW,140,'ghost',5);
+    tx(X(i)+12,BY+30,n,'t-disp','start',`font-size="21" style="fill:var(${c})" opacity=".75"`);
+    tx(X(i)+CW-12,BY+28,ph,'t-mono t-3','end','font-size="10.5"');
+    tx(X(i)+12,BY+50,net,'t-mono t-2','start','font-size="11.5"');
+    tx(X(i)+12,BY+68,`${nic} · ${t.reserved}`,'t-mono t-3','start','font-size="10"');
+  });
+  // legend in col 5
+  const lx = X(5), ly = BY;
+  tx(lx,ly+14,lang==='es'?'LEYENDA':'LEGEND','t-mono t-3','start','font-size="10" letter-spacing="1.5"');
+  t.legend.forEach(([k,label],i) => {
+    const y = ly+34+i*20;
+    if (k==='ink') p(`M${lx} ${y-4} H${lx+26}`,'link-ink');
+    if (k==='admin') p(`M${lx} ${y-4} H${lx+26}`,'admin-path');
+    if (k==='deny') o.push(`<circle cx="${lx+13}" cy="${y-4}" r="6" class="block-dot"/>`);
+    if (k==='ghost') r(lx+3,y-11,20,14,'ghost',2);
+    if (k==='on') o.push(`<circle cx="${lx+13}" cy="${y-4}" r="5" style="fill:var(--ink-2)"/>`);
+    if (k==='off') o.push(`<circle cx="${lx+13}" cy="${y-4}" r="4.5" style="fill:none;stroke:var(--ink-2);stroke-width:1.8"/>`);
+    tx(lx+36,y,label,'','start','font-size="11.5"');
+  });
+  const svg = $('dg'); svg.innerHTML = o.join('');
+  svg.setAttribute('aria-label', t.dLede);
+}
+
+/* ---------- matrix ---------- */
+function renderMatrix(){
+  const t = T[lang]; const o = [];
+  o.push(`<div class="corner">${esc(t.corner)}</div>`);
+  COLS.forEach(c => o.push(`<div class="h col" style="--c:${zColor(c)}">${esc(zName(c))}</div>`));
+  ROWS.forEach(rw => {
+    o.push(`<div class="h row" style="--c:${zColor(rw)}">${esc(zName(rw))}</div>`);
+    MX[rw].forEach((cell,ci) => {
+      const key = `${rw}>${COLS[ci]}`;
+      const txt = cell.s==='same' ? '—' : cell.s==='na' ? '·' : cell.s==='deny' ? '' : (CELL_TXT[lang][cell.l] || cell.l);
+      const sym = cell.s==='allow' ? '✓' : cell.s==='deny' ? '✕' : cell.s==='cond' ? '◐' : '';
+      const inter = cell.s==='same' || cell.s==='na';
+      o.push(`<button type="button" class="cell ${cell.s}" data-k="${key}" ${inter?'tabindex="-1" aria-disabled="true"':''} aria-pressed="${key===sel}" aria-label="${esc(zName(rw))} → ${esc(zName(COLS[ci]))}: ${esc(t.stateTxt[cell.s])}"><span>${sym?`<span class="sym">${sym}</span>`:''}${esc(txt)}</span></button>`);
+    });
+  });
+  $('mx').innerHTML = o.join('');
+  $('mx-legend').innerHTML = t.mxLegend.map(([k,l]) => `<span><i class="cell ${k}" style="min-height:0;padding:0"></i>${esc(l)}</span>`).join('');
+  renderDetail();
+}
+function renderDetail(){
+  const t = T[lang]; const [rw,cl] = sel.split('>');
+  const cell = MX[rw][COLS.indexOf(cl)];
+  const rules = (cell.r||[]).map(id => RULES.find(r => r.id===id));
+  const why = CELL_WHY[lang][sel] || (rules[0] ? L(rules[0].why) : '');
+  $('detail').innerHTML = `
+    <div class="eyebrow">${esc(lang==='es'?'Flujo seleccionado':'Selected flow')}</div>
+    <div class="route"><span style="color:${zColor(rw)}">${esc(zName(rw))}</span> → <span style="color:${zColor(cl)}">${esc(zName(cl))}</span></div>
+    <div><span class="act ${cell.s==='same'||cell.s==='na'?'':cell.s}">${esc(t.stateTxt[cell.s])}${cell.l && cell.s!=='deny' ? ' · ' + esc(CELL_TXT[lang][cell.l] || cell.l) : ''}</span></div>
+    <p>${esc(why)}</p>
+    ${rules.length ? `<div class="eyebrow">${esc(t.detailRules)}</div><ul>${rules.map(r => `<li><span class="rid">${r.id}</span><span>${esc(L(r.ifc))} · ${esc(L(r.src))} → ${esc(L(r.dst))} · <span class="mono">${esc(r.svc)}</span></span></li>`).join('')}</ul>` : ''}`;
+  document.querySelectorAll('#rules tr[data-id]').forEach(tr => tr.classList.toggle('is-hl', rules.some(r => r.id===tr.dataset.id)));
+  // highlight zones in diagram
+  const zs = touched ? [rw, cl].filter(k => Z[k]) : [];
+  document.querySelectorAll('#dg .zone').forEach(g => g.classList.toggle('dim', zs.length>0 && !zs.includes(g.dataset.zone)));
+}
+
+/* ---------- tables ---------- */
+function renderRules(){
+  const t = T[lang];
+  $('rules').innerHTML = `<thead><tr>${t.rHead.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${RULES.map(r=>`
+    <tr data-id="${r.id}"><td class="rid">${r.id}</td><td>${esc(L(r.ifc))}</td><td class="mono">${esc(L(r.src))}</td><td class="mono">${esc(L(r.dst))}</td><td class="mono">${esc(r.svc)}</td><td><span class="act ${r.act}">${ACT[lang][r.act]}</span></td><td class="mono">${r.ph}</td><td>${esc(L(r.why))}</td></tr>`).join('')}</tbody>`;
+}
+function renderAddr(){
+  const t = T[lang];
+  const rows = ZORDER.map(k => [k, Z[k].ls, Z[k].net, Z[k].gw, Z[k].nic]);
+  const dot = k => Z[k] ? `<span class="zdot" style="background:var(${Z[k].c})"></span>` : k==='AI' ? '<span class="zdot" style="background:var(--z-ai)"></span>' : k==='OT' ? '<span class="zdot" style="background:var(--z-ot)"></span>' : '<span class="zdot" style="background:var(--z-wan)"></span>';
+  $('addr').innerHTML = `<thead><tr>${t.ipHead.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.concat(t.ipExtra).map(r=>`<tr><td>${dot(r[0])}<b>${esc(r[0])}</b></td><td class="mono">${esc(r[1])}</td><td class="mono">${esc(r[2])}</td><td class="mono">${esc(r[3])}</td><td class="mono">${esc(r[4])}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="5" style="color:var(--ink-2);font-size:12.5px;border-bottom:none">${esc(t.ipNote)}</td></tr></tfoot>`;
+}
+function renderRam(){
+  const t = T[lang];
+  const segs = [{k:'host', label:t.ramLegend.host, gb:7, cls:'host', txt:'6–8'}];
+  ZORDER.forEach(k => VMS[k].filter(v=>v.on).forEach(v => segs.push({label:v.n, gb:v.ram, col:`var(${Z[k].c})`, txt:v.ram})));
+  segs.splice(1,0,{label:'fw-01', gb:2, col:'var(--ink)', txt:2});
+  segs.push({label:t.ramLegend.ondemand, gb:4, cls:'ondemand', txt:4});
+  $('ram-bar').innerHTML = segs.map(s => `<div class="ram-seg ${s.cls||''}" style="flex:${s.gb} 0 0; ${s.col?`background:${s.col}`:''}" title="${esc(s.label)} · ${s.txt} GB">${s.gb>=2?esc(s.txt):''}</div>`).join('');
+  $('ram-legend').innerHTML = segs.map(s => `<span><i class="sw ram-seg ${s.cls||''}" style="${s.col?`background:${s.col}`:''};padding:0"></i>${esc(s.label)} · <span class="mono">${esc(s.txt)} GB</span></span>`).join('');
+  $('ram-verdict').innerHTML = t.ramVerdict;
+  $('ram-save').innerHTML = t.ramSave.map(s=>`<li>${esc(s)}</li>`).join('');
+}
+
+function render(){
+  const t = T[lang];
+  document.documentElement.lang = lang === 'en' ? 'en-GB' : 'es';
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang===lang)));
+  $('t-eyebrow').textContent = t.eyebrow; $('t-title').innerHTML = t.title;
+  $('t-block').innerHTML = t.block.map(([k,v]) => `<div><b>${esc(k)}</b>${esc(v)}</div>`).join('');
+  const set = (id,v) => { $(id).textContent = v; };
+  set('t-d-eyebrow',t.dEyebrow); set('h-diagram',t.dTitle); set('t-d-lede',t.dLede); set('t-d-cap',t.dCap); set('t-d-hint',t.dHint);
+  set('t-m-eyebrow',t.mEyebrow); set('h-matrix',t.mTitle); set('t-m-lede',t.mLede);
+  set('t-r-eyebrow',t.rEyebrow); set('h-rules',t.rTitle); set('t-r-lede',t.rLede);
+  set('t-ram-eyebrow',t.ramEyebrow); set('h-ram',t.ramTitle);
+  set('t-ip-eyebrow',t.ipEyebrow); set('h-ip',t.ipTitle);
+  set('t-n-eyebrow',t.nEyebrow); set('h-notes',t.nTitle);
+  $('notes').innerHTML = t.notes.map(n => `<li><span>${n}</span></li>`).join('');
+  set('t-foot-l',t.footL); set('t-foot-r',t.footR);
+  svgDiagram(); renderRules(); renderAddr(); renderRam(); renderMatrix();
+}
+
+document.querySelector('.lang').addEventListener('click', e => {
+  const b = e.target.closest('[data-lang]'); if (!b || b.dataset.lang === lang) return;
+  lang = b.dataset.lang; try { localStorage.setItem('plano-lang', lang); } catch(err) {}
+  render();
+});
+$('mx').addEventListener('click', e => {
+  const b = e.target.closest('.cell'); if (!b || b.getAttribute('aria-disabled') === 'true') return;
+  sel = b.dataset.k; touched = true;
+  document.querySelectorAll('#mx .cell').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.k === sel)));
+  renderDetail();
+});
+render();
+})();
+</script>
+</body></html>
