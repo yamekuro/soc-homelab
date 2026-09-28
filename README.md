@@ -34,6 +34,7 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 | [0001](docs/decisions/0001-hypervisor.md) | Hypervisor | VMware Workstation Pro on Windows 11 |
 | [0002](docs/decisions/0002-firewall.md) | Firewall | OPNsense |
 | [0003](docs/decisions/0003-addressing.md) | Addressing | `10.20.0.0/16`, one `/24` per zone |
+| [0004](docs/decisions/0004-upstream-dns.md) | Upstream DNS | DNS over TLS from Unbound to Quad9 and Cloudflare |
 
 ## Repository layout
 
