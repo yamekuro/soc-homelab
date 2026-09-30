@@ -278,7 +278,7 @@ const T = {
 es:{
   eyebrow:'soc-homelab · diseño de bajo nivel · fases P0–P2',
   title:'Plano de red<span>Un firewall, seis zonas y nueve máquinas en un sobremesa</span>',
-  block:[['PROYECTO','soc-homelab'],['PLANO','Red · P0–P2'],['REV','A'],['FECHA','24 SEP 2026'],['ESCALA','S/E'],['HOJA','1 / 1']],
+  block:[['PROYECTO','soc-homelab'],['PLANO','Red · P0–P2'],['REV','B'],['FECHA','30 SEP 2026'],['ESCALA','S/E'],['HOJA','1 / 1']],
   dEyebrow:'Lámina 01 · topología física y lógica', dTitle:'Cómo se conecta todo',
   dLede:'Todo el laboratorio vive dentro de VMware Workstation en tu sobremesa. OPNsense es la única puerta entre zonas: cada zona es un segmento aislado y solo sale a Internet por el NAT de VMware. Tu red de casa queda fuera de alcance.',
   dCap:'Cotas en direcciones IPv4 · vmxN = interfaz de OPNsense · LS = LAN segment de VMware',
@@ -314,17 +314,18 @@ es:{
   notes:[
     'En el <b>Editor de redes virtuales</b> de VMware, fija la subred de <code>VMnet8</code> a <code>10.20.254.0/24</code> y crea los LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> y <code>LS-SANDBOX</code>.',
     'En los ajustes NAT de VMware, reenvía el puerto <code>2222</code> del host a <code>10.20.254.10:2222</code>. OPNsense lo traduce a <code>mgmt-01:22</code> (R02).',
+    'Al reenviar un puerto, el NAT de VMware conserva la IP del cliente: R02 filtra por la IP de tu Mac, no por la red NAT.',
     'Permite el puerto <code>2222</code> en el firewall de Windows solo desde la IP de tu Mac.',
-    'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.20.254.0/24</code>, que es privada.',
+    'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.20.254.0/24</code> y el tráfico de R02 llega con la IP de tu Mac; las dos son privadas.',
     'Usa tarjetas <code>vmxnet3</code>: OPNsense las verá como <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> y <code>vmx8</code> quedan para AI y OT (máximo 10 por máquina).',
     'Dos máquinas de la misma zona se hablan sin pasar por el firewall. Esa visibilidad llega con los sensores de red en P4.'
   ],
-  footL:'soc-homelab · plano de red · rev A', footR:'Diseño propuesto · sin construir'
+  footL:'soc-homelab · plano de red · rev B', footR:'Diseño propuesto · P0 en construcción'
 },
 en:{
   eyebrow:'soc-homelab · low-level design · phases P0–P2',
   title:'Network plan<span>One firewall, six zones and nine machines on one desktop</span>',
-  block:[['PROJECT','soc-homelab'],['SHEET','Network · P0–P2'],['REV','A'],['DATE','24 SEP 2026'],['SCALE','NTS'],['PAGE','1 / 1']],
+  block:[['PROJECT','soc-homelab'],['SHEET','Network · P0–P2'],['REV','B'],['DATE','30 SEP 2026'],['SCALE','NTS'],['PAGE','1 / 1']],
   dEyebrow:'Sheet 01 · physical and logical topology', dTitle:'How it all connects',
   dLede:'The whole lab lives inside VMware Workstation on your desktop. OPNsense is the only door between zones: each zone is an isolated segment and only reaches the Internet through VMware NAT. Your home network stays out of reach.',
   dCap:'Values are IPv4 addresses · vmxN = OPNsense interface · LS = VMware LAN segment',
@@ -360,17 +361,18 @@ en:{
   notes:[
     'In VMware’s <b>Virtual Network Editor</b>, set the <code>VMnet8</code> subnet to <code>10.20.254.0/24</code> and create LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> and <code>LS-SANDBOX</code>.',
     'In VMware’s NAT settings, forward host port <code>2222</code> to <code>10.20.254.10:2222</code>. OPNsense translates it to <code>mgmt-01:22</code> (R02).',
+    'When it forwards a port, VMware’s NAT keeps the client’s address, so R02 matches your Mac’s IP, not the NAT network.',
     'Allow port <code>2222</code> in the Windows firewall from your Mac’s IP only.',
-    'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.20.254.0/24</code>, which is private.',
+    'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.20.254.0/24</code> and R02 traffic arrives with your Mac’s address; both are private.',
     'Use <code>vmxnet3</code> adapters: OPNsense sees them as <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> and <code>vmx8</code> are kept for AI and OT (10 per machine at most).',
     'Two machines in the same zone talk without crossing the firewall. That visibility arrives with the network sensors in P4.'
   ],
-  footL:'soc-homelab · network plan · rev A', footR:'Proposed design · not yet built'
+  footL:'soc-homelab · network plan · rev B', footR:'Proposed design · P0 under construction'
 }};
 
 const RULES = [
  {id:'R01', ifc:{es:'Flotante', en:'Floating'}, src:'LAB_NETS · 10.20.0.0/16', dst:'HOME_NETS · 192.168.0.0/24, 192.168.56.0/24', svc:'*', act:'deny', ph:'P0', why:{es:'Nada del laboratorio llega a tu red de casa ni al adaptador de VirtualBox.', en:'Nothing in the lab reaches your home network or the VirtualBox adapter.'}},
- {id:'R02', ifc:{es:'WAN', en:'WAN'}, src:'10.20.254.0/24 (NAT)', dst:'mgmt-01 · 10.20.10.10', svc:'TCP 22 ← :2222', act:'allow', ph:'P0', why:{es:'Acceso de administración al bastión desde tu Mac, y solo al bastión.', en:'Administrative access from your Mac to the bastion, and only the bastion.'}},
+ {id:'R02', ifc:{es:'WAN', en:'WAN'}, src:{es:'tu Mac · 192.168.0.129', en:'your Mac · 192.168.0.129'}, dst:'mgmt-01 · 10.20.10.10', svc:'TCP 22 ← :2222', act:'allow', ph:'P0', why:{es:'Acceso de administración al bastión desde tu Mac, y solo al bastión.', en:'Administrative access from your Mac to the bastion, and only the bastion.'}},
  {id:'R03', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'fw-01', svc:'TCP 443', act:'allow', ph:'P0', why:{es:'La consola web de OPNsense solo se abre desde el bastión.', en:'The OPNsense web console only opens from the bastion.'}},
  {id:'R04', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'LAB_NETS', svc:'TCP 22 · 3389 · 443', act:'allow', ph:'P0', why:{es:'Administración de todas las máquinas desde un único punto auditado.', en:'Administration of every machine from a single audited point.'}},
  {id:'R05', ifc:{es:'Todas las zonas', en:'All zones'}, src:{es:'red de la zona', en:'zone network'}, dst:'fw-01', svc:'UDP 53 · 123', act:'allow', ph:'P0', why:{es:'DNS y NTP los sirve el firewall: todos los logs comparten la misma hora.', en:'The firewall serves DNS and NTP, so every log shares the same clock.'}},
