@@ -26,7 +26,7 @@ How to run, access, back up and recover the lab as it stands in P0. Steps marked
 - **After restarting `fw-01`,** reopen SSH sessions and the tunnel: the firewall forgets its connection states.
 - **SSH client settings:** the Mac's `~/.ssh/config` sets `ServerAliveInterval 30` and `ExitOnForwardFailure yes` for `mgmt-01`. A tunnel whose connection dies exits after about 90 seconds, and a tunnel that cannot open its port exits instead of running without it ([ssh_config(5)](https://man.openbsd.org/ssh_config)).
 - **If port 8443 is busy, or the GUI does not load:** `lsof -nP -iTCP:8443 -sTCP:LISTEN` shows the tunnel process, and `curl -sk -m 5 -o /dev/null -w 'HTTP %{http_code}\n' https://127.0.0.1:8443` gives `HTTP 000` if it forwards nothing. Run `kill <PID>`. If the port is still busy, `ps -o pid,stat,command -p <PID>` shows `T` for a suspended process: run `kill -9 <PID>`.
-- **Root on `mgmt-01`:** `sudo` is not installed, so use `ssh -t mgmt-01 "su -l -c '<command>'"`.
+- **Root on `mgmt-01`:** `ssh -t mgmt-01 'sudo <command>'`, with `yamekuro`'s password. Each command is logged; `sudo journalctl -t sudo` shows them. The root password is kept for emergencies at the console, and commands run through `su` are not recorded ([decision 0008](decisions/0008-sudo.md)).
 
 ## Host firewall
 
@@ -83,7 +83,7 @@ The backup holds `fw-01`'s `config.xml` only.
   - the VMware NAT port forward from `2222` to `10.20.254.10:2222`;
   - the DHCP reservations in the home router;
   - the host's power settings;
-  - on `mgmt-01`, `/etc/ssh/sshd_config.d/10-bastion.conf` and `/etc/systemd/timesyncd.conf.d/10-fw-01.conf`;
+  - on `mgmt-01`, `/etc/ssh/sshd_config.d/10-bastion.conf`, `/etc/systemd/timesyncd.conf.d/10-fw-01.conf`, and the `sudo` package with `yamekuro` in the `sudo` group;
   - the Mac's `~/.ssh/config`.
 
 ## Snapshots

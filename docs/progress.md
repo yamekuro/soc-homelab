@@ -70,6 +70,10 @@ Updated: 2026-10-01
   - The `vmnat.exe` rule was set to outbound only, and an inbound rule was added that allows TCP `2222` from the Mac. The iPhone still reached `fw-01` (15:06–15:08 UTC). After a third rule that denies inbound TCP `2222` from any address, the iPhone's attempts no longer reached `fw-01` (checked from 15:22 to 15:31 UTC), and the Mac still connected.
   - After the change, the verification battery gave the same results, `mgmt-01` resolved `deb.debian.org`, and `fw-01`'s NTP servers kept answering (reach 377), so the VMs' traffic through `vmnat.exe` still works.
   - The [network plan](network-plan.html) (rev E) now says to restrict port `2222` in the firewall that actually filters.
+- Installed `sudo` on `mgmt-01` and added `yamekuro` to the `sudo` group; the root password stays for emergencies at the console ([decision 0008](decisions/0008-sudo.md)). Verified on 2026-10-01:
+  - Before the change, the journal showed that `su` records who became root and when, but not the command.
+  - The package is `sudo 1.9.16p2-3+deb13u2`, the version that the Debian Security Tracker lists as fixed for CVE-2025-32463 in trixie.
+  - After logging in again, `id` shows the `sudo` group. `sudo true` asks for `yamekuro`'s password, and the journal records each command with user, terminal, directory and target user, for example `yamekuro : TTY=pts/0 ; PWD=/home/yamekuro ; USER=root ; COMMAND=/usr/bin/true`. Failed passwords are recorded too, with the command that was attempted.
 
 ### Problems found
 
@@ -81,7 +85,7 @@ Updated: 2026-10-01
 - After `fw-01` booted at 09:07 UTC on 2026-10-01, its NTP service had no time sources until about 09:11, when the pool servers appeared. Not confirmed: the pool names could not be resolved yet. The servers added by IP address do not need DNS.
 - The Windows host went to sleep twice with the VMs running, from 11:35 to 11:39 and from 11:54 to 11:58 CEST on 2026-10-01 (Kernel-Power 42 and Power-Troubleshooter 1 in the System log). The VMs stopped during each sleep. After the first one, `mgmt-01`'s clock was 233 s behind, and `fw-01` advertised a root distance above 5 s, so its own clock was off too: ntpd adds its own offset to the root dispersion it advertises, and waits 300 s before stepping the clock. `mgmt-01` refused `fw-01`'s time (`Server has too large root distance`, limit 5 s) from 09:44 UTC until it accepted it at 09:52 UTC (the journal shows the first refusal at 09:40, because `mgmt-01`'s clock was still behind). Fixed by disabling sleep on AC power ([decision 0005](decisions/0005-time.md)).
 - The host restart at 12:11 CEST on 2026-10-01 was logged as unclean (Kernel-Power 41), and the VMs were cut off without an orderly shutdown: `mgmt-01`'s journal has no shutdown entries. Before restarting the host, shut down `mgmt-01` and then `fw-01`. At start-up, start `fw-01` first, because `mgmt-01` depends on it for DNS, time and Internet access.
-- `sudo` is not installed on `mgmt-01`, because a root password was set during installation. Administrative commands used `su -l -c`.
+- `sudo` was not installed on `mgmt-01`, because a root password was set during installation. Administrative commands used `su -l -c` until `sudo` was installed on 2026-10-01.
 - In OPNsense 26.7 the factory LAN rules (*Default allow LAN to any rule*, IPv4 and IPv6) are new-style rules with sequence numbers 1 and 11, and every new rule is appended at the end, with the highest sequence number plus 100 ([`config.xml.sample`](https://github.com/opnsense/core/blob/26.7.4/src/etc/config.xml.sample), [`FilterSequenceField.php`](https://github.com/opnsense/core/blob/26.7.4/src/opnsense/mvc/app/models/OPNsense/Firewall/FieldTypes/FilterSequenceField.php)). New LAN rules therefore sat below *Default allow* and did nothing. All the explicit rules were created first, and *Default allow* was then disabled in one change, with re-enabling it as the way back.
 - Saving a rule does not load it. The first R01 test still passed until *Apply* was pressed on the rules page.
 - After the `fw-01` restart, the open SSH sessions and the GUI tunnel stopped working, because the firewall forgets its connection states when it restarts. A late packet from the old tunnel session (`10.20.10.10:22` → `192.168.0.129:51130`) looked like a new connection from the lab to the home network, and R01 blocked it. Reopen SSH sessions and the tunnel after restarting `fw-01`.
@@ -91,7 +95,6 @@ Updated: 2026-10-01
 
 ### Remaining before the P0 exit gate
 
-- Decide whether to install `sudo` on `mgmt-01`, so every administrative command is logged with the user who ran it.
 - Inventory and templates in `infra/`, and the P0 write-up.
 
 ### Carried to P1
@@ -100,5 +103,6 @@ Updated: 2026-10-01
 - Repeat R05, R13, R13a and R15 for every new zone.
 - Add name-based DoH blocking in Unbound, including Firefox's canary domain, before the USERS zone gets browsers ([decision 0006](decisions/0006-doh-blocking.md)).
 - Send `fw-01`'s firewall log to Wazuh (R07), so the evidence survives going back to a snapshot.
+- Lock the root password on `mgmt-01` once `sudo` has proven itself and the bastion's logs reach Wazuh, so every root command goes through `sudo` ([decision 0008](decisions/0008-sudo.md)).
 
 No credentials are included in this log.
