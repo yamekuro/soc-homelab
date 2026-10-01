@@ -57,6 +57,13 @@ Updated: 2026-10-01
 - Restarted `fw-01` on purpose on 2026-10-01, with the new rules in place:
   - A few minutes after boot, `ntpq -pn` showed `162.159.200.123`, configured by IP address, as the system peer. This time the pool servers also appeared within about a minute.
   - The tests from `mgmt-01` gave the same results as before the restart, and new GUI connections were still logged by R03, so the anti-lockout setting survived too.
+- Tested recovery on 2026-10-01:
+  - Exported `fw-01`'s configuration from *System ‣ Configuration ‣ Backups*, encrypted. The file header shows AES-256-CBC, PBKDF2 with 100000 iterations and SHA-512. The file is kept on the Mac, outside this repository, and its password is in the password manager.
+  - Took `fw-01` back to the snapshot *antes de reglas MGMT 2026-10-01* with *Go To* in the Snapshot Manager. Every connection in the test battery was open again, as before the rules.
+  - Restored the encrypted backup, all areas, with a reboot. The battery gave the same results as before going back, and the GUI opened through the bastion, with the log showing `R03 bastion to fw-01 GUI` at 14:09 UTC. The restore brought back the rules, the aliases and the disabled anti-lockout rule.
+  - `fw-01` now runs on top of that snapshot with the restored configuration, so *Revert to Snapshot* would return to the state before the rules until a new snapshot is taken ([VMware](https://techdocs.broadcom.com/us/en/vmware-cis/desktop-hypervisors/workstation-pro/17-0/using-vmware-workstation-pro/using-virtual-machines-in-workstation-pro-user-guide/taking-snapshots-of-virtual-machines/revert-to-a-snapshot.html)).
+- Wrote the [runbook](runbook.md): start and stop order, administrative access, recovering access from the console, backup, restore, what the backup leaves out, snapshots and the verification battery.
+- Set `ServerAliveInterval 30` and `ExitOnForwardFailure yes` for `mgmt-01` in the Mac's `~/.ssh/config`. `ssh -G mgmt-01` shows both, with `ServerAliveCountMax` at its default of 3. A tunnel whose connection dies now exits after about 90 seconds, and a tunnel that cannot open its local port exits instead of running without it ([ssh_config(5)](https://man.openbsd.org/ssh_config)).
 
 ### Problems found
 
@@ -72,11 +79,11 @@ Updated: 2026-10-01
 - In OPNsense 26.7 the factory LAN rules (*Default allow LAN to any rule*, IPv4 and IPv6) are new-style rules with sequence numbers 1 and 11, and every new rule is appended at the end, with the highest sequence number plus 100 ([`config.xml.sample`](https://github.com/opnsense/core/blob/26.7.4/src/etc/config.xml.sample), [`FilterSequenceField.php`](https://github.com/opnsense/core/blob/26.7.4/src/opnsense/mvc/app/models/OPNsense/Firewall/FieldTypes/FilterSequenceField.php)). New LAN rules therefore sat below *Default allow* and did nothing. All the explicit rules were created first, and *Default allow* was then disabled in one change, with re-enabling it as the way back.
 - Saving a rule does not load it. The first R01 test still passed until *Apply* was pressed on the rules page.
 - After the `fw-01` restart, the open SSH sessions and the GUI tunnel stopped working, because the firewall forgets its connection states when it restarts. A late packet from the old tunnel session (`10.20.10.10:22` → `192.168.0.129:51130`) looked like a new connection from the lab to the home network, and R01 blocked it. Reopen SSH sessions and the tunnel after restarting `fw-01`.
+- At the start of the recovery test, a new tunnel could not open port 8443 on the Mac (`Address already in use`). `lsof` showed an earlier `ssh` process still holding it. `pkill` and `kill` did not free the port, and `kill -9` did. Not confirmed: the old process had been suspended with Ctrl+Z. A stopped process receives no signal except SIGKILL until it continues ([POSIX](https://pubs.opengroup.org/onlinepubs/9799919799/functions/V2_chap02.html), section 2.4.3).
+- Going back to the snapshot also rolled back `fw-01`'s logs: the firewall log entries from the rule tests earlier that day are no longer on the running firewall. They remain in the screenshots taken during the tests and in the snapshot *despues de reglas MGMT 2026-10-01*.
 
 ### Remaining before the P0 exit gate
 
-- Recovery: export the OPNsense configuration and keep it outside the repository, because it contains secrets, then test a restore.
-- Runbook: start and stop order, how to recover access through the `fw-01` console (`pfctl -d`), and the rebuild steps, including `no-ipv6.conf`, which configuration backups do not include.
 - Test the Windows firewall rule from a third device on the home network.
 - Decide whether to install `sudo` on `mgmt-01`, so every administrative command is logged with the user who ran it.
 - Inventory and templates in `infra/`, and the P0 write-up.
@@ -86,5 +93,6 @@ Updated: 2026-10-01
 - Test R04 once its targets exist.
 - Repeat R05, R13, R13a and R15 for every new zone.
 - Add name-based DoH blocking in Unbound, including Firefox's canary domain, before the USERS zone gets browsers ([decision 0006](decisions/0006-doh-blocking.md)).
+- Send `fw-01`'s firewall log to Wazuh (R07), so the evidence survives going back to a snapshot.
 
 No credentials are included in this log.

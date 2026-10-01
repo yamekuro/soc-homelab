@@ -25,6 +25,7 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 
 - [Blueprint](docs/blueprint.html): target architecture, threat catalogue, phases, decisions and market fit (English and Spanish).
 - [Network plan](docs/network-plan.html): P0–P2 infrastructure, zone policy matrix, OPNsense rules, RAM budget and addressing (English and Spanish).
+- [Runbook](docs/runbook.md): start and stop order, administrative access, backup, restore and verification.
 - [Decision records](docs/decisions/): what was decided, the options considered and why.
 
 ## Decisions so far
