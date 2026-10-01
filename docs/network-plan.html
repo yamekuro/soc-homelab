@@ -315,15 +315,15 @@ es:{
     'En el <b>Editor de redes virtuales</b> de VMware, fija la subred de <code>VMnet8</code> a <code>10.20.254.0/24</code> y crea los LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> y <code>LS-SANDBOX</code>.',
     'En los ajustes NAT de VMware, reenvía el puerto <code>2222</code> del host a <code>10.20.254.10:2222</code>. OPNsense lo traduce a <code>mgmt-01:22</code> (R02).',
     'Al reenviar un puerto, el NAT de VMware conserva la IP del cliente: R02 filtra por la IP de tu Mac, no por la red NAT.',
-    'Permite el puerto <code>2222</code> en el firewall de Windows solo desde la IP de tu Mac.',
-    'Reserva en el DHCP del router las IP de tu Mac (<code>192.168.0.129</code>) y del host (<code>192.168.0.41</code>): R02 y el firewall de Windows dependen de ellas.',
+    'Deja entrar al puerto <code>2222</code> del host solo desde la IP de tu Mac, en el firewall que de verdad filtra: aquí es Bitdefender, no el de Windows. Para <code>vmnat.exe</code>: salida permitida, y entrada TCP 2222 permitida desde tu Mac y denegada para el resto. Compruébalo desde otro dispositivo.',
+    'Reserva en el DHCP del router las IP de tu Mac (<code>192.168.0.129</code>) y del host (<code>192.168.0.41</code>): R02 y el firewall del host dependen de ellas.',
     'En Windows, desactiva la suspensión con el equipo enchufado (<code>powercfg /change standby-timeout-ac 0</code>): si el host se duerme, las máquinas se paran y sus relojes se atrasan.',
     'Cuando R03 funcione, desactiva la regla automática <i>anti-lockout</i> (<i>Firewall ‣ Settings ‣ Advanced</i>): así la web de fw-01 solo se abre desde el bastión. Si te quedas fuera, usa <code>pfctl -d</code> un momento desde la consola de fw-01.',
     'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.20.254.0/24</code> y el tráfico de R02 llega con la IP de tu Mac; las dos son privadas.',
     'Usa tarjetas <code>vmxnet3</code>: OPNsense las verá como <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> y <code>vmx8</code> quedan para AI y OT (máximo 10 por máquina).',
     'Dos máquinas de la misma zona se hablan sin pasar por el firewall. Esa visibilidad llega con los sensores de red en P4.'
   ],
-  footL:'soc-homelab · plano de red · rev D', footR:'Diseño propuesto · P0 en construcción'
+  footL:'soc-homelab · plano de red · rev E', footR:'Diseño propuesto · P0 en construcción'
 },
 en:{
   eyebrow:'soc-homelab · low-level design · phases P0–P2',
@@ -365,15 +365,15 @@ en:{
     'In VMware’s <b>Virtual Network Editor</b>, set the <code>VMnet8</code> subnet to <code>10.20.254.0/24</code> and create LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> and <code>LS-SANDBOX</code>.',
     'In VMware’s NAT settings, forward host port <code>2222</code> to <code>10.20.254.10:2222</code>. OPNsense translates it to <code>mgmt-01:22</code> (R02).',
     'When it forwards a port, VMware’s NAT keeps the client’s address, so R02 matches your Mac’s IP, not the NAT network.',
-    'Allow port <code>2222</code> in the Windows firewall from your Mac’s IP only.',
-    'Reserve your Mac’s (<code>192.168.0.129</code>) and the host’s (<code>192.168.0.41</code>) addresses in the router’s DHCP: R02 and the Windows firewall depend on them.',
+    'Allow host port <code>2222</code> from your Mac’s IP only, in the firewall that actually filters: here that is Bitdefender, not the Windows firewall. For <code>vmnat.exe</code>: outbound allowed; inbound TCP 2222 allowed from your Mac and denied for everyone else. Test it from another device.',
+    'Reserve your Mac’s (<code>192.168.0.129</code>) and the host’s (<code>192.168.0.41</code>) addresses in the router’s DHCP: R02 and the host firewall depend on them.',
     'In Windows, turn off sleep while the PC is plugged in (<code>powercfg /change standby-timeout-ac 0</code>): if the host sleeps, the machines stop and their clocks fall behind.',
     'Once R03 works, disable the automatic <i>anti-lockout</i> rule (<i>Firewall ‣ Settings ‣ Advanced</i>), so the fw-01 web GUI only opens from the bastion. If you lock yourself out, run <code>pfctl -d</code> briefly from the fw-01 console.',
     'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.20.254.0/24</code> and R02 traffic arrives with your Mac’s address; both are private.',
     'Use <code>vmxnet3</code> adapters: OPNsense sees them as <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> and <code>vmx8</code> are kept for AI and OT (10 per machine at most).',
     'Two machines in the same zone talk without crossing the firewall. That visibility arrives with the network sensors in P4.'
   ],
-  footL:'soc-homelab · network plan · rev D', footR:'Proposed design · P0 under construction'
+  footL:'soc-homelab · network plan · rev E', footR:'Proposed design · P0 under construction'
 }};
 
 const RULES = [

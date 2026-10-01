@@ -38,6 +38,7 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 | [0004](docs/decisions/0004-upstream-dns.md) | Upstream DNS | DNS over TLS from Unbound to Quad9 and Cloudflare |
 | [0005](docs/decisions/0005-time.md) | Time synchronisation and time zone | `fw-01` serves NTP (pool plus Cloudflare by IP); UTC on every lab machine |
 | [0006](docs/decisions/0006-doh-blocking.md) | Blocking DNS over HTTPS | Block the published addresses of large public resolvers before R13 |
+| [0007](docs/decisions/0007-host-firewall.md) | Host firewall for the administrative path | Restrict VMware's NAT service in Bitdefender: port `2222` only from the Mac |
 
 ## Repository layout
 

@@ -10,3 +10,4 @@ Each decision the lab depends on is recorded here with its context, the options 
 | [0004](0004-upstream-dns.md) | Upstream DNS | Accepted |
 | [0005](0005-time.md) | Time synchronisation and time zone | Accepted |
 | [0006](0006-doh-blocking.md) | Blocking DNS over HTTPS | Accepted |
+| [0007](0007-host-firewall.md) | Host firewall for the administrative path | Accepted |

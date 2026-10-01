@@ -8,7 +8,7 @@ How to run, access, back up and recover the lab as it stands in P0. Steps marked
 
 | Machine | Role | Address | Access |
 |---|---|---|---|
-| Windows 11 host (`DESKTOP-GO7E8EO`) | Runs VMware Workstation | `192.168.0.41`, reserved in the home router | Local console |
+| Windows 11 host (`DESKTOP-GO7E8EO`) | Runs VMware Workstation; Bitdefender is its firewall | `192.168.0.41`, reserved in the home router | Local console |
 | Mac | Administration workstation | `192.168.0.129`, reserved in the home router | — |
 | `fw-01` | OPNsense 26.7 firewall | WAN `10.20.254.10`, LAN `10.20.10.1` | VMware console; web GUI through the bastion |
 | `mgmt-01` | Debian 13 bastion | `10.20.10.10` | `ssh mgmt-01` from the Mac |
@@ -22,11 +22,23 @@ How to run, access, back up and recover the lab as it stands in P0. Steps marked
 ## Administrative access
 
 - **SSH to the bastion:** `ssh mgmt-01`. The path is Mac → `192.168.0.41:2222` → VMware NAT → `fw-01` Destination NAT → `mgmt-01:22` (R02). Only keys are accepted.
-- **Web GUI:** `ssh -N -L 8443:10.20.10.1:443 mgmt-01`, then `https://127.0.0.1:8443`. The anti-lockout rule is disabled, so the GUI only opens from `mgmt-01` (R03).
+- **Web GUI:** `ssh -N -L 8443:10.20.10.1:443 mgmt-01`, then `https://127.0.0.1:8443`. The anti-lockout rule is disabled, so the GUI only opens from `mgmt-01` (R03). Open the tunnel in its own Terminal tab and close it with Ctrl+C. Ctrl+Z only suspends it: the port stays busy and nothing is forwarded.
 - **After restarting `fw-01`,** reopen SSH sessions and the tunnel: the firewall forgets its connection states.
 - **SSH client settings:** the Mac's `~/.ssh/config` sets `ServerAliveInterval 30` and `ExitOnForwardFailure yes` for `mgmt-01`. A tunnel whose connection dies exits after about 90 seconds, and a tunnel that cannot open its port exits instead of running without it ([ssh_config(5)](https://man.openbsd.org/ssh_config)).
-- **If port 8443 is busy:** `lsof -nP -iTCP:8443 -sTCP:LISTEN` shows the process. If it is an old `ssh`, run `kill <PID>`. If the port is still busy, run `kill -9 <PID>`.
+- **If port 8443 is busy, or the GUI does not load:** `lsof -nP -iTCP:8443 -sTCP:LISTEN` shows the tunnel process, and `curl -sk -m 5 -o /dev/null -w 'HTTP %{http_code}\n' https://127.0.0.1:8443` gives `HTTP 000` if it forwards nothing. Run `kill <PID>`. If the port is still busy, `ps -o pid,stat,command -p <PID>` shows `T` for a suspended process: run `kill -9 <PID>`.
 - **Root on `mgmt-01`:** `sudo` is not installed, so use `ssh -t mgmt-01 "su -l -c '<command>'"`.
+
+## Host firewall
+
+Bitdefender filters the host's traffic, so Windows Defender Firewall rules are not applied while it does ([decision 0007](decisions/0007-host-firewall.md)). In Bitdefender's *Firewall ‣ Rules*, `C:\Windows\System32\vmnat.exe` has three rules, all for *Any Network*:
+
+| Direction | Protocol | Local port | Remote address | Permission |
+|---|---|---|---|---|
+| Outbound | Any | Any | Any | Allow |
+| Inbound | TCP | `2222` | `192.168.0.129` | Allow |
+| Inbound | TCP | `2222` | Any | Deny |
+
+Run the third-device check in the verification battery after updating VMware Workstation or Bitdefender. A new port forward needs the same pair of inbound rules.
 
 ## Lost access to the web GUI
 
@@ -67,7 +79,7 @@ The backup holds `fw-01`'s `config.xml` only.
   ```
 
 - Everything outside `fw-01`, recreated by hand from [progress](progress.md):
-  - the Windows firewall rule *soc-homelab R02 SSH 2222 from Mac*;
+  - the three Bitdefender rules for `vmnat.exe` (see *Host firewall*), and the unused Windows Defender Firewall rule *soc-homelab R02 SSH 2222 from Mac*;
   - the VMware NAT port forward from `2222` to `10.20.254.10:2222`;
   - the DHCP reservations in the home router;
   - the host's power settings;
@@ -98,3 +110,5 @@ ssh mgmt-01 'for t in "deb.debian.org 443" "github.com 22" "1.1.1.1 853" "8.8.8.
 | `getent` | An address | R05 |
 
 Time: `ssh mgmt-01 timedatectl timesync-status` must show server `10.20.10.1` and a packet count above 0. On the `fw-01` console, `ntpq -pn` must show a line starting with `*`.
+
+Third device: from a phone on the home Wi-Fi, open `http://192.168.0.41:2222` and let it try for a minute. In *Firewall ‣ Log Files ‣ Live View*, filter `src` · `contains` · the phone's address: no new line may appear. Then remove the filter and check that the newest line has the current time. A line from the phone means the host let it through, and only R02 stopped it.
