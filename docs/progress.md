@@ -74,6 +74,7 @@ Updated: 2026-10-01
   - Before the change, the journal showed that `su` records who became root and when, but not the command.
   - The package is `sudo 1.9.16p2-3+deb13u2`, the version that the Debian Security Tracker lists as fixed for CVE-2025-32463 in trixie.
   - After logging in again, `id` shows the `sudo` group. `sudo true` asks for `yamekuro`'s password, and the journal records each command with user, terminal, directory and target user, for example `yamekuro : TTY=pts/0 ; PWD=/home/yamekuro ; USER=root ; COMMAND=/usr/bin/true`. Failed passwords are recorded too, with the command that was attempted.
+- Wrote [`infra/`](../infra/README.md): the inventory, with versions and identities, the machine templates and the restore log. Every value was checked on the machines on 2026-10-01. The inventory shows that `fw-01` and `mgmt-01` are larger than the network plan's RAM budget.
 
 ### Problems found
 
@@ -95,7 +96,7 @@ Updated: 2026-10-01
 
 ### Remaining before the P0 exit gate
 
-- Inventory and templates in `infra/`, and the P0 write-up.
+- The P0 write-up.
 
 ### Carried to P1
 
@@ -104,5 +105,6 @@ Updated: 2026-10-01
 - Add name-based DoH blocking in Unbound, including Firefox's canary domain, before the USERS zone gets browsers ([decision 0006](decisions/0006-doh-blocking.md)).
 - Send `fw-01`'s firewall log to Wazuh (R07), so the evidence survives going back to a snapshot.
 - Lock the root password on `mgmt-01` once `sudo` has proven itself and the bastion's logs reach Wazuh, so every root command goes through `sudo` ([decision 0008](decisions/0008-sudo.md)).
+- Resolve the RAM budget before Wazuh arrives. `fw-01` runs with 4 GB and `mgmt-01` with 2 GB, against 2 GB and 1 GB in the [network plan](network-plan.html). With those sizes, P2 needs 34–36 GB of the host's 32. Either shrink the machines or revise the plan ([inventory](../infra/inventory.md)).
 
 No credentials are included in this log.

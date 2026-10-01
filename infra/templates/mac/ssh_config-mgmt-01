@@ -1,0 +1,8 @@
+Host mgmt-01
+    HostName 192.168.0.41
+    Port 2222
+    User yamekuro
+    IdentityFile ~/.ssh/id_ed25519_soc-homelab
+    IdentitiesOnly yes
+    ServerAliveInterval 30
+    ExitOnForwardFailure yes
