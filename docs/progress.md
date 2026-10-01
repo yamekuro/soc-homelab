@@ -1,6 +1,6 @@
 # Lab Progress
 
-Updated: 2026-09-30
+Updated: 2026-10-01
 
 ## P0 — Reproducible base: in progress
 
@@ -36,6 +36,15 @@ Updated: 2026-09-30
   - A connection from another address (the Windows host itself, `192.168.0.41`) is blocked by the default deny rule and logged.
   - Password logins are refused with `Permission denied (publickey)`.
   - The OPNsense web GUI opens through the SSH tunnel.
+- Reserved the addresses R02 depends on in the home router's DHCP (*Configuración › LAN › DHCP estático*): the Mac (`3e:c2:48:9d:b0:84`, macOS private Wi-Fi address set to *Fixed*) gets `192.168.0.129`, and the Windows host (`DESKTOP-GO7E8EO`, `04:42:1a:ed:ea:c6`) gets `192.168.0.41`. Verified on 2026-10-01:
+  - Both entries are still there after reloading the page.
+  - After applying them, `ssh mgmt-01 hostname` from the Mac still works. That needs both addresses: R02 and the Windows firewall rule accept only `.129`, and the SSH configuration connects to `.41`.
+- Recorded the home network for R01: the home LAN is `192.168.0.0/24` (router `.1`, dynamic pool `.10`–`.250`, 24-hour leases) and the guest network is `192.168.5.0/24` (router `192.168.5.1`). The [network plan](network-plan.html) (rev C) adds the guest network to HOME_NETS and the reservations and sleep setting to the host notes. Both reservations are inside the dynamic pool. The router accepted them, but no Vodafone documentation confirms that it keeps reserved addresses out of dynamic assignment.
+- Configured NTP on `fw-01` ([decision 0005](decisions/0005-time.md)): the four default pool names stay, and Cloudflare's `162.159.200.1` and `162.159.200.123` are added by IP address with *Iburst*, so the clock can be corrected without DNS. Verified on 2026-10-01:
+  - Before the change, `fw-01` already reached public NTP servers, and the home router does not intercept NTP: each server reported its own reference and stratum.
+  - About 20 seconds after the service restarted, `162.159.200.123` was the system peer and `162.159.200.1` a candidate. Every offset was below 8 ms.
+- Pointed `mgmt-01` to `fw-01` for time and set its time zone to UTC. `/etc/systemd/timesyncd.conf.d/10-fw-01.conf` sets `NTP=10.20.10.1` and an empty `FallbackNTP=`. Before the change, `mgmt-01` took its time directly from `2.debian.pool.ntp.org`, bypassing `fw-01`'s NTP service. Verified on 2026-10-01, after a host restart: `timedatectl timesync-status` shows server `10.20.10.1`, stratum 3, an offset of +0.669 ms, and the time zone is `Etc/UTC`.
+- Disabled sleep on the Windows host while it is plugged in (`powercfg /change standby-timeout-ac 0`; it was 15 minutes). Hibernation was already off. On battery the host still sleeps after 10 minutes.
 
 ### Problems found
 
@@ -44,12 +53,17 @@ Updated: 2026-09-30
 - The web GUI is only reachable from the bastion (R03), but the path to the bastion (R02) is itself configured in the web GUI. To make the DNS changes, the packet filter was disabled for a few minutes (`pfctl -d`), the GUI was reached from the host at `10.20.254.10`, and the filter was re-enabled (`pfctl -e`). This was a temporary exception to R03. It was used once more on 2026-09-30 to build R02 and is no longer needed, because the GUI is now reached through the bastion.
 - After the adapter change, OPNsense could not find `em0` and `em1` at boot. Nobody pressed a key during the console countdown, so it assigned the interfaces automatically, LAN to the first adapter and WAN to the second, which put them the wrong way round. Assigning the WAN from the console also resets it to DHCP and DHCPv6, so its static address was lost ([`console.inc`](https://github.com/opnsense/core/blob/master/src/etc/inc/console.inc)). Fixed from the console with *Assign interfaces* and *Set interface IP address*. If the adapters change again, watch the console on the first boot, assign the interfaces by hand and then set the WAN address again.
 - The network plan assumed that R02 traffic would reach the WAN from the VMware NAT network (`10.20.254.0/24`). The firewall log showed that VMware's NAT keeps the client's original address when it forwards a port: the first attempt arrived from the Mac (`192.168.0.129`) and was blocked by the default deny rule. R02 now matches the Mac's address, so `fw-01` also enforces "only from the Mac", not just Windows. The [network plan](network-plan.html) was corrected (rev B).
+- After `fw-01` booted at 09:07 UTC on 2026-10-01, its NTP service had no time sources until about 09:11, when the pool servers appeared. Not confirmed: the pool names could not be resolved yet. The servers added by IP address do not need DNS.
+- The Windows host went to sleep twice with the VMs running, from 11:35 to 11:39 and from 11:54 to 11:58 CEST on 2026-10-01 (Kernel-Power 42 and Power-Troubleshooter 1 in the System log). The VMs stopped during each sleep. After the first one, `mgmt-01`'s clock was 233 s behind, and `fw-01` advertised a root distance above 5 s, so its own clock was off too: ntpd adds its own offset to the root dispersion it advertises, and waits 300 s before stepping the clock. `mgmt-01` refused `fw-01`'s time (`Server has too large root distance`, limit 5 s) from 09:44 UTC until it accepted it at 09:52 UTC (the journal shows the first refusal at 09:40, because `mgmt-01`'s clock was still behind). Fixed by disabling sleep on AC power ([decision 0005](decisions/0005-time.md)).
+- The host restart at 12:11 CEST on 2026-10-01 was logged as unclean (Kernel-Power 41), and the VMs were cut off without an orderly shutdown: `mgmt-01`'s journal has no shutdown entries. Before restarting the host, shut down `mgmt-01` and then `fw-01`. At start-up, start `fw-01` first, because `mgmt-01` depends on it for DNS, time and Internet access.
+- `sudo` is not installed on `mgmt-01`, because a root password was set during installation. Administrative commands used `su -l -c`.
 
 ### Remaining before the P0 exit gate
 
-- Reserve the Mac's (`192.168.0.129`) and the host's (`192.168.0.41`) addresses in the home router's DHCP, or update R02 and the Windows firewall rule whenever they change.
-- Enforce R05, R13 and R15 so no zone can bypass `fw-01` for DNS, either directly on port 53 or through DNS over HTTPS.
-- Configure NTP on `fw-01` with at least one server by IP address, and point `mgmt-01` to `fw-01` for time (R05). Align `mgmt-01`'s time zone too: it shows British Summer Time (BST), while `fw-01` uses UTC.
+- Enforce R05, R13 and R15 so no zone can bypass `fw-01` for DNS, either directly on port 53 or through DNS over HTTPS, or for time (UDP 123 to the Internet).
+- When building R01, include the guest network `192.168.5.0/24` in HOME_NETS, as the [network plan](network-plan.html) does since rev C.
+- Restart `fw-01` on purpose and run `ntpq -pn` within a minute of boot, to confirm that the servers configured by IP address answer before the pool does.
+- Decide whether to install `sudo` on `mgmt-01`, so every administrative command is logged with the user who ran it.
 - Complete and verify the firewall access matrix, network isolation, DNS/NTP, and recovery procedure. This includes an explicit R03 rule and a test of the Windows firewall rule from a third device on the home network.
 
 No credentials are included in this log.
