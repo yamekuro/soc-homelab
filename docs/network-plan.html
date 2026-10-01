@@ -278,7 +278,7 @@ const T = {
 es:{
   eyebrow:'soc-homelab · diseño de bajo nivel · fases P0–P2',
   title:'Plano de red<span>Un firewall, seis zonas y nueve máquinas en un sobremesa</span>',
-  block:[['PROYECTO','soc-homelab'],['PLANO','Red · P0–P2'],['REV','C'],['FECHA','1 OCT 2026'],['ESCALA','S/E'],['HOJA','1 / 1']],
+  block:[['PROYECTO','soc-homelab'],['PLANO','Red · P0–P2'],['REV','D'],['FECHA','1 OCT 2026'],['ESCALA','S/E'],['HOJA','1 / 1']],
   dEyebrow:'Lámina 01 · topología física y lógica', dTitle:'Cómo se conecta todo',
   dLede:'Todo el laboratorio vive dentro de VMware Workstation en tu sobremesa. OPNsense es la única puerta entre zonas: cada zona es un segmento aislado y solo sale a Internet por el NAT de VMware. Tu red de casa queda fuera de alcance.',
   dCap:'Cotas en direcciones IPv4 · vmxN = interfaz de OPNsense · LS = LAN segment de VMware',
@@ -318,16 +318,17 @@ es:{
     'Permite el puerto <code>2222</code> en el firewall de Windows solo desde la IP de tu Mac.',
     'Reserva en el DHCP del router las IP de tu Mac (<code>192.168.0.129</code>) y del host (<code>192.168.0.41</code>): R02 y el firewall de Windows dependen de ellas.',
     'En Windows, desactiva la suspensión con el equipo enchufado (<code>powercfg /change standby-timeout-ac 0</code>): si el host se duerme, las máquinas se paran y sus relojes se atrasan.',
+    'Cuando R03 funcione, desactiva la regla automática <i>anti-lockout</i> (<i>Firewall ‣ Settings ‣ Advanced</i>): así la web de fw-01 solo se abre desde el bastión. Si te quedas fuera, usa <code>pfctl -d</code> un momento desde la consola de fw-01.',
     'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.20.254.0/24</code> y el tráfico de R02 llega con la IP de tu Mac; las dos son privadas.',
     'Usa tarjetas <code>vmxnet3</code>: OPNsense las verá como <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> y <code>vmx8</code> quedan para AI y OT (máximo 10 por máquina).',
     'Dos máquinas de la misma zona se hablan sin pasar por el firewall. Esa visibilidad llega con los sensores de red en P4.'
   ],
-  footL:'soc-homelab · plano de red · rev C', footR:'Diseño propuesto · P0 en construcción'
+  footL:'soc-homelab · plano de red · rev D', footR:'Diseño propuesto · P0 en construcción'
 },
 en:{
   eyebrow:'soc-homelab · low-level design · phases P0–P2',
   title:'Network plan<span>One firewall, six zones and nine machines on one desktop</span>',
-  block:[['PROJECT','soc-homelab'],['SHEET','Network · P0–P2'],['REV','C'],['DATE','1 OCT 2026'],['SCALE','NTS'],['PAGE','1 / 1']],
+  block:[['PROJECT','soc-homelab'],['SHEET','Network · P0–P2'],['REV','D'],['DATE','1 OCT 2026'],['SCALE','NTS'],['PAGE','1 / 1']],
   dEyebrow:'Sheet 01 · physical and logical topology', dTitle:'How it all connects',
   dLede:'The whole lab lives inside VMware Workstation on your desktop. OPNsense is the only door between zones: each zone is an isolated segment and only reaches the Internet through VMware NAT. Your home network stays out of reach.',
   dCap:'Values are IPv4 addresses · vmxN = OPNsense interface · LS = VMware LAN segment',
@@ -367,11 +368,12 @@ en:{
     'Allow port <code>2222</code> in the Windows firewall from your Mac’s IP only.',
     'Reserve your Mac’s (<code>192.168.0.129</code>) and the host’s (<code>192.168.0.41</code>) addresses in the router’s DHCP: R02 and the Windows firewall depend on them.',
     'In Windows, turn off sleep while the PC is plugged in (<code>powercfg /change standby-timeout-ac 0</code>): if the host sleeps, the machines stop and their clocks fall behind.',
+    'Once R03 works, disable the automatic <i>anti-lockout</i> rule (<i>Firewall ‣ Settings ‣ Advanced</i>), so the fw-01 web GUI only opens from the bastion. If you lock yourself out, run <code>pfctl -d</code> briefly from the fw-01 console.',
     'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.20.254.0/24</code> and R02 traffic arrives with your Mac’s address; both are private.',
     'Use <code>vmxnet3</code> adapters: OPNsense sees them as <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> and <code>vmx8</code> are kept for AI and OT (10 per machine at most).',
     'Two machines in the same zone talk without crossing the firewall. That visibility arrives with the network sensors in P4.'
   ],
-  footL:'soc-homelab · network plan · rev C', footR:'Proposed design · P0 under construction'
+  footL:'soc-homelab · network plan · rev D', footR:'Proposed design · P0 under construction'
 }};
 
 const RULES = [
@@ -379,7 +381,7 @@ const RULES = [
  {id:'R02', ifc:{es:'WAN', en:'WAN'}, src:{es:'tu Mac · 192.168.0.129', en:'your Mac · 192.168.0.129'}, dst:'mgmt-01 · 10.20.10.10', svc:'TCP 22 ← :2222', act:'allow', ph:'P0', why:{es:'Acceso de administración al bastión desde tu Mac, y solo al bastión.', en:'Administrative access from your Mac to the bastion, and only the bastion.'}},
  {id:'R03', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'fw-01', svc:'TCP 443', act:'allow', ph:'P0', why:{es:'La consola web de OPNsense solo se abre desde el bastión.', en:'The OPNsense web console only opens from the bastion.'}},
  {id:'R04', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'LAB_NETS', svc:'TCP 22 · 3389 · 443', act:'allow', ph:'P0', why:{es:'Administración de todas las máquinas desde un único punto auditado.', en:'Administration of every machine from a single audited point.'}},
- {id:'R05', ifc:{es:'Todas las zonas', en:'All zones'}, src:{es:'red de la zona', en:'zone network'}, dst:'fw-01', svc:'UDP 53 · 123', act:'allow', ph:'P0', why:{es:'DNS y NTP los sirve el firewall: todos los logs comparten la misma hora.', en:'The firewall serves DNS and NTP, so every log shares the same clock.'}},
+ {id:'R05', ifc:{es:'Todas las zonas', en:'All zones'}, src:{es:'red de la zona', en:'zone network'}, dst:'fw-01', svc:'TCP/UDP 53 · UDP 123', act:'allow', ph:'P0', why:{es:'DNS y NTP los sirve el firewall: todos los logs comparten la misma hora. El DNS también va por TCP, para las respuestas que no caben en UDP.', en:'The firewall serves DNS and NTP, so every log shares the same clock. DNS also uses TCP, for answers that do not fit in UDP.'}},
  {id:'R06', ifc:{es:'USERS · SERVERS · DMZ', en:'USERS · SERVERS · DMZ'}, src:{es:'red de la zona', en:'zone network'}, dst:'soc-wazuh · 10.20.50.10', svc:'TCP 1514 · 1515', act:'allow', ph:'P1', why:{es:'Envío de eventos y registro de los agentes Wazuh.', en:'Wazuh agent events and enrolment.'}},
  {id:'R07', ifc:{es:'fw-01 (local)', en:'fw-01 (local)'}, src:'fw-01', dst:'soc-wazuh', svc:'UDP 514', act:'allow', ph:'P1', why:{es:'Los logs del propio firewall llegan a Wazuh por syslog.', en:'The firewall’s own logs reach Wazuh over syslog.'}},
  {id:'R08', ifc:{es:'USERS', en:'USERS'}, src:'USERS', dst:'srv-01 · web-01', svc:'TCP 80 · 443', act:'allow', ph:'P1', why:{es:'Actividad legítima: la línea base que el SOC tiene que conocer.', en:'Legitimate activity: the baseline the SOC needs to know.'}},
@@ -388,6 +390,7 @@ const RULES = [
  {id:'R11', ifc:{es:'ATTACK', en:'ATTACK'}, src:'atk-01 · 10.20.60.10', dst:'TARGETS · win-01, srv-01, web-01', svc:'*', act:'cond', ph:'P2', why:{es:'Solo durante un ejercicio: la regla está desactivada por defecto y se activa a mano.', en:'Only during an exercise: the rule is disabled by default and enabled by hand.'}},
  {id:'R12', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'MGMT · SOC', svc:'*', act:'deny', ph:'P2', why:{es:'El atacante nunca ve la administración ni el SOC.', en:'The attacker never sees administration or the SOC.'}},
  {id:'R13', ifc:{es:'MGMT · USERS · SERVERS · DMZ · SOC', en:'MGMT · USERS · SERVERS · DMZ · SOC'}, src:{es:'red de la zona', en:'zone network'}, dst:'Internet (!RFC1918)', svc:'TCP 80 · 443', act:'allow', ph:'P0–P1', why:{es:'Actualizaciones, feeds de reglas y navegación del endpoint.', en:'Updates, rule feeds and endpoint browsing.'}},
+ {id:'R13a', ifc:{es:'MGMT · USERS · SERVERS · DMZ · SOC', en:'MGMT · USERS · SERVERS · DMZ · SOC'}, src:{es:'red de la zona', en:'zone network'}, dst:{es:'PUBLIC_DNS · 24 resolutores públicos', en:'PUBLIC_DNS · 24 public resolvers'}, svc:'*', act:'deny', ph:'P0', why:{es:'Nadie se salta el DNS de fw-01 con DNS por HTTPS hacia resolutores públicos conocidos. Se evalúa antes que R13.', en:'Nobody bypasses fw-01’s DNS with DNS over HTTPS to well-known public resolvers. Evaluated before R13.'}},
  {id:'R14', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'Internet (!RFC1918)', svc:'TCP 80 · 443', act:'cond', ph:'P2', why:{es:'Solo para actualizar Kali; desactivada durante los ejercicios.', en:'Only to update Kali; disabled during exercises.'}},
  {id:'R15', ifc:{es:'Todas', en:'All'}, src:'*', dst:'*', svc:'*', act:'deny', ph:'P0', why:{es:'Lo que no está permitido arriba se bloquea y se registra.', en:'Anything not allowed above is blocked and logged.'}}
 ];
@@ -398,11 +401,11 @@ const COLS = ['MGMT','USERS','SERVERS','DMZ','SOC','ATTACK','NET','HOME'];
 const ROWS = ['MGMT','USERS','SERVERS','DMZ','SOC','ATTACK','ADMIN'];
 const A = (s,l,r) => ({s,l,r});
 const MX = {
- MGMT:   [A('same'), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 443',['R04']), A('allow','22',['R04']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
- USERS:  [A('deny','',['R15']), A('same'), A('allow','80 · 443',['R08']), A('allow','80 · 443',['R08']), A('allow','1514 · 1515',['R06']), A('deny','',['R15']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
- SERVERS:[A('deny','',['R15']), A('deny','',['R15']), A('same'), A('deny','',['R15']), A('allow','1514 · 1515',['R06']), A('deny','',['R15']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
- DMZ:    [A('deny','',['R09']), A('deny','',['R09']), A('deny','',['R09']), A('same'), A('allow','1514 · 1515',['R06','R09']), A('deny','',['R09']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
- SOC:    [A('deny','',['R15']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('same'), A('deny','',['R15']), A('allow','80 · 443',['R13']), A('deny','',['R01'])],
+ MGMT:   [A('same'), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 3389 · 443',['R04']), A('allow','22 · 443',['R04']), A('allow','22',['R04']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
+ USERS:  [A('deny','',['R15']), A('same'), A('allow','80 · 443',['R08']), A('allow','80 · 443',['R08']), A('allow','1514 · 1515',['R06']), A('deny','',['R15']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
+ SERVERS:[A('deny','',['R15']), A('deny','',['R15']), A('same'), A('deny','',['R15']), A('allow','1514 · 1515',['R06']), A('deny','',['R15']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
+ DMZ:    [A('deny','',['R09']), A('deny','',['R09']), A('deny','',['R09']), A('same'), A('allow','1514 · 1515',['R06','R09']), A('deny','',['R09']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
+ SOC:    [A('deny','',['R15']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('same'), A('deny','',['R15']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
  ATTACK: [A('deny','',['R12']), A('cond','ex',['R11']), A('cond','ex',['R11']), A('cond','ex',['R11']), A('deny','',['R12']), A('same'), A('cond','tmp',['R14']), A('deny','',['R01'])],
  ADMIN:  [A('cond','SSH :2222',['R02']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('na'), A('na')]
 };

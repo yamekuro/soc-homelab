@@ -35,6 +35,8 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 | [0002](docs/decisions/0002-firewall.md) | Firewall | OPNsense |
 | [0003](docs/decisions/0003-addressing.md) | Addressing | `10.20.0.0/16`, one `/24` per zone |
 | [0004](docs/decisions/0004-upstream-dns.md) | Upstream DNS | DNS over TLS from Unbound to Quad9 and Cloudflare |
+| [0005](docs/decisions/0005-time.md) | Time synchronisation and time zone | `fw-01` serves NTP (pool plus Cloudflare by IP); UTC on every lab machine |
+| [0006](docs/decisions/0006-doh-blocking.md) | Blocking DNS over HTTPS | Block the published addresses of large public resolvers before R13 |
 
 ## Repository layout
 

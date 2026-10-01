@@ -28,7 +28,7 @@ Updated: 2026-10-01
 - Applied the pending Debian security updates on `mgmt-01` (OpenSSL, PCRE2 and kernel 6.12.111) and installed the OpenSSH server.
 - Built the administrative path R02: Mac (`192.168.0.129`) → host port `2222` (`192.168.0.41`) → VMware NAT port forward to `10.20.254.10:2222` → OPNsense Destination NAT to `mgmt-01:22`.
   - Windows Defender Firewall allows inbound TCP `2222` only from the Mac (rule *soc-homelab R02 SSH 2222 from Mac*, group `soc-homelab`, Public profile, which is the home network's profile).
-  - On the OPNsense WAN, *Block private networks* is disabled and *Block bogon networks* stays on, because `10.20.254.0/24` is not in the bogons table. The Destination NAT rule uses *Firewall rule: Manual*, and R02 is an explicit WAN rule in *Rules [new]*: pass and log TCP from the Mac to `10.20.10.10:22`.
+  - On the OPNsense WAN, *Block private networks* is disabled and *Block bogon networks* stays on, because `10.20.254.0/24` is not in the bogons table. The Destination NAT rule uses *Firewall rule: Manual*, and R02 is an explicit WAN rule in *Firewall ‣ Rules*: pass and log TCP from the Mac to `10.20.10.10:22`.
   - `mgmt-01` accepts SSH keys only (`PasswordAuthentication no`, `KbdInteractiveAuthentication no` and `PermitRootLogin no` in `/etc/ssh/sshd_config.d/10-bastion.conf`). The Mac uses a dedicated Ed25519 key protected by a passphrase. The host key fingerprint was checked against the `mgmt-01` console before the first connection.
 - The web GUI is now reached through the bastion, the path R03 describes: `ssh -N -L 8443:10.20.10.1:443 mgmt-01` from the Mac, then `https://127.0.0.1:8443`.
 - Verified the administrative path on 2026-09-30:
@@ -45,6 +45,18 @@ Updated: 2026-10-01
   - About 20 seconds after the service restarted, `162.159.200.123` was the system peer and `162.159.200.1` a candidate. Every offset was below 8 ms.
 - Pointed `mgmt-01` to `fw-01` for time and set its time zone to UTC. `/etc/systemd/timesyncd.conf.d/10-fw-01.conf` sets `NTP=10.20.10.1` and an empty `FallbackNTP=`. Before the change, `mgmt-01` took its time directly from `2.debian.pool.ntp.org`, bypassing `fw-01`'s NTP service. Verified on 2026-10-01, after a host restart: `timedatectl timesync-status` shows server `10.20.10.1`, stratum 3, an offset of +0.669 ms, and the time zone is `Etc/UTC`.
 - Disabled sleep on the Windows host while it is plugged in (`powercfg /change standby-timeout-ac 0`; it was 15 minutes). Hibernation was already off. On battery the host still sleeps after 10 minutes.
+- Built the P0 firewall rules for MGMT on `fw-01`, as in the [network plan](network-plan.html) (rev D). The aliases are `LAB_NETS`, `HOME_NETS`, `RFC1918`, `BASTION`, `WEB_PORTS`, `ADMIN_PORTS` and `PUBLIC_DNS`. Each flow was tested from `mgmt-01` before and after the change on 2026-10-01, and the firewall log shows the rule that decided:
+  - R01 (floating): `mgmt-01` reached the home router's web interface (`192.168.0.1:80`) before the rule and not after. The log shows `R01 lab to home: block`.
+  - R05: DNS to `fw-01` works over UDP and TCP, and `timesyncd` gets answers from `10.20.10.1` with R15 in place.
+  - R13: TCP 80 and 443 to the Internet still pass (`deb.debian.org`).
+  - R13a ([decision 0006](decisions/0006-doh-blocking.md)): `1.1.1.1:443` was open before the rule and is closed after, and `8.8.8.8:443` is closed too. The log shows `R13a MGMT to public DNS resolvers: block`.
+  - R15: SSH to GitHub, DNS over TLS to `1.1.1.1:853` and plain DNS to `8.8.8.8:53` were open before and are blocked and logged after. The last two are now caught by R13a, which comes first.
+  - R03: with the automatic anti-lockout rule disabled (*Firewall ‣ Settings ‣ Advanced*), the web GUI still opens through the bastion, and the log shows `R03 bastion to fw-01 GUI` for every new connection.
+  - R04 is in place, but its targets arrive in P1, so it will be tested then.
+  - The factory rules *Default allow LAN to any rule* (IPv4 and IPv6) were disabled when the explicit rules took over, and deleted after the restart test.
+- Restarted `fw-01` on purpose on 2026-10-01, with the new rules in place:
+  - A few minutes after boot, `ntpq -pn` showed `162.159.200.123`, configured by IP address, as the system peer. This time the pool servers also appeared within about a minute.
+  - The tests from `mgmt-01` gave the same results as before the restart, and new GUI connections were still logged by R03, so the anti-lockout setting survived too.
 
 ### Problems found
 
@@ -57,13 +69,22 @@ Updated: 2026-10-01
 - The Windows host went to sleep twice with the VMs running, from 11:35 to 11:39 and from 11:54 to 11:58 CEST on 2026-10-01 (Kernel-Power 42 and Power-Troubleshooter 1 in the System log). The VMs stopped during each sleep. After the first one, `mgmt-01`'s clock was 233 s behind, and `fw-01` advertised a root distance above 5 s, so its own clock was off too: ntpd adds its own offset to the root dispersion it advertises, and waits 300 s before stepping the clock. `mgmt-01` refused `fw-01`'s time (`Server has too large root distance`, limit 5 s) from 09:44 UTC until it accepted it at 09:52 UTC (the journal shows the first refusal at 09:40, because `mgmt-01`'s clock was still behind). Fixed by disabling sleep on AC power ([decision 0005](decisions/0005-time.md)).
 - The host restart at 12:11 CEST on 2026-10-01 was logged as unclean (Kernel-Power 41), and the VMs were cut off without an orderly shutdown: `mgmt-01`'s journal has no shutdown entries. Before restarting the host, shut down `mgmt-01` and then `fw-01`. At start-up, start `fw-01` first, because `mgmt-01` depends on it for DNS, time and Internet access.
 - `sudo` is not installed on `mgmt-01`, because a root password was set during installation. Administrative commands used `su -l -c`.
+- In OPNsense 26.7 the factory LAN rules (*Default allow LAN to any rule*, IPv4 and IPv6) are new-style rules with sequence numbers 1 and 11, and every new rule is appended at the end, with the highest sequence number plus 100 ([`config.xml.sample`](https://github.com/opnsense/core/blob/26.7.4/src/etc/config.xml.sample), [`FilterSequenceField.php`](https://github.com/opnsense/core/blob/26.7.4/src/opnsense/mvc/app/models/OPNsense/Firewall/FieldTypes/FilterSequenceField.php)). New LAN rules therefore sat below *Default allow* and did nothing. All the explicit rules were created first, and *Default allow* was then disabled in one change, with re-enabling it as the way back.
+- Saving a rule does not load it. The first R01 test still passed until *Apply* was pressed on the rules page.
+- After the `fw-01` restart, the open SSH sessions and the GUI tunnel stopped working, because the firewall forgets its connection states when it restarts. A late packet from the old tunnel session (`10.20.10.10:22` → `192.168.0.129:51130`) looked like a new connection from the lab to the home network, and R01 blocked it. Reopen SSH sessions and the tunnel after restarting `fw-01`.
 
 ### Remaining before the P0 exit gate
 
-- Enforce R05, R13 and R15 so no zone can bypass `fw-01` for DNS, either directly on port 53 or through DNS over HTTPS, or for time (UDP 123 to the Internet).
-- When building R01, include the guest network `192.168.5.0/24` in HOME_NETS, as the [network plan](network-plan.html) does since rev C.
-- Restart `fw-01` on purpose and run `ntpq -pn` within a minute of boot, to confirm that the servers configured by IP address answer before the pool does.
+- Recovery: export the OPNsense configuration and keep it outside the repository, because it contains secrets, then test a restore.
+- Runbook: start and stop order, how to recover access through the `fw-01` console (`pfctl -d`), and the rebuild steps, including `no-ipv6.conf`, which configuration backups do not include.
+- Test the Windows firewall rule from a third device on the home network.
 - Decide whether to install `sudo` on `mgmt-01`, so every administrative command is logged with the user who ran it.
-- Complete and verify the firewall access matrix, network isolation, DNS/NTP, and recovery procedure. This includes an explicit R03 rule and a test of the Windows firewall rule from a third device on the home network.
+- Inventory and templates in `infra/`, and the P0 write-up.
+
+### Carried to P1
+
+- Test R04 once its targets exist.
+- Repeat R05, R13, R13a and R15 for every new zone.
+- Add name-based DoH blocking in Unbound, including Firefox's canary domain, before the USERS zone gets browsers ([decision 0006](decisions/0006-doh-blocking.md)).
 
 No credentials are included in this log.
