@@ -2,7 +2,7 @@
 
 Updated: 2026-10-01
 
-## P0 — Reproducible base: in progress
+## P0 — Reproducible base: complete
 
 ### Completed
 
@@ -94,9 +94,9 @@ Updated: 2026-10-01
 - The Windows Defender Firewall rule for R02 never took effect. Bitdefender manages the host's firewall, and its automatic rule for `vmnat.exe` let any device reach port `2222`. Until the third-device test, only `fw-01` (R02) enforced "only from the Mac". The test of 2026-09-30, from the host itself, could not show it. Bitdefender also lets through inbound connections that match none of an application's rules, so restricting an application needs an explicit deny rule ([decision 0007](decisions/0007-host-firewall.md)).
 - Going back to the snapshot also rolled back `fw-01`'s logs: the firewall log entries from the rule tests earlier that day are no longer on the running firewall. They remain in the screenshots taken during the tests and in the snapshot *despues de reglas MGMT 2026-10-01*.
 
-### Remaining before the P0 exit gate
+### Exit gate
 
-- The P0 write-up.
+Verified on 2026-10-01. The summary, the evidence for each criterion and the open items are in the [P0 write-up](../writeups/p0-foundation.md).
 
 ### Carried to P1
 

@@ -10,7 +10,7 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 
 | Phase | Scope | Status |
 |---|---|---|
-| P0 | Foundation: hypervisor, firewall, zones, bastion | 🔄 In progress |
+| P0 | Foundation: hypervisor, firewall, zones, bastion | ✅ Complete · [write-up](writeups/p0-foundation.md) |
 | P1 | Telemetry: Wazuh, Windows and Linux endpoints | Planned |
 | P2 | First SOC case: detection, phishing, vulnerability scan, report | Planned |
 | P3 | Identity and platforms: AD, Entra, Sentinel, Splunk | Planned |
