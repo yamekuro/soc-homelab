@@ -36,7 +36,7 @@ Updated: 2026-10-01
   - A connection from another address (the Windows host itself, `192.168.0.41`) is blocked by the default deny rule and logged.
   - Password logins are refused with `Permission denied (publickey)`.
   - The OPNsense web GUI opens through the SSH tunnel.
-- Reserved the addresses R02 depends on in the home router's DHCP (*Configuración › LAN › DHCP estático*): the Mac (`3e:c2:48:9d:b0:84`, macOS private Wi-Fi address set to *Fixed*) gets `192.168.0.129`, and the Windows host (`DESKTOP-GO7E8EO`, `04:42:1a:ed:ea:c6`) gets `192.168.0.41`. Verified on 2026-10-01:
+- Reserved the addresses R02 depends on in the home router's DHCP (*Configuración › LAN › DHCP estático*): the Mac gets `192.168.0.129`, and the Windows host (`DESKTOP-GO7E8EO`) gets `192.168.0.41`. The Mac's private Wi-Fi address is set to *Fixed* in macOS, so the reservation keeps matching it. The MAC addresses can be read in the router and are not recorded here. Verified on 2026-10-01:
   - Both entries are still there after reloading the page.
   - After applying them, `ssh mgmt-01 hostname` from the Mac still works. That needs both addresses: R02 accepts only `.129`, and the SSH configuration connects to `.41`.
 - Recorded the home network for R01: the home LAN is `192.168.0.0/24` (router `.1`, dynamic pool `.10`–`.250`, 24-hour leases) and the guest network is `192.168.5.0/24` (router `192.168.5.1`). The [network plan](network-plan.html) (rev C) adds the guest network to HOME_NETS and the reservations and sleep setting to the host notes. Both reservations are inside the dynamic pool. The router accepted them, but no Vodafone documentation confirms that it keeps reserved addresses out of dynamic assignment.
