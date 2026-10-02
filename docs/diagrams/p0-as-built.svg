@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 820" width="1280" height="820" role="img" aria-labelledby="title desc">
+  <title id="title">soc-homelab · P0 as built</title>
+  <desc id="desc">The lab as built and verified on 2026-10-01. A Mac on the home network reaches the bastion mgmt-01 through port 2222 on the Windows host, which Bitdefender only opens to the Mac, VMware NAT, and the OPNsense firewall fw-01, which translates it to mgmt-01 port 22 (rule R02). Other home devices are denied at the host. fw-01 sends DNS over TLS and NTP to the Internet through VMware NAT, and the bastion opens the firewall's web GUI (R03).</desc>
+  <defs>
+    <marker id="a-allow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1D7A4C"/></marker>
+    <marker id="a-egress" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#66737F"/></marker>
+    <marker id="a-deny" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B42318"/></marker>
+    <style>
+      text { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; fill: #13202B; }
+      .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; }
+      .h1 { font-size: 24px; font-weight: 600; }
+      .h2 { font-size: 15px; font-weight: 600; }
+      .h3 { font-size: 14px; font-weight: 600; }
+      .t { font-size: 12.5px; }
+      .s { font-size: 11.5px; }
+      .muted { fill: #5B6873; }
+      .allow { fill: #1D7A4C; }
+      .deny { fill: #B42318; }
+      .mgmt { fill: #3E5A78; }
+      .panel { fill: #FFFFFF; stroke: #C9D1D3; stroke-width: 1.2; }
+      .node { fill: #F6F8F8; stroke: #B7C1C5; stroke-width: 1; }
+      .node-mgmt { fill: #EEF3F8; stroke: #3E5A78; stroke-width: 1.4; }
+      .node-fw { fill: #F6F8F8; stroke: #13202B; stroke-width: 1.2; }
+      .node-bd { fill: #F6F8F8; stroke: #1D7A4C; stroke-width: 1.2; }
+      .line-allow { fill: none; stroke: #1D7A4C; stroke-width: 3; }
+      .line-allow-thin { fill: none; stroke: #1D7A4C; stroke-width: 2; }
+      .line-egress { fill: none; stroke: #66737F; stroke-width: 2; stroke-dasharray: 6 5; }
+      .line-deny { fill: none; stroke: #B42318; stroke-width: 2; stroke-dasharray: 4 4; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="820" fill="#EEF1F0"/>
+
+  <!-- Header -->
+  <text x="32" y="46" class="h1">soc-homelab · P0 as built</text>
+  <text x="32" y="70" class="t muted">What exists and was verified on 2026-10-01. All addresses are private (RFC 1918).</text>
+
+  <!-- Internet -->
+  <rect x="32" y="92" width="1216" height="56" rx="10" class="panel" stroke-dasharray="5 4"/>
+  <text x="52" y="125" class="h2">Internet</text>
+  <text x="130" y="125" class="t mono">Quad9 and Cloudflare, DNS over TLS from fw-01 only · NTP · deb.debian.org</text>
+  <text x="1228" y="125" class="t deny" text-anchor="end">Zones cannot reach 24 public resolvers (R13a)</text>
+
+  <!-- Home network -->
+  <rect x="32" y="176" width="270" height="424" rx="10" class="panel"/>
+  <text x="48" y="202" class="h2">Home network</text>
+  <text x="48" y="220" class="s mono muted">192.168.0.0/24</text>
+
+  <rect x="56" y="244" width="230" height="70" rx="8" class="node"/>
+  <text x="70" y="268" class="h3">Mac</text>
+  <text x="70" y="286" class="s mono">192.168.0.129</text>
+  <text x="70" y="303" class="s muted">Administration workstation</text>
+
+  <rect x="56" y="336" width="230" height="62" rx="8" class="node"/>
+  <text x="70" y="360" class="h3">Any other device</text>
+  <text x="70" y="380" class="s muted">Tested with a phone</text>
+
+  <rect x="56" y="420" width="230" height="160" rx="8" class="node"/>
+  <text x="70" y="444" class="h3">Home router</text>
+  <text x="70" y="462" class="s mono">192.168.0.1</text>
+  <text x="70" y="484" class="s">DHCP reservations for the</text>
+  <text x="70" y="500" class="s">Mac and the host</text>
+  <text x="70" y="524" class="s deny">Answers all DNS on port 53 itself,</text>
+  <text x="70" y="540" class="s deny">so the lab uses DNS over TLS (0004)</text>
+  <text x="70" y="564" class="s deny">The lab cannot reach it (R01)</text>
+
+  <!-- Windows host -->
+  <rect x="330" y="176" width="300" height="424" rx="10" class="panel"/>
+  <text x="346" y="202" class="h2">Windows 11 host</text>
+  <text x="346" y="220" class="s mono muted">192.168.0.41 · VMware Workstation 26H1</text>
+
+  <rect x="354" y="244" width="260" height="118" rx="8" class="node-bd"/>
+  <text x="368" y="268" class="h3">Bitdefender firewall</text>
+  <text x="368" y="287" class="s muted">Rules for vmnat.exe (0007)</text>
+  <text x="368" y="308" class="s allow">Inbound TCP 2222 from the Mac: allow</text>
+  <text x="368" y="326" class="s deny">Inbound TCP 2222 from others: deny</text>
+  <text x="368" y="344" class="s">Outbound: allow</text>
+
+  <rect x="354" y="388" width="260" height="110" rx="8" class="node"/>
+  <text x="368" y="412" class="h3">VMware NAT · VMnet8</text>
+  <text x="368" y="431" class="s mono">10.20.254.0/24 · gateway .2</text>
+  <text x="368" y="451" class="s">Forwards host :2222 to</text>
+  <text x="368" y="467" class="s mono">10.20.254.10:2222</text>
+  <text x="368" y="486" class="s muted">Keeps the client's source address</text>
+
+  <text x="346" y="586" class="s muted">No sleep on mains power (0005)</text>
+
+  <!-- fw-01 -->
+  <rect x="658" y="176" width="300" height="424" rx="10" class="panel"/>
+  <text x="674" y="202" class="h2">fw-01 · OPNsense 26.7</text>
+  <text x="674" y="220" class="s muted">Default deny · denied traffic logged</text>
+
+  <rect x="682" y="244" width="260" height="62" rx="8" class="node-fw"/>
+  <text x="696" y="267" class="t mono">WAN · vmx0 · 10.20.254.10</text>
+  <text x="696" y="290" class="s">Destination NAT :2222 → mgmt-01:22</text>
+
+  <rect x="682" y="328" width="260" height="112" rx="8" class="node-fw"/>
+  <text x="696" y="351" class="h3">Unbound</text>
+  <text x="696" y="369" class="s">DNS over TLS, DNSSEC validated (0004)</text>
+  <text x="696" y="395" class="h3">ntpd</text>
+  <text x="696" y="413" class="s">Pool, plus Cloudflare by IP (0005)</text>
+  <text x="696" y="430" class="s muted">Web GUI only from the bastion (R03)</text>
+
+  <rect x="682" y="462" width="260" height="46" rx="8" class="node-fw"/>
+  <text x="696" y="490" class="t mono">LAN · vmx1 · 10.20.10.1</text>
+
+  <text x="674" y="586" class="s muted">Encrypted backup, restore tested</text>
+
+  <!-- MGMT zone -->
+  <rect x="986" y="176" width="262" height="424" rx="10" class="panel"/>
+  <text x="1002" y="202" class="h2 mgmt">MGMT zone</text>
+  <text x="1002" y="220" class="s mono muted">LS-MGMT · 10.20.10.0/24</text>
+
+  <rect x="1010" y="244" width="222" height="164" rx="8" class="node-mgmt"/>
+  <text x="1024" y="268" class="h3">mgmt-01 · bastion</text>
+  <text x="1024" y="287" class="s mono">Debian 13 · 10.20.10.10</text>
+  <text x="1024" y="312" class="s">SSH with keys only</text>
+  <text x="1024" y="330" class="s">sudo logs every command (0008)</text>
+  <text x="1024" y="348" class="s">DNS and time from fw-01 (R05)</text>
+  <text x="1024" y="366" class="s">Web out on 80 and 443 (R13)</text>
+  <text x="1024" y="390" class="s muted">Opens the fw-01 GUI (R03)</text>
+
+  <text x="1002" y="568" class="s muted">USERS, SERVERS, DMZ and SOC</text>
+  <text x="1002" y="586" class="s muted">zones arrive in P1</text>
+
+  <!-- Administrative path (R02) -->
+  <path d="M286,279 L352,279" class="line-allow" marker-end="url(#a-allow)"/>
+  <text x="316" y="271" class="s allow" text-anchor="middle">SSH</text>
+  <path d="M484,362 L484,386" class="line-allow" marker-end="url(#a-allow)"/>
+  <path d="M614,443 L644,443 L644,275 L680,275" class="line-allow" marker-end="url(#a-allow)"/>
+  <path d="M942,275 L1008,275" class="line-allow" marker-end="url(#a-allow)"/>
+  <text x="972" y="267" class="s allow" text-anchor="middle">:22</text>
+  <text x="972" y="294" class="s allow" text-anchor="middle">R02</text>
+
+  <!-- GUI through the bastion (R03) -->
+  <path d="M1010,384 L972,384 L972,485 L944,485" class="line-allow-thin" marker-end="url(#a-allow)"/>
+  <text x="991" y="440" class="s allow">:443</text>
+
+  <!-- Denied: other device to port 2222 -->
+  <path d="M286,367 L322,367 L322,330 L352,330" class="line-deny" marker-end="url(#a-deny)"/>
+  <text x="337" y="349" class="t deny" text-anchor="middle" font-weight="700">✕</text>
+
+  <!-- Egress -->
+  <path d="M682,384 L664,384 L664,470 L616,470" class="line-egress" marker-end="url(#a-egress)"/>
+  <path d="M484,498 L484,560 L288,560" class="line-egress" marker-end="url(#a-egress)"/>
+  <path d="M56,470 L42,470 L42,150" class="line-egress" marker-end="url(#a-egress)"/>
+  <text x="392" y="552" class="s muted" text-anchor="middle">egress through NAT</text>
+
+  <!-- Legend -->
+  <rect x="32" y="624" width="1216" height="160" rx="10" class="panel"/>
+  <text x="52" y="652" class="h2">Legend</text>
+  <path d="M52,676 L100,676" class="line-allow"/>
+  <text x="112" y="680" class="s">Allowed and verified</text>
+  <path d="M52,702 L100,702" class="line-egress"/>
+  <text x="112" y="706" class="s">Egress through VMware NAT</text>
+  <path d="M52,728 L100,728" class="line-deny"/>
+  <text x="112" y="732" class="s">Denied</text>
+  <text x="52" y="764" class="s muted">(0004) and similar: decision records</text>
+
+  <text x="360" y="652" class="h2">Firewall rules on fw-01</text>
+  <text x="360" y="678" class="s mono">R01</text><text x="400" y="678" class="s">Lab → home networks: block (floating)</text>
+  <text x="360" y="700" class="s mono">R02</text><text x="400" y="700" class="s">Mac → mgmt-01:22, via host port 2222 (WAN)</text>
+  <text x="360" y="722" class="s mono">R03</text><text x="400" y="722" class="s">Bastion → fw-01 web GUI</text>
+  <text x="360" y="744" class="s mono">R05</text><text x="400" y="744" class="s">Zone → fw-01 DNS and NTP</text>
+  <text x="800" y="678" class="s mono">R13a</text><text x="846" y="678" class="s">Zone → 24 public DNS resolvers: block</text>
+  <text x="800" y="700" class="s mono">R13</text><text x="846" y="700" class="s">Zone → Internet, TCP 80 and 443</text>
+  <text x="800" y="722" class="s mono">R04</text><text x="846" y="722" class="s muted">Bastion → other zones: in place, tested in P1</text>
+  <text x="800" y="744" class="s mono">R15</text><text x="846" y="744" class="s">Everything else: block and log</text>
+
+  <text x="32" y="806" class="s muted">github.com/yamekuro/soc-homelab · decisions 0001–0008 · write-up: writeups/p0-foundation.md</text>
+</svg>

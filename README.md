@@ -11,7 +11,7 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 | Phase | Scope | Status |
 |---|---|---|
 | P0 | Foundation: hypervisor, firewall, zones, bastion | ✅ Complete · [write-up](writeups/p0-foundation.md) |
-| P1 | Telemetry: Wazuh, Windows and Linux endpoints | Planned |
+| P1 | Telemetry: Wazuh, Windows and Linux endpoints | 🔜 Next |
 | P2 | First SOC case: detection, phishing, vulnerability scan, report | Planned |
 | P3 | Identity and platforms: AD, Entra, Sentinel, Splunk | Planned |
 | P4 | Network, hunting and automated response | Planned |
@@ -20,6 +20,12 @@ Everything is designed against a catalogue of eight MITRE ATT&CK scenarios, and 
 | L | Parallel cloud track: AWS LLMjacking | Planned |
 
 **Minimum portfolio milestone:** track L complete + P2 (first end-to-end SOC case).
+
+## Current infrastructure
+
+What exists and is verified today. The target design for P0–P2 is in the [network plan](docs/network-plan.html).
+
+![Diagram of soc-homelab at the end of P0: the Mac reaches the bastion mgmt-01 through port 2222 on the Windows host, filtered by Bitdefender, then VMware NAT and the OPNsense firewall fw-01 (R02). Other home devices are denied at the host.](docs/diagrams/p0-as-built.svg)
 
 ## Design documents
 

@@ -4,6 +4,8 @@
 
 One Windows 11 desktop runs the lab in VMware Workstation. An OPNsense firewall, `fw-01`, connects the MGMT zone to the Internet through VMware's NAT. A Debian bastion, `mgmt-01`, is the only way in: from a Mac, through one forwarded port. Everything else is denied and logged. P0 delivers that base, the rules that make it safe, and the means to recover it: encrypted backups with a tested restore, a runbook and an inventory.
 
+![Diagram of soc-homelab at the end of P0: the Mac reaches the bastion mgmt-01 through port 2222 on the Windows host, filtered by Bitdefender, then VMware NAT and the OPNsense firewall fw-01 (R02). Other home devices are denied at the host.](../docs/diagrams/p0-as-built.svg)
+
 ## Decisions
 
 | # | Decision | Why | Trade-off |

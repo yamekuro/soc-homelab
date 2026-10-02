@@ -75,6 +75,7 @@ Updated: 2026-10-01
   - The package is `sudo 1.9.16p2-3+deb13u2`, the version that the Debian Security Tracker lists as fixed for CVE-2025-32463 in trixie.
   - After logging in again, `id` shows the `sudo` group. `sudo true` asks for `yamekuro`'s password, and the journal records each command with user, terminal, directory and target user, for example `yamekuro : TTY=pts/0 ; PWD=/home/yamekuro ; USER=root ; COMMAND=/usr/bin/true`. Failed passwords are recorded too, with the command that was attempted.
 - Wrote [`infra/`](../infra/README.md): the inventory, with versions and identities, the machine templates and the restore log. Every value was checked on the machines on 2026-10-01. The inventory shows that `fw-01` and `mgmt-01` are larger than the network plan's RAM budget.
+- Drew the [P0 as-built diagram](diagrams/p0-as-built.svg): only what exists and was verified, with the decisions and rules that apply. It is shown in the README and in the [P0 write-up](../writeups/p0-foundation.md).
 
 ### Problems found
 
