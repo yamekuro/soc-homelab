@@ -1,7 +1,8 @@
 # P1 preflight · capacity and retention
 
-- **Status:** Preparation in progress; measurements pending
+- **Status:** Preparation in progress; initial user-reported readings recorded
 - **Date:** 2026-10-08
+- **Updated:** 2026-10-15
 - **Phase:** Before P1
 - **Source baseline:** 4b97f8f6e28552f0c173c73bdf0841292c7d85e3
 
@@ -18,21 +19,21 @@ This record follows the existing [blueprint](https://github.com/yamekuro/soc-hom
 | P1 target VM RAM | 20 GB | Calculation with current P0 sizes and Windows, Linux, web and Wazuh |
 | Complete target + one demand VM | 28 GB of VM allocations | Calculation; with the plan host reservation, 34–36 GB |
 
-## Record when the host is available
+## Readings and remaining checks
 
 Start fw-01 and then mgmt-01 in the order defined by the [runbook](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/runbook.md). Use its existing battery to recheck access, DNS, time and network rules. Save the results outside the VM snapshots.
 
 | Observation | Result | Evidence/date |
 |---|---|---|
-| Host physical, available and committed memory | Pending | Pending |
-| Host applications and VMware services running | Pending | Pending |
+| Host physical, available and committed memory | 32 GB DDR4; available 16.6 GB; committed 14.5 / 33.9 GB | [User report, 2026-10-15](p0-measurements-2026-10-15.md); point readings |
+| Host applications and VMware services running | Three process readings recorded; complete normal workload and service usage pending | User report, 2026-10-15 |
 | Host paging and observed peaks during the recorded workload | Pending | Pending |
-| fw-01 and mgmt-01 allocations and observed usage | Pending | Pending |
-| Host disk usable/free space and VM file sizes | Pending | Pending |
+| fw-01 and mgmt-01 allocations and observed usage | Allocations 4096 / 2048 MB; observed guest usage pending | User report, 2026-10-15 |
+| Host disk usable/free space and VM file sizes | C: 1.29 TB free / 1.81 TB total; configuration files on C:; disk locations and file sizes pending | User report, 2026-10-15 |
 | Snapshot locations and storage growth | Pending | Pending |
 | Private backup exists and required external settings are recorded | Pending | Pending |
 | P0 verification battery and third-device access check | Pending | Pending |
-| Workload and machines active during measurements | Pending | Pending |
+| Workload and machines active during measurements | Only fw-01 and mgmt-01 powered on; usual host application workload pending | User report, 2026-10-15 |
 
 The later P1 workload measurements must document source coverage, reception/indexing, delays, losses and recovery. These are phase checks, not results assumed before installing Wazuh.
 
@@ -40,8 +41,8 @@ The later P1 workload measurements must document source coverage, reception/inde
 
 | Capacity field | State |
 |---|---|
-| P1 and P2 simultaneity map covering every programmed role | Pending |
-| Selected allocations and required host reserve | Pending |
+| P1 concurrency and P0–P2 capacity windows preserving all roles | Pending; product choices keep their original phases |
+| Selected allocations and required host reserve | Pending within the user's confirmed 32 GB limit |
 | P0–P2 target deficit resolved by a documented option | Pending |
 | Available storage and snapshot/data budget | Pending |
 | Allocations changed, if any, and P0 rechecks | Pending; no change performed |
