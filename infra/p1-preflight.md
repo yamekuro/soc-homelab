@@ -32,7 +32,7 @@ Start fw-01 and then mgmt-01 in the order defined by the [runbook](https://githu
 | Host disk usable/free space and VM file sizes | C: 1.29 TB free / 1.81 TB total; configuration files on C:; disk locations and file sizes pending | User report, 2026-10-15 |
 | Snapshot locations and storage growth | Pending | Pending |
 | Private backup exists and required external settings are recorded | Pending | Pending |
-| P0 verification battery and third-device access check | SSH authenticated; runbook TCP probes, DNS and bastion time matched expectations; GUI HTTP 200. A later user-provided SSH transcript confirms sudo id -u returned 0 on mgmt-01 after account-password recovery. Firewall-console NTP and third-device/log checks remain unrecorded this session | [SSH recheck and follow-up, 2026-10-15](p0-recheck-2026-10-15.md) |
+| P0 verification battery and third-device access check | SSH authenticated; runbook TCP probes, DNS and bastion time matched expectations; GUI HTTP 200. A later user-provided SSH transcript confirms sudo id -u returned 0 on mgmt-01 after account-password recovery; a firewall-console screenshot shows selected NTP peer *195.95.153.43 with offset +0.682 ms. Third-device/log checks remain unrecorded this session | [SSH recheck and follow-ups, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Workload and machines active during measurements | Only fw-01 and mgmt-01 powered on; usual host application workload pending | User report, 2026-10-15 |
 
 The later P1 workload measurements must document source coverage, reception/indexing, delays, losses and recovery. These are phase checks, not results assumed before installing Wazuh.
