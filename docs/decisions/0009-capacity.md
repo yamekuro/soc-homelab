@@ -31,7 +31,7 @@ The source does not size the P4 sensors, P5 AI or P6 OT workloads. The figures a
 
 ## Review within the 32 GB constraint
 
-The [2026-10-15 user-reported readings](../../infra/p0-measurements-2026-10-15.md) confirm the current P0 allocations and only those two guests powered on. The host showed 16.6 GB available and 14.5 / 33.9 GB committed. These are initial readings, not runtime acceptance evidence. The user has fixed 32 GB as a hard design limit; increasing host memory is outside the selected scope.
+The [2026-10-15 readings](../../infra/p0-measurements-2026-10-15.md) confirm the current P0 allocations and only those two guests powered on. Initial readings were 16.6 GB available and 14.5 / 33.9 GB committed. A later CIM query shown in screenshots, with Steam closed and both guests still running, reports 20.05 GiB available and 9.08 / 33.91 GiB committed. These are point readings, not runtime acceptance evidence for P1/P2. The user has fixed 32 GB as a hard design limit; increasing host memory is outside the selected scope.
 
 The original smaller firewall allocation cannot be assumed valid. Current [OPNsense guidance](https://docs.opnsense.org/manual/hardware.html#hardware-requirements) lists 3 GB as a limited minimum, 4 GB as a reasonable configuration and 8 GB as recommended. Keep 4 GB in the candidate budget. The [Wazuh quickstart](https://documentation.wazuh.com/current/quickstart.html#hardware) recommends 8 GiB for an all-in-one deployment with 1–25 agents; keep that planning reference. The [Debian 13 guide](https://www.debian.org/releases/trixie/amd64/ch03s04.en.html) recommends 1 GB without a desktop. Reducing the bastion from 2 GB to 1 GB is therefore a candidate for verification with its administrative and agent workload, not a change already made.
 
@@ -80,3 +80,4 @@ No percentage headroom, test duration or numeric paging threshold is prescribed 
 The capacity prerequisite remains open until the design is resolved within 32 GB. Initial user-reported host readings are recorded; no VM resizing or deployment has been performed.
 
 The [P1 preflight record](../../infra/p1-preflight.md) provides the measurement fields. Later workloads remain in their original phases and require their own sizing when specified. This proposal does not change the blueprint or close a phase.
+

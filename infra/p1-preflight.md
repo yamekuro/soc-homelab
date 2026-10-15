@@ -25,14 +25,14 @@ Start fw-01 and then mgmt-01 in the order defined by the [runbook](https://githu
 
 | Observation | Result | Evidence/date |
 |---|---|---|
-| Host physical, available and committed memory | 32 GB DDR4; available 16.6 GB; committed 14.5 / 33.9 GB | [User report, 2026-10-15](p0-measurements-2026-10-15.md); point readings |
+| Host physical, available and committed memory | 32 GB DDR4; initial available 16.6 GB and committed 14.5 / 33.9 GB; follow-up with Steam closed: 20.05 GiB available and 9.08 / 33.91 GiB committed | [User report and CIM screenshots, 2026-10-15](p0-measurements-2026-10-15.md); point readings |
 | Host applications and VMware services running | Three process readings recorded; complete normal workload and service usage pending | User report, 2026-10-15 |
 | Host paging and observed peaks during the recorded workload | Pending | Pending |
-| fw-01 and mgmt-01 allocations and observed usage | Allocations 4096 / 2048 MB; observed guest usage pending | User report, 2026-10-15 |
+| fw-01 and mgmt-01 allocations and observed usage | Allocations 4096 / 2048 MB; bastion point reading: 1935 MiB total, 259 MiB used, 1676 MiB available, swap used 0 | User report and [SSH recheck, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Host disk usable/free space and VM file sizes | C: 1.29 TB free / 1.81 TB total; configuration files on C:; disk locations and file sizes pending | User report, 2026-10-15 |
 | Snapshot locations and storage growth | Pending | Pending |
 | Private backup exists and required external settings are recorded | Pending | Pending |
-| P0 verification battery and third-device access check | Pending | Pending |
+| P0 verification battery and third-device access check | SSH authenticated; runbook TCP probes, DNS and bastion time matched expectations; GUI HTTP 200. Sudo execution, firewall-console NTP and third-device/log checks remain unrecorded this session | [SSH recheck, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Workload and machines active during measurements | Only fw-01 and mgmt-01 powered on; usual host application workload pending | User report, 2026-10-15 |
 
 The later P1 workload measurements must document source coverage, reception/indexing, delays, losses and recovery. These are phase checks, not results assumed before installing Wazuh.
