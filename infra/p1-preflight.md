@@ -35,7 +35,7 @@ Start fw-01 and then mgmt-01 in the order defined by the [runbook](https://githu
 | P0 verification battery and third-device access check | SSH authenticated; runbook TCP probes, DNS and bastion time matched expectations; GUI HTTP 200. A later user-provided SSH transcript confirms sudo id -u returned 0 on mgmt-01 after account-password recovery; a firewall-console screenshot shows selected NTP peer *195.95.153.43 with offset +0.682 ms. Third-device/log checks remain unrecorded this session | [SSH recheck and follow-ups, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Workload and machines active during measurements | Only fw-01 and mgmt-01 powered on; usual host application workload pending | User report, 2026-10-15 |
 
-The sudo, DNS, time, TCP and GUI checks above preceded the memory reduction. Only SSH access and a memory reading are recorded at the lower allocation so far; its functional and workload checks remain pending.
+The baseline sudo, DNS, time, TCP and GUI checks above preceded the memory reduction. At the lower allocation, later user screenshots record SSH, memory, DNS resolution and bastion time from 10.20.10.1 with 4 packets; the user explicitly confirms sudo id -u returned 0. TCP/GUI and workload checks remain pending. The linked recheck distinguishes the evidence sources and stages.
 
 The later P1 workload measurements must document source coverage, reception/indexing, delays, losses and recovery. These are phase checks, not results assumed before installing Wazuh.
 
@@ -47,7 +47,7 @@ The later P1 workload measurements must document source coverage, reception/inde
 | Selected allocations and required host reserve | Pending within the user's confirmed 32 GB limit |
 | P0–P2 target deficit resolved by a documented option | Pending |
 | Available storage and snapshot/data budget | Pending |
-| Allocations changed, if any, and P0 rechecks | The user has begun the 2048 to 1024 MB bastion trial; SSH and an initial memory reading recorded, remaining functional/workload checks pending |
+| Allocations changed, if any, and P0 rechecks | The 2048 to 1024 MB bastion trial has recorded SSH/memory/DNS/time and user-confirmed sudo; TCP/GUI and workload checks pending |
 
 | Retention field | State |
 |---|---|
