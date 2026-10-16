@@ -2,7 +2,7 @@
 
 - **Status:** Proposed
 - **Date:** 2026-10-08
-- **Updated:** 2026-10-15
+- **Updated:** 2026-10-16
 - **Phase:** Before P1
 - **Source baseline:** 4b97f8f6e28552f0c173c73bdf0841292c7d85e3
 
@@ -33,7 +33,7 @@ The source does not size the P4 sensors, P5 AI or P6 OT workloads. The figures a
 
 The [2026-10-15 readings](../../infra/p0-measurements-2026-10-15.md) record the baseline P0 allocations and only those two guests powered on. Initial readings were 16.6 GB available and 14.5 / 33.9 GB committed. A later CIM query shown in screenshots, with Steam closed and both guests still running, reports 20.05 GiB available and 9.08 / 33.91 GiB committed. These are point readings, not runtime acceptance evidence for P1/P2. The user has fixed 32 GB as a hard design limit; increasing host memory is outside the selected scope.
 
-The original smaller firewall allocation cannot be assumed valid. Current [OPNsense guidance](https://docs.opnsense.org/manual/hardware.html#hardware-requirements) lists 3 GB as a limited minimum, 4 GB as a reasonable configuration and 8 GB as recommended. Keep 4 GB in the candidate budget. The [Wazuh quickstart](https://documentation.wazuh.com/current/quickstart.html#hardware) recommends 8 GiB for an all-in-one deployment with 1–25 agents; keep that planning reference. The [Debian 13 guide](https://www.debian.org/releases/trixie/amd64/ch03s04.en.html) recommends 1 GB without a desktop. The user has now begun a 1024 MB bastion trial: a supplied SSH screenshot shows 929 MiB guest-visible total, 252 MiB used, 676 MiB available and zero swap used. This is an initial reading; the reduced allocation still requires its functional, administrative and agent-workload checks. See the [trial record](../../infra/p0-recheck-2026-10-15.md#follow-up-initial-1024-mb-bastion-trial).
+The original smaller firewall allocation cannot be assumed valid. Current [OPNsense guidance](https://docs.opnsense.org/manual/hardware.html#hardware-requirements) lists 3 GB as a limited minimum, 4 GB as a reasonable configuration and 8 GB as recommended. Keep 4 GB in the candidate budget. The [Wazuh quickstart](https://documentation.wazuh.com/current/quickstart.html#hardware) recommends 8 GiB for an all-in-one deployment with 1–25 agents; keep that planning reference. The [Debian 13 guide](https://www.debian.org/releases/trixie/amd64/ch03s04.en.html) recommends 1 GB without a desktop. The user has completed the observed basic P0 checks at the requested 1024 MB bastion allocation: SSH, sudo, DNS, time, the six TCP probes, browser access to the firewall login and a sudo apt update. The subsequent screenshot shows 929 MiB guest-visible total, 281 MiB used, 647 MiB available and zero swap used. These point readings support the tested basic workload; the later agent and full-phase behaviour must be evaluated during P1, without making agent verification a prerequisite to installing Wazuh. See the [trial record](../../infra/p0-recheck-2026-10-15.md#follow-up-initial-1024-mb-bastion-trial).
 
 The blueprint [defines components as functions rather than one VM per block](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html#L1503). The [network plan](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/network-plan.html#L307) permits one on-demand machine at a time and explicitly offers Markdown case templates as an alternative to a dedicated case application. That is an option to evaluate, not a selected implementation or proof that its consumption is zero.
 
@@ -77,7 +77,7 @@ No percentage headroom, test duration or numeric paging threshold is prescribed 
 
 ## Consequences
 
-The capacity prerequisite remains open until the design is resolved within 32 GB. Host readings and the initial lower-memory bastion trial are recorded. The trial is in progress; no reduced-allocation design is accepted and no P1 component has been deployed.
+The capacity prerequisite remains open until the design is resolved within 32 GB. Host readings and the completed basic P0 checks at the lower bastion allocation are recorded. This supports the observed P0 workload; the overall allocation/concurrency design remains proposed and no P1 component has been deployed.
 
 The [P1 preflight record](../../infra/p1-preflight.md) provides the measurement fields. Later workloads remain in their original phases and require their own sizing when specified. This proposal does not change the blueprint or close a phase.
 

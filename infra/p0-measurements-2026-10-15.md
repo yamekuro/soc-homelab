@@ -1,6 +1,7 @@
 # P0 measurements reported on 2026-10-15
 
-- **Status:** Initial user-reported readings; capacity and retention decisions remain open
+- **Status:** Initial host readings preserved; later bastion trial linked; capacity and retention decisions remain open
+- **Updated:** 2026-10-16
 - **Source:** Initial readings were reported from Windows Task Manager, File Explorer and VMware settings. A later read-only CIM query is shown in user-supplied PowerShell screenshots, with its workload context confirmed by the user.
 - **Constraint:** Keep the host at 32 GB RAM while preserving every curriculum capability, phase and exit gate.
 
@@ -42,7 +43,7 @@ An earlier query misspelled CommittedBytes as CommitedBytes and returned zero. T
 
 Both configuration-file locations were checked through VM > Settings > Options > Advanced > Configuration. This establishes where the configuration files are stored, not the location of every virtual disk or a custom working directory. VM file sizes, snapshot locations/growth and the separate backup destination remain to be checked.
 
-Initial SSH attempts timed out or stopped at client authentication. After the user completed an interactive login on the Mac, the assistant authenticated successfully and executed the runbook's SSH battery. Connectivity results, DNS and bastion-side time matched the runbook; the GUI HTTPS probe returned HTTP 200. The [recheck record](p0-recheck-2026-10-15.md) distinguishes those results from the remaining sudo, firewall-console and third-device/log checks.
+Initial SSH attempts timed out or stopped at client authentication. After the user completed an interactive login on the Mac, the assistant authenticated successfully and executed the runbook's SSH battery. Connectivity results, DNS and bastion-side time matched the runbook; the GUI HTTPS probe returned HTTP 200. The [recheck record](p0-recheck-2026-10-15.md) distinguishes those results from later sudo/firewall-time verification and the reduced-memory bastion trial. Conditional third-device/log work remains separately tracked.
 
 ## Planning implications
 
@@ -50,12 +51,12 @@ The reported P0 allocations match the published inventory. The full P1 workload 
 
 The follow-up has 20.05 GiB available, with Steam closed. Subtracting the planned additional 14 GB of nominal VM allocations gives roughly 6.05 GB in the plan's rounded arithmetic. Allocated guest memory is not resident usage; this comparison does not validate overhead, peaks, case-management capacity or the full P0–P2 target.
 
-The user has ruled out increasing physical RAM. A feasible allocation and operating-window design must therefore account for Windows, VMware, case-management consumption and headroom within 32 GB. Steam was closed for the follow-up. No guest allocation, firewall rule or deployment was changed.
+The user has ruled out increasing physical RAM. A feasible allocation and operating-window design must therefore account for Windows, VMware, case-management consumption and headroom within 32 GB. Steam was closed for this host-memory follow-up, which preceded the guest-memory trial. The user later tested the bastion at the requested 1024 MB allocation, including the basic P0 checks and a package-index update. The subsequent guest reading shows 647 MiB available and no swap used; this is not a fresh Windows host measurement. No firewall configuration change or P1 deployment is recorded.
 
 ## Still open
 
 - The usual host applications and an observed baseline/variation for that workload.
-- Guest memory variation, paging and competing host/VMware services; an initial bastion reading is recorded in the recheck report.
+- Guest memory variation, paging and competing host/VMware services; baseline, reduced-memory and post-package-index bastion readings are recorded in the recheck report.
 - Virtual-disk/working-directory locations, VM file sizes, snapshots and private backup coverage.
 - The P1 allocation/concurrency design and documented resolution of the P0–P2 budget conflict.
 - Retention windows, storage allowances, preservation and expiry by data category.

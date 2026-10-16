@@ -2,7 +2,7 @@
 
 - **Status:** Preparation in progress; initial user-reported readings recorded
 - **Date:** 2026-10-08
-- **Updated:** 2026-10-15
+- **Updated:** 2026-10-16
 - **Phase:** Before P1
 - **Source baseline:** 4b97f8f6e28552f0c173c73bdf0841292c7d85e3
 
@@ -16,7 +16,7 @@ This record follows the existing [blueprint](https://github.com/yamekuro/soc-hom
 | Host SSD | 2 TB | Nominal capacity; usable/free space not recorded here |
 | fw-01 RAM | 4 GB | Inventory checked 2026-10-01 |
 | mgmt-01 RAM | 2 GB | Inventory checked 2026-10-01 |
-| P1 target VM RAM | 20 GB | Calculation with current P0 sizes and Windows, Linux, web and Wazuh |
+| P1 target VM RAM | 20 GB | Calculation with baseline P0 sizes and Windows, Linux, web and Wazuh |
 | Complete target + one demand VM | 28 GB of VM allocations | Calculation; with the plan host reservation, 34–36 GB |
 
 ## Readings and remaining checks
@@ -28,14 +28,14 @@ Start fw-01 and then mgmt-01 in the order defined by the [runbook](https://githu
 | Host physical, available and committed memory | 32 GB DDR4; initial available 16.6 GB and committed 14.5 / 33.9 GB; follow-up with Steam closed: 20.05 GiB available and 9.08 / 33.91 GiB committed | [User report and CIM screenshots, 2026-10-15](p0-measurements-2026-10-15.md); point readings |
 | Host applications and VMware services running | Three process readings recorded; complete normal workload and service usage pending | User report, 2026-10-15 |
 | Host paging and observed peaks during the recorded workload | Pending | Pending |
-| fw-01 and mgmt-01 allocations and observed usage | Baseline allocations 4096 / 2048 MB; bastion baseline 1935 MiB total, 259 MiB used, 1676 MiB available, swap used 0. In the later 1024 MB bastion trial, an SSH screenshot shows 929 MiB total, 252 MiB used, 676 MiB available and swap used 0 | User report and [SSH recheck and memory trial, 2026-10-15](p0-recheck-2026-10-15.md) |
+| fw-01 and mgmt-01 allocations and observed usage | Baseline allocations 4096 / 2048 MB; bastion baseline 1935 MiB total, 259 MiB used, 1676 MiB available, swap used 0. In the later 1024 MB bastion trial, initial SSH memory is 929 MiB total, 252 MiB used, 676 MiB available and swap used 0; after apt update, 281 MiB used, 647 MiB available and swap used 0 | User report and [SSH recheck and memory trial, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Host disk usable/free space and VM file sizes | C: 1.29 TB free / 1.81 TB total; configuration files on C:; disk locations and file sizes pending | User report, 2026-10-15 |
 | Snapshot locations and storage growth | Pending | Pending |
 | Private backup exists and required external settings are recorded | Pending | Pending |
 | P0 verification battery and third-device access check | SSH authenticated; runbook TCP probes, DNS and bastion time matched expectations; GUI HTTP 200. A later user-provided SSH transcript confirms sudo id -u returned 0 on mgmt-01 after account-password recovery; a firewall-console screenshot shows selected NTP peer *195.95.153.43 with offset +0.682 ms. Third-device/log checks remain unrecorded this session | [SSH recheck and follow-ups, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Workload and machines active during measurements | Only fw-01 and mgmt-01 powered on; usual host application workload pending | User report, 2026-10-15 |
 
-The baseline sudo, DNS, time, TCP and GUI checks above preceded the memory reduction. At the lower allocation, later user screenshots record SSH, memory, DNS resolution and bastion time from 10.20.10.1 with 4 packets; the user explicitly confirms sudo id -u returned 0. TCP/GUI and workload checks remain pending. The linked recheck distinguishes the evidence sources and stages.
+The baseline sudo, DNS, time, TCP and GUI checks above preceded the memory reduction. At the lower allocation, later user screenshots record SSH, memory, DNS resolution, bastion time from 10.20.10.1 with 4 packets and all six TCP results matching the runbook; the user explicitly confirms sudo id -u returned 0. Later screenshots show the OPNsense login page through the tunnel, a completed sudo apt update and 647 MiB available with no swap used afterwards. The basic P0 checks at the lower allocation are complete for the observed workload. Peak/sustained and later agent/full-phase workloads remain to be evaluated in their phases. The linked recheck distinguishes the evidence sources and stages.
 
 The later P1 workload measurements must document source coverage, reception/indexing, delays, losses and recovery. These are phase checks, not results assumed before installing Wazuh.
 
@@ -47,7 +47,7 @@ The later P1 workload measurements must document source coverage, reception/inde
 | Selected allocations and required host reserve | Pending within the user's confirmed 32 GB limit |
 | P0–P2 target deficit resolved by a documented option | Pending |
 | Available storage and snapshot/data budget | Pending |
-| Allocations changed, if any, and P0 rechecks | The 2048 to 1024 MB bastion trial has recorded SSH/memory/DNS/time and user-confirmed sudo; TCP/GUI and workload checks pending |
+| Allocations changed, if any, and P0 rechecks | Basic observed P0 use tested at 1024 MB, including SSH/sudo/DNS/time/TCP, GUI login-page access and apt update; no agent/full-phase capacity acceptance |
 
 | Retention field | State |
 |---|---|
