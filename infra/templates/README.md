@@ -14,7 +14,13 @@ How to build each machine again: its VM settings, and the configuration files cr
 | Network | Adapter 1: VMXNET3 on VMnet8 (WAN, `vmx0`). Adapter 2: VMXNET3 on `LS-MGMT` (LAN, `vmx1`) | E1000 on `LS-MGMT` (`ens33`) |
 | Addresses | WAN `10.20.254.10/24`, gateway `10.20.254.2`; LAN `10.20.10.1/24` | `10.20.10.10/24`, gateway and DNS `10.20.10.1` |
 
-The sizes are the ones built in P0. [inventory.md](../inventory.md) compares them with the network plan's RAM budget. Restoring the configuration backup onto a new installation of `fw-01` has not been tested yet ([restore log](../restore-log.md)).
+The table preserves the sizes originally built in P0. [inventory.md](../inventory.md) compares them with the network plan's RAM budget. Restoring the configuration backup onto a new installation of `fw-01` has not been tested yet ([restore log](../restore-log.md)).
+
+### Bastion memory follow-up, 2026-10-16
+
+The original table records 2 GB for mgmt-01. A later requested 1024 MB trial passed the recorded basic P0 use, including SSH, sudo, DNS, time, the six TCP checks, firewall login-page access and package maintenance. The final reported guest reading shows 929 MiB total, 626 MiB available and zero swap used.
+
+See the [trial record](../p0-recheck-2026-10-15.md#follow-up-initial-1024-mb-bastion-trial) and [inventory follow-up](../inventory.md#bastion-follow-up-2026-10-16). This dated observation does not silently replace every baseline template or accept the overall P1/P2 allocation design. Later agent and phase workloads are verified when deployed.
 
 ## Files
 

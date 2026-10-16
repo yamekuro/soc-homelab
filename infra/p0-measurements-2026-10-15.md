@@ -51,7 +51,7 @@ The reported P0 allocations match the published inventory. The full P1 workload 
 
 The follow-up has 20.05 GiB available, with Steam closed. Subtracting the planned additional 14 GB of nominal VM allocations gives roughly 6.05 GB in the plan's rounded arithmetic. Allocated guest memory is not resident usage; this comparison does not validate overhead, peaks, case-management capacity or the full P0–P2 target.
 
-The user has ruled out increasing physical RAM. A feasible allocation and operating-window design must therefore account for Windows, VMware, case-management consumption and headroom within 32 GB. Steam was closed for this host-memory follow-up, which preceded the guest-memory trial. The user later tested the bastion at the requested 1024 MB allocation, including the basic P0 checks and a package-index update. The subsequent guest reading shows 647 MiB available and no swap used; this is not a fresh Windows host measurement. No firewall configuration change or P1 deployment is recorded.
+The user has ruled out increasing physical RAM. A feasible allocation and operating-window design must therefore account for Windows, VMware, case-management consumption and headroom within 32 GB. Steam was closed for this host-memory follow-up, which preceded the guest-memory trial. The user later tested the bastion at the requested 1024 MB allocation, including the basic P0 checks and a package-index update. The post-index guest reading shows 647 MiB available and no swap used; a later verified package-upgrade follow-up shows 626 MiB available and no swap used. Neither is a fresh Windows host measurement. No firewall configuration change or P1 deployment is recorded.
 
 ## Still open
 
