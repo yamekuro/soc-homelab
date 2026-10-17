@@ -73,4 +73,6 @@ The parallel L block in GitHub specifies week 0: a dedicated isolated AWS accoun
 
 ## Next implementation step
 
-Follow [P1 network preparation](p1-network-start.md). Create/confirm the four P1 LAN segments first. Adding or assigning firewall adapters follows a recorded mapping and recoverable configuration; no network change is claimed yet.
+Follow [P1 network preparation](p1-network-start.md). The user has confirmed the four new segment definitions, pre-change VMX copy, six VMware adapter connections and a private encrypted OPNsense export with the encryption password stored in KeePassXC. A console screenshot verifies all six guest device/MAC pairs: existing WAN/vmx0 and MGMT/vmx1, plus new USERS/em0, SERVERS/em1, DMZ/em2 and SOC/em3. Actual device names differ from the original plan's illustrative vmx2–vmx5 labels; retain the MAC-verified mapping.
+
+The 2026-10-17 12:23:41 Overview screenshot confirms USERS/opt1 on em0 with static 10.20.20.1/24, connected route 10.20.20.0/24 and no upstream gateway. WAN remains 10.20.254.10/24 through 10.20.254.2; MGMT/LAN remains 10.20.10.1/24. SERVERS/em1, DMZ/em2 and SOC/em3 are still unassigned. Next configure SERVERS. New-zone DNS/NTP/DHCP, firewall policy/isolation checks and endpoint traffic tests remain pending; interface address state alone does not pass those checks or the P1 gate. The export is user-reported, not an independently inspected encryption/recovery test.

@@ -1,7 +1,7 @@
 # P1 network preparation
 
 - **Date:** 2026-10-17
-- **Status:** Segment list, VMX copy and six-adapter segment/MAC inventory reported by the user; guest interface mapping/configuration pending
+- **Status:** Encrypted export reported complete; USERS opt1/em0 static address and route confirmed in Overview; SERVERS/DMZ/SOC assignments and new-zone services/policy/tests pending
 - **Prerequisites recorded:** Initial capacity design 0009 selected; retention policy 0010 accepted. Their runtime tests remain pending.
 
 This sequence implements [accepted addressing decision 0003](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/decisions/0003-addressing.md). The curriculum specifies the zones and checks; the small execution steps below are a derived implementation order. They do not reduce P1 scope or close a gate.
@@ -12,6 +12,8 @@ This sequence implements [accepted addressing decision 0003](https://github.com/
 | SERVERS | LS-SERVERS | 10.20.30.0/24 | 10.20.30.1 | vmx3 |
 | DMZ | LS-DMZ | 10.20.40.0/24 | 10.20.40.1 | vmx4 |
 | SOC | LS-SOC | 10.20.50.0/24 | 10.20.50.1 | vmx5 |
+
+These vmx2–vmx5 labels preserve the original plan, not observed device names. The 2026-10-17 guest inspection below identifies the four new cards as em0–em3. Use the MAC-verified device names for implementation; subnets, zone functions and WAN/MGMT remain as designed.
 
 Existing WAN/NAT and LS-MGMT are the administrative baseline. P2 ATTACK and isolated SANDBOX, P5 AI and P6 OT retain their phases; the sandbox has no firewall interface. These are virtual LAN segments, not a claim of 802.1Q VLAN implementation.
 
@@ -42,11 +44,51 @@ The user replied "Hecho" to the VMX-copy and USERS-adapter instructions. Record 
 | Network Adapter 5 | LS-DMZ | 00:50:56:39:D9:F0 |
 | Network Adapter 6 | LS-SOC | 00:50:56:3B:3C:F6 |
 
-The instruction included Connect at power on for new adapters and saving with OK; their connection state has not been independently inspected. The owner supplied the six MAC values above in separate text replies after instructions to read each Advanced dialog without generating/replacing values. These are distinct and syntactically valid; they are user-transcribed VMware values, not an observed guest mapping. Guest interface assignments, encrypted OPNsense export and new-zone addressing/policy remain pending.
+The instruction included Connect at power on for new adapters and saving with OK. The owner supplied the six MAC values above in separate text replies after instructions to read each Advanced dialog without generating/replacing values. Their subsequent VMware console screenshot shows fw-01 booted, root selecting 8) Shell and running `ifconfig -a | grep -E '^[a-z]|ether'`. All six guest MACs match the supplied VMware values:
 
-The next read-only guest step is to save/close VMware settings, boot fw-01, enter its local console as root and select 8) Shell, as described in the [OPNsense console documentation](https://docs.opnsense.org/manual/install.html). Run `ifconfig -a | grep -E '^[a-z]|ether'` to display interface headings and Ethernet MACs, then compare against this inventory. This command has been instructed, not executed or observed by the assistant. Record actual detected names without inferring vmx2–vmx5 from VMware adapter numbering. Do not change guest interface assignments in this inspection step.
+| Zone | Guest device observed | MAC observed |
+|---|---|---|
+| WAN / NAT | vmx0 | 00:0c:29:41:fb:3c |
+| MGMT | vmx1 | 00:0c:29:41:fb:46 |
+| USERS | em0 | 00:50:56:38:67:e7 |
+| SERVERS | em1 | 00:50:56:36:af:67 |
+| DMZ | em2 | 00:50:56:39:d9:f0 |
+| SOC | em3 | 00:50:56:3b:3c:f6 |
+
+The screenshot directly verifies detected device/MAC identity; zone names derive from the user-reported VMware segment mapping. The existing vmx0/vmx1 headers show UP/RUNNING, whereas em0–em3 do not show UP. This is not a source-to-destination connectivity test or evidence that the new zones are configured. No guest assignment or policy change is shown. Do not replace em0–em3 with guessed vmx2–vmx5 names. The [OPNsense console documentation](https://docs.opnsense.org/manual/install.html) describes the shell entry used here.
 
 Before modifying guest interface assignments, addresses or policy, preserve the current encrypted OPNsense configuration outside the VM and ensure VMware console access. This guest export remains required; a `.vmx` copy does not replace it. Follow the existing runbook for orderly shutdown/boot if further adapter changes require it. Plan the temporary loss of SSH/GUI when stopping the firewall.
+
+The GUI access instructions were to start mgmt-01 if needed, reopen/use the existing Mac SSH forward to the firewall GUI (`ssh -N -L 8443:10.20.10.1:443 mgmt-01`) and visit `https://127.0.0.1:8443`. An existing tunnel serving that URL is reused instead of creating a competing listener. Export the complete configuration from System > Configuration > Backups with password protection, keep the encryption password in KeePassXC and the file in private storage outside the VM. The completion reports below record the subsequent export. See [OPNsense configuration backups](https://docs.opnsense.org/manual/backups.html). No file contents or passwords should be sent to the chat or committed to the repository.
+
+The subsequent user browser screenshot (2026-10-17, filename time 12:05:06) shows `https://127.0.0.1:8443/` blocked with `ERR_CERT_AUTHORITY_INVALID` and a certificate-verification message. Record a browser trust failure, not a connection-refused diagnosis or validated firewall identity. OPNsense uses a self-signed GUI certificate by default, which is consistent with this error; the actual certificate has not been inspected. The next guidance is to use the Mac's Chrome browser, as in the earlier working GUI flow, and inspect its certificate-warning options for this specific local lab endpoint. No firewall reset, certificate replacement, global browser-security change or completed configuration export is recorded.
+
+After guidance to open the local lab URL in Chrome and log in with the existing firewall root account, the user reported "Estoy dentro". A subsequent browser screenshot (filename time 12:07:44) directly shows the authenticated root GUI at `/diag_backup.php`, the Download and Restore areas, Do not backup RRD data selected and encryption not yet selected at that capture. The download area has no All selector; the visible All selector belongs to Restore. The later instructions correctly use Download, enable Encrypt this configuration file and preserve the existing RRD exclusion (statistics, not configuration). No certificate identity/trust validation is claimed by reaching this page.
+
+The owner requested assistance storing the encryption password in KeePassXC. Instructions created a separate entry under soc-homelab, proposed title `fw-01 — copia antes de P1 — 2026-10-17`, empty username, the same encryption password as the backup, and a purpose note, followed by saving the database. The owner replied "Hecho". After explicit instructions to enable encryption, use that password, download the full configuration and keep the file in a private Mac folder, the owner again replied "Hecho". Record password storage and encrypted configuration export completion by user report. Exact file location/name, vault contents and file encryption/readability have not been independently inspected, and no restore test is implied. No secret or configuration file content was shared. A Mac copy is outside the Windows VM's storage; private-copy integrity/recovery remains progressive A3 work.
+
+The initial Assignments screenshot (filename time 12:17:07) directly shows wan/WAN on vmx0 (00:0c:29:41:fb:3c) and lan/LAN on vmx1 (00:0c:29:41:fb:46). MGMT is the functional zone of the existing LAN interface; the GUI description remains LAN. Preserve its identifier, device and administrative configuration.
+
+The subsequent Add/Edit Assignment modal (12:17:57) shows em0 (00:50:56:38:67:e7) selected, a blank Description and Lock checked. Instructions set Description USERS, retain em0 and Lock, save and apply. The next Assignments screenshot (12:19:16) confirms opt1 / USERS on em0 with the correct MAC and the existing WAN/LAN rows unchanged. The presence of an Apply button alone does not prove whether the configuration was already applied. That screenshot alone did not verify new-zone IP addressing, enablement or packet-flow behaviour. Subsequent configuration and Overview evidence follows below.
+
+### USERS configuration and Overview, 2026-10-17
+
+The USERS settings screenshots show opt1/em0, Description USERS and Prevent interface removal checked. Enable Interface is initially clear (12:20:29), then checked (12:21:12), revealing IPv4/IPv6 settings. The visible initial defaults are private/bogon filtering clear, both IP types None, MAC/MTU/MSS blank, promiscuous mode clear and default speed/duplex. The configured-form screenshot (12:22:41) shows IPv4 Static, IPv6 None, 10.20.20.1/24, IPv4 gateway rules Disabled, Dynamic gateway policy and Overwrite global settings clear. That form was followed by Save/Apply instructions.
+
+The Interfaces > Overview screenshot (12:23:41) confirms the resulting live interface/address/route state:
+
+| Zone / GUI name | Device | IPv4 type and address | Gateway | Connected route / state |
+|---|---|---|---|---|
+| USERS (opt1) | em0 | static 10.20.20.1/24 | blank | 10.20.20.0/24; green status icon |
+| WAN (wan) | vmx0 | static 10.20.254.10/24 | 10.20.254.2 | default and 10.20.254.0/24; green icon |
+| MGMT / LAN (lan) | vmx1 | static 10.20.10.1/24 | blank | 10.20.10.0/24; green icon |
+| SERVERS, planned | em1 | not assigned | blank | Unassigned Interface, red icon |
+| DMZ, planned | em2 | not assigned | blank | Unassigned Interface, red icon |
+| SOC, planned | em3 | not assigned | blank | Unassigned Interface, red icon |
+
+Overview shows IPv6 type none on USERS/WAN/LAN; loopback IPv6 entries are separate and do not establish externally routed IPv6. Address/route state is verified for USERS, while endpoint connectivity, DNS/NTP/DHCP, isolation and positive/negative firewall tests remain pending. No new firewall rule or DHCP service has been configured in this step. No further screenshot of the same USERS fields is needed absent a new discrepancy.
+
+Next assign SERVERS to em1 / 00:50:56:36:af:67, enable it with Static IPv4 10.20.30.1/24, IPv6 None and IPv4 gateway rules Disabled, retaining internal-interface defaults used for USERS. Verify its resulting address/route in Overview. These SERVERS instructions are not yet reported executed. DMZ/em2 and SOC/em3 remain later steps.
 
 Add the four adapters for USERS, SERVERS, DMZ and SOC, each attached to its corresponding LAN segment. Record adapter number, MAC address, segment, detected OPNsense interface and zone before assigning addresses. vmx2–vmx5 are design labels, not proof of the detected MAC/interface order. Never reassign WAN/MGMT based only on a guessed enumeration. Configure and verify one zone at a time from the console/administrative path. No DHCP is introduced except the USERS service specified by the accepted design; server/SOC addresses follow the static range .10–.99.
 
