@@ -12,8 +12,8 @@ Each decision the lab depends on is recorded here with its context, the options 
 | [0006](0006-doh-blocking.md) | Blocking DNS over HTTPS | Accepted |
 | [0007](0007-host-firewall.md) | Host firewall for the administrative path | Accepted |
 | [0008](0008-sudo.md) | Root access on the bastion | Accepted |
-| [0009](0009-capacity.md) | Capacity for P1 and the P0–P2 target | Proposed |
+| [0009](0009-capacity.md) | Capacity for P1 and the P0–P2 target | Accepted design; runtime verification pending |
 | [0010](0010-retention.md) | Retention by data type | Accepted; implementation pending |
 
-The [P1 preflight record](../../infra/p1-preflight.md) tracks the proposed capacity design and implementation of the retention policy accepted on 2026-10-17.
+The [P1 preflight record](../../infra/p1-preflight.md) tracks implementation and verification of the initial capacity design and retention policy recorded on 2026-10-17; acceptance of the design does not claim measured full-phase performance.
 

@@ -83,7 +83,7 @@ Index lifecycle rules are distinct from deletion or preservation of manager file
 
 ## Consequences
 
-The retention choice is accepted and recorded; implementation, measured growth, capacity provision and the private recovery destination remain pending. No deletion policy, global archiving setting or automatic purge has been applied. Decision 0009 remains Proposed, and this acceptance does not close the P1 gate.
+The retention choice is accepted and recorded; implementation, measured growth, capacity provision and the private recovery destination remain pending. No deletion policy, global archiving setting or automatic purge has been applied. Decision 0009 selects the initial implementation design and budgets; its runtime checks and this policy do not close the P1 gate.
 
 During P1, verify that the selected policy permits the required source-to-alert trace, benign controls, fixture replay, retrieval of preserved evidence and interruption/recovery accounting. Use isolated test data to verify lifecycle behaviour; writing a policy is not evidence that it works.
 

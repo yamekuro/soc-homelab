@@ -1,8 +1,8 @@
 # 0009 · Capacity for P1 and the P0–P2 target
 
-- **Status:** Proposed
+- **Status:** Accepted (initial implementation design; runtime verification pending)
 - **Date:** 2026-10-08
-- **Updated:** 2026-10-16
+- **Updated:** 2026-10-17
 - **Phase:** Before P1
 - **Source baseline:** 4b97f8f6e28552f0c173c73bdf0841292c7d85e3
 
@@ -12,7 +12,7 @@
 
 The [network plan](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/network-plan.html) allocates 2 GB to the firewall and 1 GB to the bastion, 4 GB to Windows, 1 GB each to the Linux server and web server, 8 GB to Wazuh, and 4 GB to the case manager. The scanner, attack machine and isolated sandbox each use 4 GB on demand. The [P0 carry-over](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/progress.md#carried-to-p1) requires resolving the RAM budget before Wazuh arrives.
 
-All capabilities, phases and exit gates remain in scope. Case management is a P2 capability, and its product is an open decision before P2. The zone label SOC does not assign an installation phase to every machine in it. The table below distinguishes a P1 workload from the complete P0–P2 target; it does not remove any machine or exercise. The baseline columns retain the recorded 4 GB firewall / 2 GB bastion sizes for comparison; the later 1 GB trial has not been accepted as a replacement design.
+All capabilities, phases and exit gates remain in scope. Case management is a P2 capability, and its product is an open decision before P2. The zone label SOC does not assign an installation phase to every machine in it. The table below preserves the original workload comparison, including the recorded 4 GB firewall / 2 GB bastion baseline. The selected initial design, including the tested 1 GB bastion, is recorded under Decision below; the historical comparison is not the selected allocation.
 
 | Workload | VM RAM with plan sizes | VM RAM with baseline P0 sizes | Total with plan sizes + host | Total with baseline P0 sizes + host |
 |---|---:|---:|---:|---:|
@@ -44,13 +44,13 @@ The blueprint [defines components as functions rather than one VM per block](htt
 
 Keeping the original additional 4 GB case VM would instead produce 28 GB or 27 GB of VM allocations respectively, before host overhead. Neither row demonstrates that this full configuration fits the current host.
 
-A case-function resource allowance may be designed now, but product selection remains before P2. Its templates, orchestration/API and export criteria, ticket, executive report, handover and evidence remain in scope. Required targets, services and telemetry must remain active in each exercise window; any change to the plan's always-on model requires an explicit operating-window decision. No case implementation, reduced bastion allocation or capacity option is accepted here.
+A case-function resource allowance may be designed now, but product selection remains before P2. Its templates, orchestration/API and export criteria, ticket, executive report, handover and evidence remain in scope. Required targets, services and telemetry must remain active in each exercise window. The selected resource architecture is recorded below; no case product or implemented integration is implied.
 
 ## Windows case-management constraint, 2026-10-16
 
 The user requires case management to remain on Windows. Moving that function to the Mac is outside the selected design. This location choice does not itself require a separate 4 GB VM or select a product. A Windows-host implementation within a measured shared resource envelope, or a Windows-only operating-window design that preserves a usable case workflow, must satisfy the original templates, API/orchestration and export criteria before P2.
 
-The complete P1 VM budget is 19 GB. An 8 GB proposed reserve for Windows, applications and VMware gives 27 GB in the plan's rounded units; adding one 4 GB on-demand role gives 31 GB. The host screenshot shows 31.9 GB usable. If a future case application shares the host, its real resource use must be included in the shared reserve or explicitly budgeted remaining space. No case-product compatibility, zero consumption or completed API capability is inferred from using templates. A dedicated case VM of 4 GB plus the on-demand role remains outside this budget. The allocation/concurrency decision remains Proposed.
+The complete P1 VM budget is 19 GB. An 8 GB reserve for Windows, applications and VMware gives 27 GB in the plan's rounded units; adding one 4 GB on-demand role gives 31 GB. The host screenshot shows 31.9 GB usable. The selected design includes the case function in the shared host reserve. No case-product compatibility, zero consumption or completed API capability is inferred from using templates. A dedicated case VM of 4 GB plus the on-demand role is excluded from concurrency by the decision below.
 
 ## Options considered
 
@@ -65,25 +65,68 @@ The plan mentions Markdown case templates as a possible saving. Selecting that i
 
 ## Decision
 
-No capacity option is accepted yet.
+Select the following initial resource architecture for implementation on 2026-10-17, under the owner's instruction to continue within 32 GB, keep cases on Windows and preserve the curriculum. This is the implementation design selected in the working session, not a claim that the owner separately approved every numeric estimate or that full-phase performance has been measured.
 
-Before deploying Wazuh, define the P1 allocations and concurrency and resolve the P0–P2 target conflict using the planned reservations for future functions. Product choices assigned to P2, detailed exercise implementation and runtime verification retain their original phases. The initial design decision must cover the target conflict while preserving every capability.
+### RAM and operating windows
 
-Before accepting the design, record:
+| Function | Guest RAM | Operation |
+|---|---:|---|
+| fw-01 | 4 GiB / 4096 MiB | Active throughout laboratory windows |
+| mgmt-01 | 1 GiB / 1024 MiB | Active; observed administrative checks completed |
+| Windows / Sysmon | 4 GiB / 4096 MiB | Active P1 source |
+| Internal Linux | 1 GiB / 1024 MiB | Active P1 service/source |
+| Web / DMZ | 1 GiB / 1024 MiB | Active P1 service/source |
+| Wazuh all-in-one | 8 GiB / 8192 MiB | Active manager, indexer and dashboard; 4 vCPU initial allocation |
+| P1 guest total | 19 GiB | All six functions remain active |
+| One demand role | 4 GiB / 4096 MiB | Scanner OR attack OR isolated sandbox |
 
-- Actual host RAM, available and committed memory, paging behaviour and competing applications.
-- Whether the host reservation includes VMware services; documented overhead and headroom.
-- Usable storage, existing VM files and snapshot growth.
-- P1 concurrency and budgeted P0–P2 operating windows, preserving the case function and every on-demand role without requiring all future exercise designs before P1.
-- The selected option, its allocations, its consequences and any limits.
+Reserve 8 GiB jointly for Windows, normal host applications, VMware overhead outside guest allocations and the Windows case function. The resulting planning totals are 27 GiB for P1 and 31 GiB with one demand VM. These are allocations plus a design reserve, not measured resident totals. The remaining margin is less than 1 GiB against the usable capacity displayed by Windows; it is not an allowance for another server or a proven performance buffer. The host baseline supports a trial, not sustained acceptance.
 
-Implementation and performance verification then belong to P1: check event ingestion, indexing, source health, auditing, access, DNS and time under the documented workload. They are not claimed as completed here. If P0 allocations change, repeat its verification battery and record the results.
+Select the case function on the Windows host within that shared envelope. Before P2, choose and verify an implementation meeting templates, timeline, evidence, ticket, executive report, handover, Spanish case, API/orchestration and export criteria. A plain Markdown folder alone does not prove API capability. Count editor, browser and background-service consumption. Do not expose the host directly to adversarial lab traffic or open untrusted attachments there; use the isolated sandbox.
 
-No percentage headroom, test duration or numeric paging threshold is prescribed by the blueprint. Any such acceptance parameter must be identified as a design choice and supported by measurements.
+A dedicated 4 GiB case VM is an alternative only in windows without the 4 GiB demand VM: 19 + 4 + 8 = 31 GiB. During demand, the host case workflow must remain available and preserve IDs, chronology, decisions and evidence references; any transfer to a dedicated product must be verified without traceability loss. If an exercise requires the dedicated application's live API during demand, that alternative does not fit and cannot be used as a substitute for a verified host implementation. Do not silently omit the API, switch off a required target/source or add the excluded 35 GiB concurrency. Revisit this design before P2 if no candidate meets both capabilities and resources. No future product compatibility is asserted.
+
+Use separate demand windows for detection tests, vulnerability scanning/fix/rescan and isolated phishing detonation. Keep the required targets, services, ingestion and case workflow running. Confirm receipt and preservation before changing windows. Detailed P2 exercises retain their phase; sensors, AI, OT and other P3–P6 workloads require later sizing and are not declared covered by these figures.
+
+### Storage planning within the measured C: volume
+
+The [2026-10-17 disk/folder record](../../infra/p0-measurements-2026-10-15.md#complete-folder-properties-2026-10-17) records both displayed virtual disks on C:, 40 GB maximum each, the complete folder totals and approximately 1.3 TB free. Snapshot chain details, external files and a separate private backup destination remain unverified. Retain those recovery tasks without adding a fresh full-rebuild gate before P1.
+
+All new values in this table are **planning estimates**, not blueprint requirements, existing provisions or guaranteed maximum growth. Budget every retained on-demand VM disk even though only one runs at a time.
+
+| Additional C: space purpose | Initial allowance |
+|---|---:|
+| New Wazuh virtual disk | 300 GiB |
+| New Windows source disk | 80 GiB |
+| New internal Linux disk | 30 GiB |
+| New web/DMZ disk | 30 GiB |
+| Three future demand-role disks | 240 GiB (80 each) |
+| Optional future dedicated case disk | 80 GiB, held even if the host implementation is used |
+| Principal protected fixtures/cases/configuration outside VM disks | 40 GiB |
+| Further growth of existing P0 files, excluding separately budgeted snapshot growth | 80 GiB conservative additional allowance |
+| Additional snapshot growth | 60 GiB shared planning allowance |
+| New installation media and staging | 20 GiB |
+| Total additional growth/provision envelope | 960 GiB |
+| Host free-space reserve to preserve | 150 GiB |
+| Combined planning requirement against currently free space | 1110 GiB (approximately 1.192 TB in decimal bytes) |
+
+The combined requirement is below the approximately 1.29 TB initial / 1.3 TB subsequent free-space readings even using decimal TB for a conservative comparison, but those rounded observations are not exact-byte certification. Recheck C: free space at provisioning; record actual disk units/byte capacity rather than silently equating VMware labels with GiB. No physical allocation has been made by this decision.
+
+The 300 GiB Wazuh disk includes an estimated 220 GiB of the accepted retention allowance: 180 GiB operational data plus 40 GiB temporary work. The remaining 80 GiB is for guest OS, software, state and internal filesystem margin. The other 40 GiB of the accepted 260 GiB allowance is the protected host data row. Do not add the same 260 GiB again to the virtual disks. Thin provisioning does not remove the growth budget.
+
+Current occupied folder bytes are already reflected in free space and are not subtracted again. Existing snapshot files are already included in their folder totals; 60 GiB is for additional growth, not an assertion that every snapshot fits or can be deleted. A snapshot/recovery operation may need more temporary space; assess its actual chain before executing it. Do not purge protected data or snapshots automatically merely to stay within an allowance.
+
+Keep a separate private recovery copy, provisionally 40 GiB under decision 0010, on another medium/system when its destination is selected. It is not claimed to exist. If any additional copy or external dependency uses C:, add its bytes to this budget (40 GiB would make 1150 GiB including the host reserve) and recheck available space. Source-native buffers belong inside their endpoint disk budgets; exports count in the protected-data row. Changes to source volume, snapshot behaviour or case product require updating these estimates.
+
+### Validation and response to limits
+
+Implement progressively during P1 and verify ingestion/indexing, source health, auditing, access, DNS, time, memory/paging and recovery under the documented workload. Test mgmt-01 with its later agent before claiming the 1 GiB allocation supports P1; the observed P0 evidence is not that test. Do not begin a demand exercise if it would impair required ingestion or case work. Stop that optional load, preserve evidence and revise the resource design if necessary. If the bastion requires restoring 2 GiB, reopen the demand/concurrency arithmetic rather than retaining the old totals.
+
+Monitor disk growth and retention during P1. Before growth consumes the host reserve or projected data exceeds an allowance, review provisioning, exports and recovery copies. Retention windows and protected evidence cannot be silently reduced. Snapshot inventory and backup/recovery implementation remain tracked; this design is not proof of restoration. No new fixed paging threshold, test duration or performance guarantee is invented.
 
 ## Consequences
 
-The capacity prerequisite remains open until the design is resolved within 32 GB. Host readings and the completed basic P0 checks at the lower bastion allocation are recorded. This supports the observed P0 workload; the overall allocation/concurrency design remains proposed and no P1 component has been deployed.
+The initial capacity architecture and operating windows are now selected within the 32 GB constraint, with the historical deficit explicitly excluded by relocating the case function into the Windows host envelope or a valid no-demand window. This resolves the written resource-design prerequisite for beginning P1, not runtime acceptance or future product compatibility. The 31 GiB demand window has little margin and must be validated when used. No new P1 VM or firewall rule has been deployed by this record.
 
-The [P1 preflight record](../../infra/p1-preflight.md) provides the measurement fields. Later workloads remain in their original phases and require their own sizing when specified. This proposal does not change the blueprint or close a phase.
+The [P1 preflight record](../../infra/p1-preflight.md) tracks implementation and evidence. Later workloads remain in their original phases and require their own sizing when specified. This decision preserves the blueprint's functions and does not close a phase.
 

@@ -1,12 +1,12 @@
 # P1 preflight · capacity and retention
 
-- **Status:** Capacity preparation in progress; retention policy accepted on 2026-10-17, implementation pending
+- **Status:** Initial capacity design selected and retention policy accepted on 2026-10-17; implementation and runtime verification pending
 - **Date:** 2026-10-08
 - **Updated:** 2026-10-17
 - **Phase:** Before P1
 - **Source baseline:** 4b97f8f6e28552f0c173c73bdf0841292c7d85e3
 
-This record follows the existing [blueprint](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html), [P0 carry-over](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/progress.md#carried-to-p1), inventory and runbook. It prepares the two open decisions, [0009](../docs/decisions/0009-capacity.md) and [0010](../docs/decisions/0010-retention.md). Retention policy 0010 was accepted by the owner on 2026-10-17; capacity 0009 remains Proposed. This record does not claim a deployment or a completed phase.
+This record follows the existing [blueprint](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html), [P0 carry-over](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/progress.md#carried-to-p1), inventory and runbook. It tracks the two decisions, [0009](../docs/decisions/0009-capacity.md) and [0010](../docs/decisions/0010-retention.md). Retention policy 0010 was accepted by the owner on 2026-10-17; capacity 0009 now selects the initial implementation design, including resource limits and later verification. This record does not claim a deployment or a completed phase.
 
 ## Published baseline
 
@@ -43,10 +43,10 @@ The later P1 workload measurements must document source coverage, reception/inde
 
 | Capacity field | State |
 |---|---|
-| P1 concurrency and P0–P2 capacity windows preserving all roles | Pending; product choices keep their original phases |
-| Selected allocations and required host reserve | Proposed within 32 GB: P1 VMs 19 GB plus 8 GB host reserve; new host baseline recorded, with full workload validation in P1 |
-| P0–P2 target deficit resolved by a documented option | Pending; user requires case management on Windows, product remains before P2 |
-| Available storage and snapshot/data budget | Pending |
+| P1 concurrency and P0–P2 capacity windows preserving all roles | Selected: six P1 VMs active; one demand VM at a time; cases available on Windows host within shared reserve. A dedicated 4 GiB case VM is allowed only in a compatible no-demand window, preserving a usable case workflow. Product/API/export checks stay before P2 |
+| Selected allocations and required host reserve | 19 GiB P1 guests plus 8 GiB joint host/apps/VMware/case reserve; 27 GiB initial planning total, 31 GiB with one 4 GiB demand VM; runtime verification pending |
+| P0–P2 target deficit resolved by a documented option | Written design selected in 0009: case function in host envelope or compatible no-demand window; excluded 35 GiB concurrency. Actual case implementation must meet capabilities/resources before P2; revisit design if no candidate does |
+| Available storage and snapshot/data budget | Estimated 960 GiB additional growth/provision plus 150 GiB host free reserve; 300 GiB Wazuh disk includes 220 GiB of retention data/temporary work; 40 GiB protected host data completes the accepted 260 GiB. No duplicate count. Recheck actual free space at provisioning; snapshot chain and separate recovery destination remain pending |
 | Allocations changed, if any, and P0 rechecks | Basic observed P0 use tested at 1024 MB, including SSH/sudo/DNS/time/TCP, GUI login-page access, apt update and verified security-package upgrades; no agent/full-phase capacity acceptance |
 
 | Retention field | State |
@@ -70,3 +70,7 @@ Recovery verification also remains open: restoring OPNsense onto a fresh install
 The bastion-agent flow is a documented design gap: R06 lists USERS/SERVERS/DMZ and R04 lists administration ports. Its telemetry permission must be resolved when rules are concretised. No new firewall rule is implemented by this record.
 
 The parallel L block in GitHub specifies week 0: a dedicated isolated AWS account, separate identities, offline secrets and cost controls. [AWS card](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html#L1760), [L phase](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html#L1782). The detailed separate eight-week calendar has not yet been located in the accessible files; it is not recreated here. L remains independent of local P1 and retains its weekly evidence/publication requirements.
+
+## Next implementation step
+
+Follow [P1 network preparation](p1-network-start.md). Create/confirm the four P1 LAN segments first. Adding or assigning firewall adapters follows a recorded mapping and recoverable configuration; no network change is claimed yet.

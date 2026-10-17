@@ -1,6 +1,6 @@
 # P0 measurements reported on 2026-10-15
 
-- **Status:** Initial host readings preserved; later bastion trial linked; capacity remains proposed; retention policy accepted on 2026-10-17
+- **Status:** Initial host readings preserved; later bastion trial linked; initial capacity design selected; retention policy accepted on 2026-10-17
 - **Updated:** 2026-10-17
 - **Source:** Initial readings were reported from Windows Task Manager, File Explorer and VMware settings. A later read-only CIM query is shown in user-supplied PowerShell screenshots, with its workload context confirmed by the user. Separate Task Manager screenshots on 2026-10-16 provide the subsequent host/process observations below.
 - **Constraint:** Keep the host at 32 GB RAM while preserving every curriculum capability, phase and exit gate.
@@ -125,7 +125,7 @@ The user has ruled out increasing physical RAM. A feasible allocation and operat
 - The displayed host/process baseline is recorded; sustained variation and later deployment workloads retain their own checks.
 - Guest memory variation, paging and competing host/VMware services; baseline, reduced-memory and post-package-index bastion readings are recorded in the recheck report.
 - Files outside the measured VM folders, snapshot inventory/future growth and private backup coverage; both displayed virtual-disk paths and complete folder sizes are recorded above.
-- The P1 allocation/concurrency design and documented resolution of the P0–P2 budget conflict.
+- Implementation and runtime verification of the allocation/concurrency design now selected in decision 0009; later case-product compatibility remains to be verified before P2.
 - Retention implementation and measured growth; the 30/7/30-day policy and protected-data conditions were accepted on 2026-10-17 in decision 0010, with a 260 GiB initial estimated data/temporary allowance.
 - The remaining P0 rechecks listed in the recheck report; later P1 ingestion and performance verification retain their phase.
 
