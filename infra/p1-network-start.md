@@ -1,7 +1,7 @@
 # P1 network preparation
 
 - **Date:** 2026-10-17
-- **Status:** Encrypted export reported complete; USERS opt1/em0 static address and route confirmed in Overview; SERVERS/DMZ/SOC assignments and new-zone services/policy/tests pending
+- **Status:** Four P1 interface addresses/routes confirmed in Overview; encrypted pre-change export reported complete; new-zone services/policy/endpoint tests pending
 - **Prerequisites recorded:** Initial capacity design 0009 selected; retention policy 0010 accepted. Their runtime tests remain pending.
 
 This sequence implements [accepted addressing decision 0003](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/decisions/0003-addressing.md). The curriculum specifies the zones and checks; the small execution steps below are a derived implementation order. They do not reduce P1 scope or close a gate.
@@ -88,13 +88,40 @@ The Interfaces > Overview screenshot (12:23:41) confirms the resulting live inte
 
 Overview shows IPv6 type none on USERS/WAN/LAN; loopback IPv6 entries are separate and do not establish externally routed IPv6. Address/route state is verified for USERS, while endpoint connectivity, DNS/NTP/DHCP, isolation and positive/negative firewall tests remain pending. No new firewall rule or DHCP service has been configured in this step. No further screenshot of the same USERS fields is needed absent a new discrepancy.
 
-Next assign SERVERS to em1 / 00:50:56:36:af:67, enable it with Static IPv4 10.20.30.1/24, IPv6 None and IPv4 gateway rules Disabled, retaining internal-interface defaults used for USERS. Verify its resulting address/route in Overview. These SERVERS instructions are not yet reported executed. DMZ/em2 and SOC/em3 remain later steps.
+The next instructions assigned SERVERS to em1 / 00:50:56:36:af:67, enabled Static IPv4 10.20.30.1/24, IPv6 None and IPv4 gateway rules Disabled, retaining the internal-interface defaults used for USERS. Subsequent evidence follows.
+
+### SERVERS configuration and Overview, 2026-10-17
+
+The 12:29:53 assignment-modal screenshot shows Description SERVERS but em0 selected and the validation error "Can not assign a device to more interfaces." No duplicate assignment is inferred to have succeeded. Guidance selected em1 / 00:50:56:36:af:67 instead. The 12:30:47 settings screenshot confirms SERVERS / opt2 / em1, removal prevention checked and enablement initially clear, followed by instructions to enable and configure the planned static address. The assignment selector includes already-used devices, so each new zone requires explicit selection of its MAC-verified device rather than accepting the initial em0 selection.
+
+The 12:32:00 Overview screenshot confirms SERVERS (opt2) on em1, static IPv4 10.20.30.1/24, IPv6 type none, blank gateway and connected route 10.20.30.0/24, with a green status icon. USERS retains 10.20.20.1/24 and its route; WAN retains 10.20.254.10/24 through 10.20.254.2 and MGMT/LAN retains 10.20.10.1/24. em2 and em3 remain unassigned. This verifies resulting interface/address/route state, not source traffic, service coverage or isolation.
+
+The next instructions assigned/configured DMZ using em2 / 00:50:56:39:d9:f0, Static IPv4 10.20.40.1/24, IPv6 None, IPv4 gateway rules Disabled and the same internal-interface defaults. The 12:34:23 Overview screenshot confirms DMZ (opt3) on em2 with static 10.20.40.1/24, IPv6 none, blank gateway, route 10.20.40.0/24 and a green status icon. USERS, SERVERS, WAN and MGMT/LAN retain their prior addresses/routes. em3 is still unassigned. Interface/address/route state is verified for these three new zones; endpoint service/connectivity and isolation tests remain pending.
+
+The SOC instructions used em3 / 00:50:56:3b:3c:f6, Static IPv4 10.20.50.1/24, IPv6 None, IPv4 gateway rules Disabled and the same internal-interface defaults. The 12:40:43 Assignments screenshot confirms SOC/opt4 on em3 with the expected MAC; WAN/wan, LAN/lan and opt1–opt3 retain their prior devices/MACs.
+
+### All four P1 interface addresses, 2026-10-17
+
+The 12:41:18 Overview screenshot confirms the completed interface-address milestone:
+
+| Zone | Identifier | Device | IPv4 | Route | IPv6 type / upstream gateway |
+|---|---|---|---|---|---|
+| USERS | opt1 | em0 | 10.20.20.1/24, static | 10.20.20.0/24 | none / blank |
+| SERVERS | opt2 | em1 | 10.20.30.1/24, static | 10.20.30.0/24 | none / blank |
+| DMZ | opt3 | em2 | 10.20.40.1/24, static | 10.20.40.0/24 | none / blank |
+| SOC | opt4 | em3 | 10.20.50.1/24, static | 10.20.50.0/24 | none / blank |
+| WAN | wan | vmx0 | 10.20.254.10/24, static | default; 10.20.254.0/24 | none / 10.20.254.2 |
+| MGMT (GUI LAN) | lan | vmx1 | 10.20.10.1/24, static | 10.20.10.0/24 | none / blank |
+
+All six rows show green status icons. These are observed device/address/route states, not end-to-end connectivity, DNS/NTP service access, source coverage or firewall-isolation evidence. enc0/pflog0 remain separate unassigned system interfaces. Do not reassign them as lab zones. WAN/MGMT address and route values match the earlier observations. No new source VM or service rule is recorded as deployed by this milestone.
 
 Add the four adapters for USERS, SERVERS, DMZ and SOC, each attached to its corresponding LAN segment. Record adapter number, MAC address, segment, detected OPNsense interface and zone before assigning addresses. vmx2–vmx5 are design labels, not proof of the detected MAC/interface order. Never reassign WAN/MGMT based only on a guessed enumeration. Configure and verify one zone at a time from the console/administrative path. No DHCP is introduced except the USERS service specified by the accepted design; server/SOC addresses follow the static range .10–.99.
 
 ## 3. Apply the documented services and policy before onboarding sources
 
 Read the current network plan/rules at implementation; the guide is not an implicit allow-any policy. Carry forward R04 when its targets exist and verify R05/R13/R13a/R15 for every new zone. Establish the required DNS/time and minimum package/admin/telemetry flows; preserve home/host-network isolation. Add name-based DoH blocking, including the Firefox canary, before browsers enter USERS.
+
+The immediate next read-only inspection is Services > Unbound DNS > General, including Enable and Network Interfaces, to determine whether the existing resolver listens on the new zone addresses. Inspect access lists as needed before changing them; do not assume a wildcard selector or automatic ACL coverage. Preserve accepted decision 0004's strict DoT upstreams, DNSSEC, no plaintext fallback and no-ipv6.conf. Decision 0005 retains fw-01 as each zone's sole time source; inspect its service interface/ACL coverage separately. Required R05 permissions and other zone rules still need implementation and endpoint/log verification. Creating interfaces alone does not provide those permissions.
 
 Resolve and document the bastion-to-Wazuh telemetry/enrolment gap: existing R06 names USERS/SERVERS/DMZ, while R04's administrative ports do not cover agent events/enrolment. Resolve the firewall log flow R07 explicitly. Verify rules with positive/negative tests and matching logs rather than relying only on failed TCP probes. Preserve IPv4/IPv6 scope and the existing default-deny design.
 
