@@ -1,12 +1,12 @@
 # P1 preflight · capacity and retention
 
-- **Status:** Preparation in progress; initial user-reported readings recorded
+- **Status:** Capacity preparation in progress; retention policy accepted on 2026-10-17, implementation pending
 - **Date:** 2026-10-08
-- **Updated:** 2026-10-16
+- **Updated:** 2026-10-17
 - **Phase:** Before P1
 - **Source baseline:** 4b97f8f6e28552f0c173c73bdf0841292c7d85e3
 
-This record follows the existing [blueprint](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html), [P0 carry-over](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/progress.md#carried-to-p1), inventory and runbook. It prepares the two open decisions, [0009](../docs/decisions/0009-capacity.md) and [0010](../docs/decisions/0010-retention.md). It does not claim a deployment, an accepted decision or a completed phase.
+This record follows the existing [blueprint](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html), [P0 carry-over](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/progress.md#carried-to-p1), inventory and runbook. It prepares the two open decisions, [0009](../docs/decisions/0009-capacity.md) and [0010](../docs/decisions/0010-retention.md). Retention policy 0010 was accepted by the owner on 2026-10-17; capacity 0009 remains Proposed. This record does not claim a deployment or a completed phase.
 
 ## Published baseline
 
@@ -25,12 +25,12 @@ Start fw-01 and then mgmt-01 in the order defined by the [runbook](https://githu
 
 | Observation | Result | Evidence/date |
 |---|---|---|
-| Host physical, available and committed memory | 32 GB DDR4; initial available 16.6 GB and committed 14.5 / 33.9 GB; follow-up with Steam closed: 20.05 GiB available and 9.08 / 33.91 GiB committed | [User report and CIM screenshots, 2026-10-15](p0-measurements-2026-10-15.md); point readings |
-| Host applications and VMware services running | Three process readings recorded; complete normal workload and service usage pending | User report, 2026-10-15 |
+| Host physical, available and committed memory | 32 GB DDR4; initial available 16.6 GB and committed 14.5 / 33.9 GB; follow-up with Steam closed: 20.05 GiB available and 9.08 / 33.91 GiB committed; later Task Manager: 31.9 GB usable, 11.4 GB in use, 20.5 GB available and 9.1 / 33.9 GB committed | [User reports and screenshots, 2026-10-15/16](p0-measurements-2026-10-15.md); point readings |
+| Host applications and VMware services running | Initial three process readings and a later partial Memory-sorted process screenshot recorded; no full inventory, aggregate VMware use or app-closure claim | User report and screenshot, 2026-10-15/16 |
 | Host paging and observed peaks during the recorded workload | Pending | Pending |
 | fw-01 and mgmt-01 allocations and observed usage | Baseline allocations 4096 / 2048 MB; bastion baseline 1935 MiB total, 259 MiB used, 1676 MiB available, swap used 0. In the later 1024 MB bastion trial, initial SSH memory is 929 MiB total, 252 MiB used, 676 MiB available and swap used 0; after apt update, 281 MiB used, 647 MiB available and swap used 0; after the verified two-package upgrade, 302 MiB used, 626 MiB available and swap used 0 | User report and [SSH recheck and memory trial, 2026-10-15](p0-recheck-2026-10-15.md) |
-| Host disk usable/free space and VM file sizes | C: 1.29 TB free / 1.81 TB total; configuration files on C:; disk locations and file sizes pending | User report, 2026-10-15 |
-| Snapshot locations and storage growth | Pending | Pending |
+| Host disk usable/free space and VM file sizes | Initial C: 1.29 TB free / 1.81 TB total; later VMware shows 1.3 TB free. Both displayed disks and VM folders are on C:. Each disk has 40 GB maximum virtual capacity. Folder size on disk: fw-01 14,109,327,360 bytes, mgmt-01 1,835,130,880 bytes; sum approximately 14.85 GiB | [User reports and screenshots, 2026-10-15/17](p0-measurements-2026-10-15.md#complete-folder-properties-2026-10-17) |
+| Snapshot locations and storage growth | fw-01 points to fw-01-000002.vmdk; snapshot association inferred from naming. Measured folder totals already include their contents. Chain inventory, external files and future growth remain unverified | User VMware and Explorer screenshots, 2026-10-17 |
 | Private backup exists and required external settings are recorded | Pending | Pending |
 | P0 verification battery and third-device access check | SSH authenticated; runbook TCP probes, DNS and bastion time matched expectations; GUI HTTP 200. A later user-provided SSH transcript confirms sudo id -u returned 0 on mgmt-01 after account-password recovery; a firewall-console screenshot shows selected NTP peer *195.95.153.43 with offset +0.682 ms. Third-device/log checks remain unrecorded this session | [SSH recheck and follow-ups, 2026-10-15](p0-recheck-2026-10-15.md) |
 | Workload and machines active during measurements | Only fw-01 and mgmt-01 powered on; usual host application workload pending | User report, 2026-10-15 |
@@ -44,20 +44,20 @@ The later P1 workload measurements must document source coverage, reception/inde
 | Capacity field | State |
 |---|---|
 | P1 concurrency and P0–P2 capacity windows preserving all roles | Pending; product choices keep their original phases |
-| Selected allocations and required host reserve | Pending within the user's confirmed 32 GB limit |
-| P0–P2 target deficit resolved by a documented option | Pending |
+| Selected allocations and required host reserve | Proposed within 32 GB: P1 VMs 19 GB plus 8 GB host reserve; new host baseline recorded, with full workload validation in P1 |
+| P0–P2 target deficit resolved by a documented option | Pending; user requires case management on Windows, product remains before P2 |
 | Available storage and snapshot/data budget | Pending |
 | Allocations changed, if any, and P0 rechecks | Basic observed P0 use tested at 1024 MB, including SSH/sudo/DNS/time/TCP, GUI login-page access, apt update and verified security-package upgrades; no agent/full-phase capacity acceptance |
 
 | Retention field | State |
 |---|---|
-| Investigation window by data category | Pending |
-| Searchable alert/event windows | Pending |
-| Original-event archive window and capacity | Pending |
-| Operational/source-health window and capacity | Pending |
-| Fixture and evidence preservation conditions | Pending |
-| Private storage, publication boundary and recovery route | Pending |
-| Lifecycle/expiry implementation and isolated verification plan | Pending |
+| Investigation window by data category | Accepted initial 30-day investigation window; protected datasets retain dependency/lifetime conditions |
+| Searchable alert/event windows | Accepted: alerts 30 days; all received events 7 days, from receipt |
+| Original-event archive window and capacity | Accepted: all received events archived 30 days; 260 GiB overall initial estimated data/temporary allowance, with provisional category breakdown in 0010 |
+| Operational/source-health window and capacity | Planning defaults: 30 days detailed health and 10 GiB; refine and implement in P1 |
+| Fixture and evidence preservation conditions | Accepted: protect fixtures, cases/gates and necessary configuration from operational age-based purges; dependency/lifetime conditions in 0010 |
+| Private storage, publication boundary and recovery route | Private originals and anonymised published samples; separate recovery destination pending, additional copy estimated at 40 GiB |
+| Lifecycle/expiry implementation and isolated verification plan | Plan recorded in 0010; implementation and isolated expiry/preservation/recovery checks remain in P1 |
 
 A field is resolved by a documented choice, its rationale and its supporting measurement or labelled estimate. These preparation records do not close the P1 gate.
 
