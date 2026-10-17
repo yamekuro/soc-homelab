@@ -1,6 +1,6 @@
 # Inventory · P0
 
-Checked on the machines on 2026-10-01. No secrets are included: the identities table only says where each secret is kept.
+Baseline checked on the machines on 2026-10-01. Dated follow-ups below record the later bastion trial and package maintenance without re-dating the other baseline versions. No secrets are included: the identities table only says where each secret is kept.
 
 ## Machines
 
@@ -14,6 +14,12 @@ Checked on the machines on 2026-10-01. No secrets are included: the identities t
 The VM settings are in [templates/](templates/README.md#machines). The VM files are in `%USERPROFILE%\Documents\Virtual Machines\<name>\` on the host.
 
 The [network plan](../docs/network-plan.html) budgets 2 vCPU and 2 GB for `fw-01`, and 1 vCPU and 1 GB for `mgmt-01`. With the sizes above, the machines that are always on in P2 need 24 GB instead of 21, and the total comes to 34–36 GB of 32. This has to be resolved before P1.
+
+### Bastion follow-up, 2026-10-16
+
+The table above preserves the original 2 GB bastion allocation. The user subsequently tested the requested 1024 MB allocation, with 929 MiB visible to Debian. SSH, sudo, DNS, time, all six runbook TCP probes, browser access to the firewall login and a package-index update gave the expected recorded results. After the package maintenance below, the user reports 626 MiB available and zero swap used.
+
+The [recheck record](p0-recheck-2026-10-15.md#follow-up-initial-1024-mb-bastion-trial) gives evidence sources and limits. The VMware allocation setting is not directly pictured in the supplied memory screenshot. The overall [capacity decision](../docs/decisions/0009-capacity.md) remains Proposed; the later agent and full-phase workloads retain their own verification. Other CPU, disk and system values above remain the 2026-10-01 baseline.
 
 ## Software versions
 
@@ -30,6 +36,17 @@ The [network plan](../docs/network-plan.html) budgets 2 vCPU and 2 GB for `fw-01
 | sudo | `mgmt-01` | `1.9.16p2-3+deb13u2` | `dpkg-query -W` |
 | systemd-timesyncd | `mgmt-01` | `257.13-1~deb13u1` | `dpkg-query -W` |
 | OpenSSH client | Mac | `10.3p1`, LibreSSL 3.3.6 | `ssh -V` |
+
+### Package maintenance verified on 2026-10-16
+
+The user supplied the targeted apt-get upgrade transcript and an installed-version readback with `dpkg-query -W liblzma5 libpng16-16t64`. Both packages are amd64.
+
+| Package on mgmt-01 | Previous version | Installed version verified |
+|---|---|---|
+| liblzma5 | 5.8.1-1+deb13u1 | 5.8.1-1+deb13u2 |
+| libpng16-16t64 | 1.6.48-1+deb13u5 | 1.6.48-1+deb13u6 |
+
+The operation reports two upgrades, zero new packages and zero removals. Full evidence and the post-upgrade memory reading are in the [recheck record](p0-recheck-2026-10-15.md#gui-package-index-update-and-subsequent-memory). The libc-bin trigger is not recorded as an upgrade of that package. Other software versions in the baseline table were not rechecked by this follow-up.
 
 ## Identities
 
