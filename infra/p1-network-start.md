@@ -1,7 +1,7 @@
 # P1 network preparation
 
 - **Date:** 2026-10-17
-- **Status:** Four P1 interface addresses/routes confirmed in Overview; encrypted pre-change export reported complete; new-zone services/policy/endpoint tests pending
+- **Status:** Four P1 interface addresses/routes, running Unbound and generated DNS ACL file confirmed; encrypted pre-change export reported complete; NTP coverage and new-zone policy/endpoint tests pending
 - **Prerequisites recorded:** Initial capacity design 0009 selected; retention policy 0010 accepted. Their runtime tests remain pending.
 
 This sequence implements [accepted addressing decision 0003](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/decisions/0003-addressing.md). The curriculum specifies the zones and checks; the small execution steps below are a derived implementation order. They do not reduce P1 scope or close a gate.
@@ -122,6 +122,45 @@ Add the four adapters for USERS, SERVERS, DMZ and SOC, each attached to its corr
 Read the current network plan/rules at implementation; the guide is not an implicit allow-any policy. Carry forward R04 when its targets exist and verify R05/R13/R13a/R15 for every new zone. Establish the required DNS/time and minimum package/admin/telemetry flows; preserve home/host-network isolation. Add name-based DoH blocking, including the Firefox canary, before browsers enter USERS.
 
 The immediate next read-only inspection is Services > Unbound DNS > General, including Enable and Network Interfaces, to determine whether the existing resolver listens on the new zone addresses. Inspect access lists as needed before changing them; do not assume a wildcard selector or automatic ACL coverage. Preserve accepted decision 0004's strict DoT upstreams, DNSSEC, no plaintext fallback and no-ipv6.conf. Decision 0005 retains fw-01 as each zone's sole time source; inspect its service interface/ACL coverage separately. Required R05 permissions and other zone rules still need implementation and endpoint/log verification. Creating interfaces alone does not provide those permissions.
+
+### Unbound General inspection, 2026-10-17
+
+The 12:44:15 screenshot directly shows Enable Unbound checked, Listen Port 53, Network Interfaces All (recommended), Enable DNSSEC Support checked, DNS64 and AAAA-only mode clear, and Local Zone Type transparent. It also shows the banner that manual overwrites may interfere with GUI settings. Decision 0004 already documents no-ipv6.conf outside the GUI, but the banner does not identify all present overwrites or prove their effective content. Preserve existing manual settings; do not remove the documented override merely to clear the banner. No service configuration change is instructed here.
+
+These are observed configured values, not proof that the daemon is running, that new sockets/ACLs have been loaded, or that source traffic is permitted. The subsequent read-only inspection requested Access Lists to check coverage of the four new networks and MGMT. The [Unbound documentation](https://docs.opnsense.org/manual/unbound.html#access-lists) describes automatically generated assigned-interface records, but the installed-version template and actual screenshot must govern interpretation rather than assuming the four networks must appear as rows. Runtime state, generated/loaded settings and endpoint queries require their own checks, alongside R05. No new wildcard ACL was selected by this workflow.
+
+### Unbound Access Lists and source check, 2026-10-17
+
+The 12:45:18 screenshot shows Default Action Allow, an empty Access Control Lists table (0 entries) and the same manual-overwrites banner. It does not establish absent permissions or stopped/running service state. After the owner's request to resume, the OPNsense core tag 26.7.4 was confirmed via GitHub's matching-refs endpoint and its templates inspected. The [versioned access_lists.conf template](https://github.com/opnsense/core/blob/26.7.4/src/opnsense/service/templates/OPNsense/Unbound/core/access_lists.conf) emits `access-control: 0.0.0.0/0 {{default_action}}` and `access-control: ::/0 {{default_action}}`, with separate enabled custom entries. Therefore Default Action Allow with no custom rows can generate broad resolver-layer permission; the absence of four per-zone rows is not itself a fault. This source result is not proof of the running firewall's generated/loaded configuration, and resolver permission is separate from firewall ingress rules.
+
+The [versioned +TARGETS](https://github.com/opnsense/core/blob/26.7.4/src/opnsense/service/templates/OPNsense/Unbound/core/%2BTARGETS) maps the generated ACL file to `/usr/local/etc/unbound.opnsense.d/access_lists.conf`. The [versioned configd action](https://github.com/opnsense/core/blob/26.7.4/src/opnsense/service/conf/actions.d/actions_unbound.conf) provides a read-only status command. Next ask the owner to run the following from fw-01's root console shell and supply the outputs:
+
+```sh
+configctl unbound status
+cat /usr/local/etc/unbound.opnsense.d/access_lists.conf
+```
+
+Both commands are inspection only; the subsequent console evidence below records their execution. Preserve Default Action and custom files while inspecting; do not add duplicate per-zone rows or assume Internet exposure from an ACL alone. Later R05 and isolation tests must verify the actual permitted paths. Any resolver ACL hardening, if selected after inspection, must preserve MGMT and source-zone service access and have a recorded rationale; none is implemented here.
+
+### Access-path follow-up, 2026-10-17
+
+The owner asked whether the two firewall queries could run from the Mac. Existing confirmed SSH access targets mgmt-01, not fw-01. During GUI reconnection, the user's SSH transcript targeted `1020.10.1` instead of `10.20.10.1`, producing a channel destination-resolution error. Read-only Mac lsof showed an SSH listener on 127.0.0.1:8443 and an established TCP session to 192.168.0.41:2222; those states did not prove the forwarded destination worked. Guidance stopped that user-owned foreground command with Ctrl+C and corrected the destination. The owner subsequently reported being back inside OPNsense.
+
+The 15:48:22 Administration screenshot shows Enable Secure Shell unchecked, root login unchecked, password login unchecked, configured SSH port 22 and Listen Interfaces All (recommended). This verifies the GUI's disabled SSH setting, not a successful remote firewall shell or a live port test. No SSH/root/password setting was changed. The two pending read-only DNS queries remain assigned to the already-used local VMware root console (8) Shell), preserving the existing firewall access design. The web tunnel remains the administrative GUI path from the Mac; it does not by itself provide fw-01 shell access.
+
+### Unbound running state and generated ACL file, 2026-10-17
+
+The subsequent user-supplied fw-01 VMware root-console screenshot shows `configctl unbound status` reporting that Unbound is running (PID 88818 in that observation). The exact file printed by `cat /usr/local/etc/unbound.opnsense.d/access_lists.conf` is:
+
+```text
+server:
+access-control: 0.0.0.0/0 allow
+access-control: ::/0 allow
+```
+
+This confirms a running daemon and the generated file's broad IPv4/IPv6 resolver permission, matching the versioned template and GUI Default Action Allow. It does not independently prove that this file is loaded without additional overrides, that a source query succeeds, or that the resolver is reachable from an external network. Existing/new firewall ingress rules control that reachability and still require inspection and tests. No DNS setting, SSH service, root-login option or custom file was changed. Per-zone duplicate ACL entries are not needed merely to make the GUI table non-empty.
+
+The next read-only service inspection returns to the Mac GUI at Services > Network Time > General: inspect Interface(s) and the configured upstream time sources, preserving accepted decision 0005's pool names and the IP-based Cloudflare sources with Iburst. The [OPNsense NTP documentation](https://docs.opnsense.org/manual/ntpd.html) recommends listening on all interfaces by default and limiting service access with firewall rules. The actual current NTP bind selection and new-zone client access remain unverified; do not change settings before observing them. NTP synchronization and R05 endpoint tests remain separate from this configuration inspection.
 
 Resolve and document the bastion-to-Wazuh telemetry/enrolment gap: existing R06 names USERS/SERVERS/DMZ, while R04's administrative ports do not cover agent events/enrolment. Resolve the firewall log flow R07 explicitly. Verify rules with positive/negative tests and matching logs rather than relying only on failed TCP probes. Preserve IPv4/IPv6 scope and the existing default-deny design.
 
