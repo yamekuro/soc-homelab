@@ -2,6 +2,8 @@
 
 - [Blueprint](blueprint.html): target architecture, threat catalogue, phases and decisions.
 - [Network plan](network-plan.html): P0–P2 infrastructure, policy matrix, firewall rules and addressing.
+- [Firewall policy guide](firewall-policy.md): guía en español de las políticas implementadas, sus motivos, orden, evidencias y límites.
+- [Interactive firewall map](firewall-policy-map.html): zonas, reglas ordenadas y recorridos explicativos; distingue configuración, pruebas y trabajo pendiente.
 - [Lab progress](progress.md): implementation status and remaining P0 exit criteria.
 - [Runbook](runbook.md): start and stop order, administrative access, backup, restore and verification.
 - [P0 as built](diagrams/p0-as-built.svg): diagram of what exists and was verified when P0 closed.
