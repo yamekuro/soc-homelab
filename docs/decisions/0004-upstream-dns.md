@@ -1,5 +1,8 @@
 # 0004 · Upstream DNS
 
+> Public edition: internal addresses and roles are illustrative; historical observations refer to the original environment. Full operating records are kept separately. Values are not a current access inventory.
+
+
 - **Status:** Accepted
 - **Date:** 2026-09-28
 - **Phase:** P0

@@ -1,9 +1,9 @@
 # infra/
 
-Inventory, machine templates and restore records. Ansible comes later, when configuration is automated.
+Public summaries by role and illustrative examples. These are not deployed configuration readbacks or the complete operating inventory. Automation remains a future phase.
 
-- [inventory.md](inventory.md): machines, software versions and identities, checked on the machines.
-- [templates/](templates/README.md): VM settings, and the configuration files created by hand, at the same path they have on each machine.
-- [restore-log.md](restore-log.md): every restore test and its result.
+- [inventory.md](inventory.md): role and resource context, with personal and access identities omitted.
+- [templates/](templates/README.md): illustrative configurations to adapt and verify before use.
+- [restore-log.md](restore-log.md): scoped historical recovery result and remaining checks.
 
 The procedures are in the [runbook](../docs/runbook.md).

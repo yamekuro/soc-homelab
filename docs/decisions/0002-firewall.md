@@ -1,5 +1,8 @@
 # 0002 · Firewall
 
+> Public edition: internal addresses and roles are illustrative; historical observations refer to the original environment. Full operating records are kept separately. Values are not a current access inventory.
+
+
 - **Status:** Accepted
 - **Date:** 2026-09-24
 - **Phase:** Before P0
@@ -24,5 +27,5 @@ OPNsense, with `vmxnet3` adapters (`vmx0`–`vmx6` in P0–P2; `vmx7` and `vmx8`
 ## Consequences
 
 - The rule set R01–R15 is documented in the [network plan](../network-plan.html), in evaluation order.
-- On the WAN interface, "Block private networks" must be disabled because the WAN uses `10.20.254.0/24`.
+- On the WAN interface, "Block private networks" must be disabled because the WAN uses `10.77.254.0/24`.
 - Familiarity with a commercial firewall can come later from a small, separate FortiGate VM exercise; it does not need to be the lab's firewall.

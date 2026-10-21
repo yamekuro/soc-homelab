@@ -1,4 +1,5 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style></head><body>
+<aside style="padding:16px;background:Canvas;color:CanvasText;border-bottom:1px solid GrayText"><strong>Edición ilustrativa / Illustrative edition.</strong> Direcciones, equipos e interfaces son ejemplos; los resultados históricos no se ejecutaron con estos valores. Diseño histórico P0–P2: presupuestos y estados no representan la asignación actual. Consultar la <a href="firewall-policy.md">guía actual</a> y la <a href="decisions/0009-capacity.md">capacidad seleccionada</a>. Original ingress details omitted. <a href="publication-policy.md">Alcance / Scope</a></aside>
 <title>Plano de red soc-homelab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -255,23 +256,23 @@ footer{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; bo
 <script>
 (() => {
 const Z = {
-  MGMT:{c:'--z-mgmt', net:'10.20.10.0/24', gw:'10.20.10.1', nic:'vmx1', ls:'LS-MGMT', ph:'P0'},
-  USERS:{c:'--z-users', net:'10.20.20.0/24', gw:'10.20.20.1', nic:'vmx2', ls:'LS-USERS', ph:'P1'},
-  SERVERS:{c:'--z-servers', net:'10.20.30.0/24', gw:'10.20.30.1', nic:'vmx3', ls:'LS-SERVERS', ph:'P1'},
-  DMZ:{c:'--z-dmz', net:'10.20.40.0/24', gw:'10.20.40.1', nic:'vmx4', ls:'LS-DMZ', ph:'P1'},
-  SOC:{c:'--z-soc', net:'10.20.50.0/24', gw:'10.20.50.1', nic:'vmx5', ls:'LS-SOC', ph:'P1'},
-  ATTACK:{c:'--z-attack', net:'10.20.60.0/24', gw:'10.20.60.1', nic:'vmx6', ls:'LS-ATTACK', ph:'P2'}
+  MGMT:{c:'--z-mgmt', net:'10.77.10.0/24', gw:'10.77.10.1', nic:'vmx1', ls:'LS-MGMT', ph:'P0'},
+  USERS:{c:'--z-users', net:'10.77.20.0/24', gw:'10.77.20.1', nic:'vmx2', ls:'LS-USERS', ph:'P1'},
+  SERVERS:{c:'--z-servers', net:'10.77.30.0/24', gw:'10.77.30.1', nic:'vmx3', ls:'LS-SERVERS', ph:'P1'},
+  DMZ:{c:'--z-dmz', net:'10.77.40.0/24', gw:'10.77.40.1', nic:'vmx4', ls:'LS-DMZ', ph:'P1'},
+  SOC:{c:'--z-soc', net:'10.77.50.0/24', gw:'10.77.50.1', nic:'vmx5', ls:'LS-SOC', ph:'P1'},
+  ATTACK:{c:'--z-attack', net:'10.77.60.0/24', gw:'10.77.60.1', nic:'vmx6', ls:'LS-ATTACK', ph:'P2'}
 };
 const ZORDER = ['MGMT','USERS','SERVERS','DMZ','SOC','ATTACK'];
 const VMS = {
-  MGMT:[{n:'mgmt-01', ip:'10.20.10.10', role:{es:'Bastión · Debian', en:'Bastion · Debian'}, cpu:1, ram:1, on:true}],
-  USERS:[{n:'win-01', ip:'10.20.20.10', role:{es:'Windows 11 + Sysmon', en:'Windows 11 + Sysmon'}, cpu:2, ram:4, on:true}],
-  SERVERS:[{n:'srv-01', ip:'10.20.30.10', role:{es:'Servidor · Debian', en:'Server · Debian'}, cpu:1, ram:1, on:true}],
-  DMZ:[{n:'web-01', ip:'10.20.40.10', role:{es:'Web · Debian + nginx', en:'Web · Debian + nginx'}, cpu:1, ram:1, on:true}],
-  SOC:[{n:'soc-wazuh', ip:'10.20.50.10', role:{es:'Wazuh todo en uno', en:'Wazuh all-in-one'}, cpu:4, ram:8, on:true},
-       {n:'soc-cases', ip:'10.20.50.20', role:{es:'Gestor de casos', en:'Case manager'}, cpu:2, ram:4, on:true},
-       {n:'soc-vuln', ip:'10.20.50.30', role:{es:'Escáner de vulns.', en:'Vuln. scanner'}, cpu:2, ram:4, on:false}],
-  ATTACK:[{n:'atk-01', ip:'10.20.60.10', role:{es:'Kali Linux', en:'Kali Linux'}, cpu:2, ram:4, on:false}]
+  MGMT:[{n:'bastion-demo', ip:'10.77.10.10', role:{es:'Bastión · Debian', en:'Bastion · Debian'}, cpu:1, ram:1, on:true}],
+  USERS:[{n:'client-demo', ip:'10.77.20.10', role:{es:'Windows 11 + Sysmon', en:'Windows 11 + Sysmon'}, cpu:2, ram:4, on:true}],
+  SERVERS:[{n:'server-demo', ip:'10.77.30.10', role:{es:'Servidor · Debian', en:'Server · Debian'}, cpu:1, ram:1, on:true}],
+  DMZ:[{n:'web-demo', ip:'10.77.40.10', role:{es:'Web · Debian + nginx', en:'Web · Debian + nginx'}, cpu:1, ram:1, on:true}],
+  SOC:[{n:'soc-demo', ip:'10.77.50.10', role:{es:'Wazuh todo en uno', en:'Wazuh all-in-one'}, cpu:4, ram:8, on:true},
+       {n:'soc-cases', ip:'10.77.50.20', role:{es:'Gestor de casos', en:'Case manager'}, cpu:2, ram:4, on:true},
+       {n:'soc-vuln', ip:'10.77.50.30', role:{es:'Escáner de vulns.', en:'Vuln. scanner'}, cpu:2, ram:4, on:false}],
+  ATTACK:[{n:'exercise-demo', ip:'10.77.60.10', role:{es:'Kali Linux', en:'Kali Linux'}, cpu:2, ram:4, on:false}]
 };
 
 const T = {
@@ -280,16 +281,16 @@ es:{
   title:'Plano de red<span>Un firewall, seis zonas y nueve máquinas en un sobremesa</span>',
   block:[['PROYECTO','soc-homelab'],['PLANO','Red · P0–P2'],['REV','D'],['FECHA','1 OCT 2026'],['ESCALA','S/E'],['HOJA','1 / 1']],
   dEyebrow:'Lámina 01 · topología física y lógica', dTitle:'Cómo se conecta todo',
-  dLede:'Todo el laboratorio vive dentro de VMware Workstation en tu sobremesa. OPNsense es la única puerta entre zonas: cada zona es un segmento aislado y solo sale a Internet por el NAT de VMware. Tu red de casa queda fuera de alcance.',
+  dLede:'Diseño histórico P0–P2 con valores ilustrativos. La política busca controlar conexiones nuevas enrutadas; no demuestra aislamiento universal, estados ni IPv6. La guía actual conserva el alcance comprobado.',
   dCap:'Cotas en direcciones IPv4 · vmxN = interfaz de OPNsense · LS = LAN segment de VMware',
   dHint:'Desliza para ver el plano completo →',
-  home:'Red de casa · 192.168.0.0/24', router:'Router', mac:'Tu Mac (admin)', macIp:'192.168.0.129', internet:'Internet',
-  host:'Sobremesa · Windows 11', hostSpec:'AMD Ryzen · 16 núcleos · 32 GB RAM · SSD 2 TB', nic:'NIC · 192.168.0.41',
-  vbox:'Adaptador VirtualBox', vboxIp:'192.168.56.1 · bloqueado',
-  vmw:'VMware Workstation Pro 26H1', vmnet:'VMnet8 · NAT de VMware · 10.20.254.0/24', natgw:'NAT .2',
-  wan:'vmx0 · WAN · 10.20.254.10', fwName:'fw-01', fwSpec:'OPNsense · 2 vCPU · 2 GB · siempre encendida', fwPolicy:'Denegar por defecto · reglas R01–R15',
-  block15:'R01 · hacia tu casa: bloqueado', adminTag:'SSH → host:2222',
-  sbx:'Sandbox de phishing', sbxSub:'LS-SANDBOX · sin puerta de enlace', sbxGap:'Sin enlace al firewall: aislamiento total',
+  home:'Red de casa · 172.31.240.0/24', router:'Router', mac:'Tu Mac (admin)', macIp:'172.31.240.10', internet:'Internet',
+  host:'Sobremesa · Windows 11', hostSpec:'AMD Ryzen · 16 núcleos · 32 GB RAM · SSD 2 TB', nic:'NIC · 172.31.240.20',
+  vbox:'Adaptador VirtualBox', vboxIp:'172.31.242.1 · bloqueado',
+  vmw:'VMware Workstation Pro 26H1', vmnet:'VMnet8 · NAT de VMware · 10.77.254.0/24', natgw:'NAT .2',
+  wan:'vmx0 · WAN · 10.77.254.10', fwName:'fw-demo', fwSpec:'Diseño histórico · 2 vCPU · 2 GB', fwPolicy:'Denegar por defecto · reglas R01–R15',
+  block15:'R01 · hacia tu casa: bloqueado', adminTag:'Administración restringida / Restricted admin',
+  sbx:'Sandbox de phishing', sbxSub:'LS-SANDBOX · sin puerta de enlace', sbxGap:'Diseño sin enlace al firewall; aislamiento por verificar',
   sbxVm:{n:'sbx-01', ip:'red aislada', role:'Windows · detonación', cpu:2, ram:4},
   reserved:'reservada', ai:'AI', ot:'OT',
   legend:[['ink','Enlace de red'],['admin','Acceso de administración'],['deny','Bloqueado'],['ghost','Zona reservada'],['on','Siempre encendida'],['off','Bajo demanda']],
@@ -299,27 +300,27 @@ es:{
   rowAdmin:'Tu Mac', colNet:'Internet', colHome:'Casa', corner:'origen ↓ · destino →',
   mxLegend:[['allow','Permitido'],['cond','Condicional (horario, ejercicio o temporal)'],['deny','Bloqueado'],['same','Misma zona: no pasa por el firewall']],
   detailRules:'Reglas que aplican', stateTxt:{allow:'Permitido', deny:'Bloqueado', cond:'Condicional', same:'Misma zona', na:'Fuera del laboratorio'},
-  rEyebrow:'Lámina 03 · reglas de OPNsense', rTitle:'Reglas en orden de evaluación',
-  rLede:'Las flotantes se evalúan primero; después, las de cada interfaz de arriba abajo. La primera que coincide decide. Todo lo bloqueado queda registrado.',
+  rEyebrow:'Lámina 03 · reglas de OPNsense', rTitle:'Catálogo de reglas de diseño',
+  rLede:'Catálogo por identificador, no orden de evaluación. El orden real por zona y las pruebas se consultan en la guía del firewall; R13a precede a R13.',
   rHead:['ID','Interfaz','Origen','Destino','Servicio','Acción','Fase','Motivo'],
   ramEyebrow:'Lámina 04 · capacidad', ramTitle:'Presupuesto de RAM',
   ramLegend:{host:'Windows 11 (host)', ondemand:'1 máquina bajo demanda'},
-  ramVerdict:'<b>21 GB</b> siempre encendidas + <b>4 GB</b> bajo demanda + <b>6–8 GB</b> de Windows = <b>31–33 GB</b> de 32. Cabe, pero sin margen: solo una máquina bajo demanda a la vez.',
-  ramSave:['Gestor de casos en plantillas Markdown en vez de una aplicación: −4 GB.','Apagar web-01 cuando no la uses: −1 GB.'],
+  ramVerdict:'Presupuesto histórico P0–P2, no validado: 31–33 GB de un límite de 32. La asignación P1 seleccionada y sus comprobaciones están en la <a href="decisions/0009-capacity.md">decisión 0009</a>.',
+  ramSave:['Gestor de casos en plantillas Markdown en vez de una aplicación: −4 GB.','Apagar web-demo cuando no la uses: −1 GB.'],
   ipEyebrow:'Lámina 05 · direccionamiento', ipTitle:'Plan de direcciones',
   ipHead:['Zona','Segmento','Subred','Puerta de enlace','Interfaz'],
-  ipExtra:[['WAN','VMnet8 (NAT)','10.20.254.0/24','10.20.254.2 (NAT)','vmx0'],['AI','LS-AI','10.20.70.0/24','reservada · P5','vmx7'],['OT','LS-OT','10.20.80.0/24','reservada · P6','vmx8'],['SANDBOX','LS-SANDBOX','aislada','ninguna','—']],
+  ipExtra:[['WAN','VMnet8 (NAT)','10.77.254.0/24','10.77.254.2 (NAT)','vmx0'],['AI','LS-AI','10.77.70.0/24','reservada · P5','vmx7'],['OT','LS-OT','10.77.80.0/24','reservada · P6','vmx8'],['SANDBOX','LS-SANDBOX','aislada','ninguna','—']],
   ipNote:'En cada zona: .1 firewall · .10–.99 IP fijas · .100–.199 DHCP (solo USERS).',
   nEyebrow:'Lámina 06 · notas de montaje', nTitle:'Detalles que no se ven en el plano',
   notes:[
-    'En el <b>Editor de redes virtuales</b> de VMware, fija la subred de <code>VMnet8</code> a <code>10.20.254.0/24</code> y crea los LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> y <code>LS-SANDBOX</code>.',
-    'En los ajustes NAT de VMware, reenvía el puerto <code>2222</code> del host a <code>10.20.254.10:2222</code>. OPNsense lo traduce a <code>mgmt-01:22</code> (R02).',
+    'En el <b>Editor de redes virtuales</b> de VMware, fija la subred de <code>VMnet8</code> a <code>10.77.254.0/24</code> y crea los LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> y <code>LS-SANDBOX</code>.',
+    'Administración restringida: los endpoints y los detalles de entrada se omiten en esta edición / Restricted administration: operational ingress details omitted.',
     'Al reenviar un puerto, el NAT de VMware conserva la IP del cliente: R02 filtra por la IP de tu Mac, no por la red NAT.',
-    'Deja entrar al puerto <code>2222</code> del host solo desde la IP de tu Mac, en el firewall que de verdad filtra: aquí es Bitdefender, no el de Windows. Para <code>vmnat.exe</code>: salida permitida, y entrada TCP 2222 permitida desde tu Mac y denegada para el resto. Compruébalo desde otro dispositivo.',
-    'Reserva en el DHCP del router las IP de tu Mac (<code>192.168.0.129</code>) y del host (<code>192.168.0.41</code>): R02 y el firewall del host dependen de ellas.',
+    'Administración restringida: los endpoints y los detalles de entrada se omiten en esta edición / Restricted administration: operational ingress details omitted.',
+    'Administración restringida: los endpoints y los detalles de entrada se omiten en esta edición / Restricted administration: operational ingress details omitted.',
     'En Windows, desactiva la suspensión con el equipo enchufado (<code>powercfg /change standby-timeout-ac 0</code>): si el host se duerme, las máquinas se paran y sus relojes se atrasan.',
-    'Cuando R03 funcione, desactiva la regla automática <i>anti-lockout</i> (<i>Firewall ‣ Settings ‣ Advanced</i>): así la web de fw-01 solo se abre desde el bastión. Si te quedas fuera, usa <code>pfctl -d</code> un momento desde la consola de fw-01.',
-    'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.20.254.0/24</code> y el tráfico de R02 llega con la IP de tu Mac; las dos son privadas.',
+    'Antes de cambiar administración, verificar consola de recuperación, reglas automáticas y estados / Verify recovery console, automatic rules and states before administration changes.',
+    'En la WAN de OPNsense, desactiva «Bloquear redes privadas»: la WAN usa <code>10.77.254.0/24</code> y el tráfico de R02 llega con la IP de tu Mac; las dos son privadas.',
     'Usa tarjetas <code>vmxnet3</code>: OPNsense las verá como <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> y <code>vmx8</code> quedan para AI y OT (máximo 10 por máquina).',
     'Dos máquinas de la misma zona se hablan sin pasar por el firewall. Esa visibilidad llega con los sensores de red en P4.'
   ],
@@ -330,16 +331,16 @@ en:{
   title:'Network plan<span>One firewall, six zones and nine machines on one desktop</span>',
   block:[['PROJECT','soc-homelab'],['SHEET','Network · P0–P2'],['REV','D'],['DATE','1 OCT 2026'],['SCALE','NTS'],['PAGE','1 / 1']],
   dEyebrow:'Sheet 01 · physical and logical topology', dTitle:'How it all connects',
-  dLede:'The whole lab lives inside VMware Workstation on your desktop. OPNsense is the only door between zones: each zone is an isolated segment and only reaches the Internet through VMware NAT. Your home network stays out of reach.',
+  dLede:'Historical P0–P2 design with illustrative values. Policy seeks to control new routed connections; universal isolation, states and IPv6 are not established. The current guide states verified scope.',
   dCap:'Values are IPv4 addresses · vmxN = OPNsense interface · LS = VMware LAN segment',
   dHint:'Swipe to see the full plan →',
-  home:'Home network · 192.168.0.0/24', router:'Router', mac:'Your Mac (admin)', macIp:'192.168.0.129', internet:'Internet',
-  host:'Desktop · Windows 11', hostSpec:'AMD Ryzen · 16 cores · 32 GB RAM · 2 TB SSD', nic:'NIC · 192.168.0.41',
-  vbox:'VirtualBox adapter', vboxIp:'192.168.56.1 · blocked',
-  vmw:'VMware Workstation Pro 26H1', vmnet:'VMnet8 · VMware NAT · 10.20.254.0/24', natgw:'NAT .2',
-  wan:'vmx0 · WAN · 10.20.254.10', fwName:'fw-01', fwSpec:'OPNsense · 2 vCPU · 2 GB · always on', fwPolicy:'Default deny · rules R01–R15',
-  block15:'R01 · to your home: blocked', adminTag:'SSH → host:2222',
-  sbx:'Phishing sandbox', sbxSub:'LS-SANDBOX · no gateway', sbxGap:'No link to the firewall: fully isolated',
+  home:'Home network · 172.31.240.0/24', router:'Router', mac:'Your Mac (admin)', macIp:'172.31.240.10', internet:'Internet',
+  host:'Desktop · Windows 11', hostSpec:'AMD Ryzen · 16 cores · 32 GB RAM · 2 TB SSD', nic:'NIC · 172.31.240.20',
+  vbox:'VirtualBox adapter', vboxIp:'172.31.242.1 · blocked',
+  vmw:'VMware Workstation Pro 26H1', vmnet:'VMnet8 · VMware NAT · 10.77.254.0/24', natgw:'NAT .2',
+  wan:'vmx0 · WAN · 10.77.254.10', fwName:'fw-demo', fwSpec:'Historical design · 2 vCPU · 2 GB', fwPolicy:'Default deny · rules R01–R15',
+  block15:'R01 · to your home: blocked', adminTag:'Administración restringida / Restricted admin',
+  sbx:'Phishing sandbox', sbxSub:'LS-SANDBOX · no gateway', sbxGap:'Designed without firewall link; isolation needs verification',
   sbxVm:{n:'sbx-01', ip:'isolated network', role:'Windows · detonation', cpu:2, ram:4},
   reserved:'reserved', ai:'AI', ot:'OT',
   legend:[['ink','Network link'],['admin','Administrative access'],['deny','Blocked'],['ghost','Reserved zone'],['on','Always on'],['off','On demand']],
@@ -349,27 +350,27 @@ en:{
   rowAdmin:'Your Mac', colNet:'Internet', colHome:'Home', corner:'source ↓ · destination →',
   mxLegend:[['allow','Allowed'],['cond','Conditional (schedule, exercise or temporary)'],['deny','Blocked'],['same','Same zone: does not cross the firewall']],
   detailRules:'Rules that apply', stateTxt:{allow:'Allowed', deny:'Blocked', cond:'Conditional', same:'Same zone', na:'Outside the lab'},
-  rEyebrow:'Sheet 03 · OPNsense rules', rTitle:'Rules in evaluation order',
-  rLede:'Floating rules are evaluated first, then each interface’s rules from top to bottom. The first match decides. Everything blocked is logged.',
+  rEyebrow:'Sheet 03 · OPNsense rules', rTitle:'Design rule catalogue',
+  rLede:'Catalogue by identifier, not evaluation order. See the firewall guide for actual zone order and evidence; R13a precedes R13.',
   rHead:['ID','Interface','Source','Destination','Service','Action','Phase','Reason'],
   ramEyebrow:'Sheet 04 · capacity', ramTitle:'RAM budget',
   ramLegend:{host:'Windows 11 (host)', ondemand:'1 on-demand machine'},
-  ramVerdict:'<b>21 GB</b> always on + <b>4 GB</b> on demand + <b>6–8 GB</b> for Windows = <b>31–33 GB</b> of 32. It fits, with no headroom: only one on-demand machine at a time.',
-  ramSave:['Case manager as Markdown templates instead of an application: −4 GB.','Shut down web-01 when not in use: −1 GB.'],
+  ramVerdict:'Historical P0–P2 budget, unvalidated: 31–33 GB against a 32 GB limit. See <a href="decisions/0009-capacity.md">decision 0009</a> for the selected P1 allocation and checks.',
+  ramSave:['Case manager as Markdown templates instead of an application: −4 GB.','Shut down web-demo when not in use: −1 GB.'],
   ipEyebrow:'Sheet 05 · addressing', ipTitle:'Address plan',
   ipHead:['Zone','Segment','Subnet','Gateway','Interface'],
-  ipExtra:[['WAN','VMnet8 (NAT)','10.20.254.0/24','10.20.254.2 (NAT)','vmx0'],['AI','LS-AI','10.20.70.0/24','reserved · P5','vmx7'],['OT','LS-OT','10.20.80.0/24','reserved · P6','vmx8'],['SANDBOX','LS-SANDBOX','isolated','none','—']],
+  ipExtra:[['WAN','VMnet8 (NAT)','10.77.254.0/24','10.77.254.2 (NAT)','vmx0'],['AI','LS-AI','10.77.70.0/24','reserved · P5','vmx7'],['OT','LS-OT','10.77.80.0/24','reserved · P6','vmx8'],['SANDBOX','LS-SANDBOX','isolated','none','—']],
   ipNote:'In every zone: .1 firewall · .10–.99 static IPs · .100–.199 DHCP (USERS only).',
   nEyebrow:'Sheet 06 · build notes', nTitle:'Details the drawing does not show',
   notes:[
-    'In VMware’s <b>Virtual Network Editor</b>, set the <code>VMnet8</code> subnet to <code>10.20.254.0/24</code> and create LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> and <code>LS-SANDBOX</code>.',
-    'In VMware’s NAT settings, forward host port <code>2222</code> to <code>10.20.254.10:2222</code>. OPNsense translates it to <code>mgmt-01:22</code> (R02).',
+    'In VMware’s <b>Virtual Network Editor</b>, set the <code>VMnet8</code> subnet to <code>10.77.254.0/24</code> and create LAN segments <code>LS-MGMT</code> … <code>LS-ATTACK</code> and <code>LS-SANDBOX</code>.',
+    'Administración restringida: los endpoints y los detalles de entrada se omiten en esta edición / Restricted administration: operational ingress details omitted.',
     'When it forwards a port, VMware’s NAT keeps the client’s address, so R02 matches your Mac’s IP, not the NAT network.',
-    'Allow host port <code>2222</code> from your Mac’s IP only, in the firewall that actually filters: here that is Bitdefender, not the Windows firewall. For <code>vmnat.exe</code>: outbound allowed; inbound TCP 2222 allowed from your Mac and denied for everyone else. Test it from another device.',
-    'Reserve your Mac’s (<code>192.168.0.129</code>) and the host’s (<code>192.168.0.41</code>) addresses in the router’s DHCP: R02 and the host firewall depend on them.',
+    'Administración restringida: los endpoints y los detalles de entrada se omiten en esta edición / Restricted administration: operational ingress details omitted.',
+    'Administración restringida: los endpoints y los detalles de entrada se omiten en esta edición / Restricted administration: operational ingress details omitted.',
     'In Windows, turn off sleep while the PC is plugged in (<code>powercfg /change standby-timeout-ac 0</code>): if the host sleeps, the machines stop and their clocks fall behind.',
-    'Once R03 works, disable the automatic <i>anti-lockout</i> rule (<i>Firewall ‣ Settings ‣ Advanced</i>), so the fw-01 web GUI only opens from the bastion. If you lock yourself out, run <code>pfctl -d</code> briefly from the fw-01 console.',
-    'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.20.254.0/24</code> and R02 traffic arrives with your Mac’s address; both are private.',
+    'Antes de cambiar administración, verificar consola de recuperación, reglas automáticas y estados / Verify recovery console, automatic rules and states before administration changes.',
+    'On the OPNsense WAN, disable “Block private networks”: the WAN uses <code>10.77.254.0/24</code> and R02 traffic arrives with your Mac’s address; both are private.',
     'Use <code>vmxnet3</code> adapters: OPNsense sees them as <code>vmx0</code>–<code>vmx6</code>. <code>vmx7</code> and <code>vmx8</code> are kept for AI and OT (10 per machine at most).',
     'Two machines in the same zone talk without crossing the firewall. That visibility arrives with the network sensors in P4.'
   ],
@@ -377,22 +378,22 @@ en:{
 }};
 
 const RULES = [
- {id:'R01', ifc:{es:'Flotante', en:'Floating'}, src:'LAB_NETS · 10.20.0.0/16', dst:'HOME_NETS · 192.168.0.0/24, 192.168.5.0/24, 192.168.56.0/24', svc:'*', act:'deny', ph:'P0', why:{es:'Nada del laboratorio llega a tu red de casa, a la de invitados ni al adaptador de VirtualBox.', en:'Nothing in the lab reaches your home network, the guest network or the VirtualBox adapter.'}},
- {id:'R02', ifc:{es:'WAN', en:'WAN'}, src:{es:'tu Mac · 192.168.0.129', en:'your Mac · 192.168.0.129'}, dst:'mgmt-01 · 10.20.10.10', svc:'TCP 22 ← :2222', act:'allow', ph:'P0', why:{es:'Acceso de administración al bastión desde tu Mac, y solo al bastión.', en:'Administrative access from your Mac to the bastion, and only the bastion.'}},
- {id:'R03', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'fw-01', svc:'TCP 443', act:'allow', ph:'P0', why:{es:'La consola web de OPNsense solo se abre desde el bastión.', en:'The OPNsense web console only opens from the bastion.'}},
- {id:'R04', ifc:{es:'MGMT', en:'MGMT'}, src:'mgmt-01', dst:'LAB_NETS', svc:'TCP 22 · 3389 · 443', act:'allow', ph:'P0', why:{es:'Administración de todas las máquinas desde un único punto auditado.', en:'Administration of every machine from a single audited point.'}},
- {id:'R05', ifc:{es:'Todas las zonas', en:'All zones'}, src:{es:'red de la zona', en:'zone network'}, dst:'fw-01', svc:'TCP/UDP 53 · UDP 123', act:'allow', ph:'P0', why:{es:'DNS y NTP los sirve el firewall: todos los logs comparten la misma hora. El DNS también va por TCP, para las respuestas que no caben en UDP.', en:'The firewall serves DNS and NTP, so every log shares the same clock. DNS also uses TCP, for answers that do not fit in UDP.'}},
- {id:'R06', ifc:{es:'USERS · SERVERS · DMZ', en:'USERS · SERVERS · DMZ'}, src:{es:'red de la zona', en:'zone network'}, dst:'soc-wazuh · 10.20.50.10', svc:'TCP 1514 · 1515', act:'allow', ph:'P1', why:{es:'Envío de eventos y registro de los agentes Wazuh.', en:'Wazuh agent events and enrolment.'}},
- {id:'R07', ifc:{es:'fw-01 (local)', en:'fw-01 (local)'}, src:'fw-01', dst:'soc-wazuh', svc:'UDP 514', act:'allow', ph:'P1', why:{es:'Los logs del propio firewall llegan a Wazuh por syslog.', en:'The firewall’s own logs reach Wazuh over syslog.'}},
- {id:'R08', ifc:{es:'USERS', en:'USERS'}, src:'USERS', dst:'srv-01 · web-01', svc:'TCP 80 · 443', act:'allow', ph:'P1', why:{es:'Actividad legítima: la línea base que el SOC tiene que conocer.', en:'Legitimate activity: the baseline the SOC needs to know.'}},
- {id:'R09', ifc:{es:'DMZ', en:'DMZ'}, src:'DMZ', dst:'LAB_NETS', svc:'*', act:'deny', ph:'P1', why:{es:'La DMZ no inicia conexiones hacia dentro, salvo sus agentes (R06). Se comprueba con una prueba negativa.', en:'The DMZ never opens connections inwards, except its agents (R06). Verified with a negative test.'}},
- {id:'R10', ifc:{es:'SOC', en:'SOC'}, src:'soc-vuln · 10.20.50.30', dst:'USERS · SERVERS · DMZ', svc:'*', act:'cond', ph:'P2', why:{es:'Escaneo autenticado solo dentro de la ventana horaria definida (horario de OPNsense).', en:'Authenticated scanning only inside the defined window (OPNsense schedule).'}},
- {id:'R11', ifc:{es:'ATTACK', en:'ATTACK'}, src:'atk-01 · 10.20.60.10', dst:'TARGETS · win-01, srv-01, web-01', svc:'*', act:'cond', ph:'P2', why:{es:'Solo durante un ejercicio: la regla está desactivada por defecto y se activa a mano.', en:'Only during an exercise: the rule is disabled by default and enabled by hand.'}},
- {id:'R12', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'MGMT · SOC', svc:'*', act:'deny', ph:'P2', why:{es:'El atacante nunca ve la administración ni el SOC.', en:'The attacker never sees administration or the SOC.'}},
+ {id:'R01', ifc:{es:'Flotante', en:'Floating'}, src:'LAB_NETS · 10.77.0.0/16', dst:'HOME_NETS · 172.31.240.0/24, 172.31.241.0/24, 172.31.242.0/24', svc:'*', act:'deny', ph:'P0', why:{es:'R01 busca bloquear conexiones nuevas hacia redes ajenas declaradas; no acredita todos los estados ni IPv6.', en:'R01 seeks to block new connections to declared outside networks; complete state and IPv6 coverage is not claimed.'}},
+ {id:'R02', ifc:{es:'WAN', en:'WAN'}, src:{es:'tu Mac · 172.31.240.10', en:'your Mac · 172.31.240.10'}, dst:'bastion-demo · 10.77.10.10', svc:'Acceso restringido / Restricted access', act:'allow', ph:'P0', why:{es:'Acceso de administración al bastión desde tu Mac, y solo al bastión.', en:'Administrative access from your Mac to the bastion, and only the bastion.'}},
+ {id:'R03', ifc:{es:'MGMT', en:'MGMT'}, src:'bastion-demo', dst:'fw-demo', svc:'TCP 443', act:'allow', ph:'P0', why:{es:'R03 autoriza al bastión; no acredita exclusividad global de GUI ni todas las reglas automáticas.', en:'R03 authorizes the bastion; it does not prove global GUI exclusivity or all automatic rules.'}},
+ {id:'R04', ifc:{es:'MGMT', en:'MGMT'}, src:'bastion-demo', dst:'LAB_NETS', svc:'TCP 22 · 3389 · 443', act:'allow', ph:'P0', why:{es:'Permiso de administración limitado al bastión y a los puertos definidos; nuevos destinos pendientes de prueba.', en:'Administrative permission limited to the bastion and defined ports; tests to new destinations pending.'}},
+ {id:'R05', ifc:{es:'Todas las zonas', en:'All zones'}, src:{es:'red de la zona', en:'zone network'}, dst:'fw-demo', svc:'TCP/UDP 53 · UDP 123', act:'allow', ph:'P0', why:{es:'DNS y NTP centralizados en el firewall. El uso y la sincronización de cada cliente requieren prueba propia; DNS permite UDP y TCP.', en:'DNS and NTP centralized at the firewall. Each client needs its own usage and synchronization check; DNS permits UDP and TCP.'}},
+ {id:'R06', ifc:{es:'USERS · SERVERS · DMZ', en:'USERS · SERVERS · DMZ'}, src:{es:'red de la zona', en:'zone network'}, dst:'soc-demo · 10.77.50.10', svc:'TCP 1514 · 1515', act:'allow', ph:'P1', why:{es:'Permiso de eventos y enrolamiento; receptor y agentes aún previstos.', en:'Events and enrolment permission; receiver and agents still planned.'}},
+ {id:'R07', ifc:{es:'fw-demo (local)', en:'fw-demo (local)'}, src:'fw-demo', dst:'soc-demo', svc:'UDP 514', act:'cond', ph:'P1', why:{es:'R07 preparada y deshabilitada por reporte; receptor, activación e ingesta pendientes.', en:'R07 prepared and disabled by report; receiver, activation and ingestion pending.'}},
+ {id:'R08', ifc:{es:'USERS', en:'USERS'}, src:'USERS', dst:'server-demo · web-demo', svc:'TCP 80 · 443', act:'allow', ph:'P1', why:{es:'Actividad legítima: la línea base que el SOC tiene que conocer.', en:'Legitimate activity: the baseline the SOC needs to know.'}},
+ {id:'R09', ifc:{es:'DMZ', en:'DMZ'}, src:'DMZ', dst:'LAB_NETS', svc:'*', act:'deny', ph:'P1', why:{es:'R09 bloquea conexiones nuevas tras las excepciones DNS, NTP y agentes; prueba negativa desde DMZ pendiente.', en:'R09 blocks new connections after DNS, NTP and agent exceptions; negative test from DMZ pending.'}},
+ {id:'R10', ifc:{es:'SOC', en:'SOC'}, src:'soc-vuln · 10.77.50.30', dst:'USERS · SERVERS · DMZ', svc:'*', act:'cond', ph:'P2', why:{es:'Escaneo autenticado solo dentro de la ventana horaria definida (horario de OPNsense).', en:'Authenticated scanning only inside the defined window (OPNsense schedule).'}},
+ {id:'R11', ifc:{es:'ATTACK', en:'ATTACK'}, src:'exercise-demo · 10.77.60.10', dst:'TARGETS · client-demo, server-demo, web-demo', svc:'*', act:'cond', ph:'P2', why:{es:'Solo durante un ejercicio: la regla está desactivada por defecto y se activa a mano.', en:'Only during an exercise: the rule is disabled by default and enabled by hand.'}},
+ {id:'R12', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'MGMT · SOC', svc:'*', act:'deny', ph:'P2', why:{es:'Objetivo de diseño futuro: denegar nuevas conexiones de ATTACK a MGMT y SOC; requiere pruebas.', en:'Future design goal: deny new ATTACK connections to MGMT and SOC; tests required.'}},
  {id:'R13', ifc:{es:'MGMT · USERS · SERVERS · DMZ · SOC', en:'MGMT · USERS · SERVERS · DMZ · SOC'}, src:{es:'red de la zona', en:'zone network'}, dst:'Internet (!RFC1918)', svc:'TCP 80 · 443', act:'allow', ph:'P0–P1', why:{es:'Actualizaciones, feeds de reglas y navegación del endpoint.', en:'Updates, rule feeds and endpoint browsing.'}},
- {id:'R13a', ifc:{es:'MGMT · USERS · SERVERS · DMZ · SOC', en:'MGMT · USERS · SERVERS · DMZ · SOC'}, src:{es:'red de la zona', en:'zone network'}, dst:{es:'PUBLIC_DNS · 24 resolutores públicos', en:'PUBLIC_DNS · 24 public resolvers'}, svc:'*', act:'deny', ph:'P0', why:{es:'Nadie se salta el DNS de fw-01 con DNS por HTTPS hacia resolutores públicos conocidos. Se evalúa antes que R13.', en:'Nobody bypasses fw-01’s DNS with DNS over HTTPS to well-known public resolvers. Evaluated before R13.'}},
+ {id:'R13a', ifc:{es:'MGMT · USERS · SERVERS · DMZ · SOC', en:'MGMT · USERS · SERVERS · DMZ · SOC'}, src:{es:'red de la zona', en:'zone network'}, dst:{es:'PUBLIC_DNS · 24 IPv4 de resolutores', en:'PUBLIC_DNS · 24 resolver IPv4 addresses'}, svc:'*', act:'deny', ph:'P0', why:{es:'R13a bloquea las IP listadas antes de R13. La lista es finita y no acredita bloqueo universal de DoH.', en:'R13a blocks listed IPs before R13. The finite list does not establish universal DoH blocking.'}},
  {id:'R14', ifc:{es:'ATTACK', en:'ATTACK'}, src:'ATTACK', dst:'Internet (!RFC1918)', svc:'TCP 80 · 443', act:'cond', ph:'P2', why:{es:'Solo para actualizar Kali; desactivada durante los ejercicios.', en:'Only to update Kali; disabled during exercises.'}},
- {id:'R15', ifc:{es:'Todas', en:'All'}, src:'*', dst:'*', svc:'*', act:'deny', ph:'P0', why:{es:'Lo que no está permitido arriba se bloquea y se registra.', en:'Anything not allowed above is blocked and logged.'}}
+ {id:'R15', ifc:{es:'Todas', en:'All'}, src:'*', dst:'*', svc:'*', act:'deny', ph:'P0', why:{es:'Cierre manual para conexiones nuevas; estados y reglas anteriores requieren su propia revisión.', en:'Manual closure for new connections; states and earlier rules require separate review.'}}
 ];
 const ACT = {es:{allow:'PERMITIR', deny:'BLOQUEAR', cond:'CONDICIONAL'}, en:{allow:'ALLOW', deny:'BLOCK', cond:'CONDITIONAL'}};
 
@@ -407,23 +408,23 @@ const MX = {
  DMZ:    [A('deny','',['R09']), A('deny','',['R09']), A('deny','',['R09']), A('same'), A('allow','1514 · 1515',['R06','R09']), A('deny','',['R09']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
  SOC:    [A('deny','',['R15']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('cond','scan',['R10']), A('same'), A('deny','',['R15']), A('allow','80 · 443',['R13','R13a']), A('deny','',['R01'])],
  ATTACK: [A('deny','',['R12']), A('cond','ex',['R11']), A('cond','ex',['R11']), A('cond','ex',['R11']), A('deny','',['R12']), A('same'), A('cond','tmp',['R14']), A('deny','',['R01'])],
- ADMIN:  [A('cond','SSH :2222',['R02']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('na'), A('na')]
+ ADMIN:  [A('cond','Admin',['R02']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('deny','',['R15']), A('na'), A('na')]
 };
 const CELL_TXT = {es:{scan:'escaneo', ex:'ejercicio', tmp:'80 · 443 temporal'}, en:{scan:'scan', ex:'exercise', tmp:'80 · 443 temporary'}};
 const CELL_WHY = {
  es:{
   'SOC>USERS':'Solo soc-vuln, y solo dentro de la ventana de escaneo. El resto del SOC no inicia conexiones hacia los endpoints.',
-  'ATTACK>USERS':'Solo atk-01 hacia los objetivos del ejercicio, con la regla activada a mano durante la ventana.',
-  'ADMIN>MGMT':'Tu Mac entra por el puerto 2222 del sobremesa; VMware y OPNsense lo encaminan hasta el SSH del bastión. Desde ahí se administra todo lo demás.',
+  'ATTACK>USERS':'Solo exercise-demo hacia los objetivos del ejercicio, con la regla activada a mano durante la ventana.',
+  'ADMIN>MGMT':'Administración restringida por rol; entrada operativa omitida / Restricted role-based administration; ingress details omitted.',
   'DMZ>SOC':'La DMZ solo puede enviar eventos de su agente Wazuh. Cualquier otra conexión hacia dentro choca con R09.',
-  'MGMT>HOME':'Aunque el tráfico sale por tu sobremesa, ninguna zona puede dirigirse a direcciones de tu red de casa.'
+  'MGMT>HOME':'Objetivo de R01: bloquear conexiones nuevas hacia HOME_NETS. Solo hay una muestra MGMT atribuida; no cobertura universal.'
  },
  en:{
   'SOC>USERS':'Only soc-vuln, and only inside the scan window. The rest of the SOC never opens connections to endpoints.',
-  'ATTACK>USERS':'Only atk-01 towards the exercise targets, with the rule enabled by hand during the window.',
-  'ADMIN>MGMT':'Your Mac enters on port 2222 of the desktop; VMware and OPNsense route it to the bastion’s SSH. Everything else is administered from there.',
+  'ATTACK>USERS':'Only exercise-demo towards the exercise targets, with the rule enabled by hand during the window.',
+  'ADMIN>MGMT':'Administración restringida por rol; entrada operativa omitida / Restricted role-based administration; ingress details omitted.',
   'DMZ>SOC':'The DMZ may only send its Wazuh agent’s events. Any other inward connection hits R09.',
-  'MGMT>HOME':'Although traffic leaves through your desktop, no zone can address your home network.'
+  'MGMT>HOME':'R01 aims to block new connections to HOME_NETS. One MGMT sample was attributed; universal coverage is not established.'
  }
 };
 
@@ -450,7 +451,7 @@ function svgDiagram(){
   // home network box
   r(700,16,484,112,'box-home',6);
   tx(716,38,t.home,'t-mono t-2','start','font-size="11.5" letter-spacing="1"');
-  r(716,52,130,56,'chip',4); tx(730,76,t.router,'t-disp','start','font-size="17"'); tx(730,96,'192.168.0.0/24','t-mono t-3','start','font-size="10.5"');
+  r(716,52,130,56,'chip',4); tx(730,76,t.router,'t-disp','start','font-size="17"'); tx(730,96,'172.31.240.0/24','t-mono t-3','start','font-size="10.5"');
   r(862,52,168,56,'chip',4,'style="stroke:var(--admin)"'); tx(876,76,t.mac,'t-disp','start','font-size="17"'); tx(876,96,t.macIp,'t-mono t-3','start','font-size="10.5"');
   tx(1044,76,t.adminTag,'t-mono','start','font-size="10.5" style="fill:var(--admin)"');
   // links: internet <-> router
@@ -479,7 +480,7 @@ function svgDiagram(){
   o.push(`<circle cx="1100" cy="238" r="11" class="block-dot"/>`);
   p('M1094 232 L1106 244 M1106 232 L1094 244','link','style="stroke:var(--paper)" stroke-width="2.4"');
   tx(1060,242,t.block15,'t-mono','end','font-size="10.5" style="fill:var(--deny)" font-weight="700"');
-  // fw-01
+  // fw-demo
   p('M600 300 V350','link-ink','stroke-width="3"');
   tx(610,334,t.wan,'t-mono','start','font-size="11"');
   r(44,350,1112,76,'fw',6);
@@ -530,7 +531,7 @@ function svgDiagram(){
   tx(X(0)+20,BY+94,sv.ip,'t-mono t-2','start','font-size="11"');
   tx(X(0)+20,BY+111,sv.role,'','start','font-size="11.5" class="t-2"');
   tx(X(0)+20,BY+127,`${sv.cpu} vCPU · ${sv.ram} GB · ${t.off}`,'t-mono t-3','start','font-size="9.8"');
-  [['AI','10.20.70.0/24','P5','vmx7','--z-ai',2],['OT','10.20.80.0/24','P6','vmx8','--z-ot',3]].forEach(([n,net,ph,nic,c,i]) => {
+  [['AI','10.77.70.0/24','P5','vmx7','--z-ai',2],['OT','10.77.80.0/24','P6','vmx8','--z-ot',3]].forEach(([n,net,ph,nic,c,i]) => {
     r(X(i),BY,CW,140,'ghost',5);
     tx(X(i)+12,BY+30,n,'t-disp','start',`font-size="21" style="fill:var(${c})" opacity=".75"`);
     tx(X(i)+CW-12,BY+28,ph,'t-mono t-3','end','font-size="10.5"');
@@ -606,7 +607,7 @@ function renderRam(){
   const t = T[lang];
   const segs = [{k:'host', label:t.ramLegend.host, gb:7, cls:'host', txt:'6–8'}];
   ZORDER.forEach(k => VMS[k].filter(v=>v.on).forEach(v => segs.push({label:v.n, gb:v.ram, col:`var(${Z[k].c})`, txt:v.ram})));
-  segs.splice(1,0,{label:'fw-01', gb:2, col:'var(--ink)', txt:2});
+  segs.splice(1,0,{label:'fw-demo', gb:2, col:'var(--ink)', txt:2});
   segs.push({label:t.ramLegend.ondemand, gb:4, cls:'ondemand', txt:4});
   $('ram-bar').innerHTML = segs.map(s => `<div class="ram-seg ${s.cls||''}" style="flex:${s.gb} 0 0; ${s.col?`background:${s.col}`:''}" title="${esc(s.label)} · ${s.txt} GB">${s.gb>=2?esc(s.txt):''}</div>`).join('');
   $('ram-legend').innerHTML = segs.map(s => `<span><i class="sw ram-seg ${s.cls||''}" style="${s.col?`background:${s.col}`:''};padding:0"></i>${esc(s.label)} · <span class="mono">${esc(s.txt)} GB</span></span>`).join('');
