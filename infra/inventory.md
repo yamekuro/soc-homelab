@@ -10,4 +10,4 @@ Internal names and addresses are illustrative. Personal host identity, access ac
 | Wazuh all-in-one | Linux server, planned | 4 vCPU, 8 GiB memory, 300 GiB disk design | Not yet evidenced as deployed |
 | USERS, SERVERS and DMZ sources | Windows/Linux roles | See accepted capacity plan | New sources and services pending |
 
-The [illustrative network plan](../docs/network-plan.html) describes intended topology, not a live inventory. The [capacity decision](../docs/decisions/0009-capacity.md) records the selected allocation and its limits. Installation versions are evaluated and pinned during deployment; this table is not a current fingerprint of a reachable system.
+The [illustrative network plan](https://yamekuro.github.io/soc-homelab/network-plan.html) describes intended topology, not a live inventory. The [capacity decision](../docs/decisions/0009-capacity.md) records the selected allocation and its limits. Installation versions are evaluated and pinned during deployment; this table is not a current fingerprint of a reachable system.

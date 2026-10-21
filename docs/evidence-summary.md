@@ -1,6 +1,6 @@
 # Pruebas del firewall: resultados y alcance
 
-Este documento resume las comprobaciones disponibles hasta el **20 de octubre de 2026**. Los registros originales y las capturas se conservan fuera de esta edición. Los nombres y las direcciones de la [guía](firewall-policy.md) y el [mapa](firewall-policy-map.html) son ilustrativos; **no son los valores originales de estas pruebas**.
+Este documento resume las comprobaciones disponibles hasta el **20 de octubre de 2026**. Los registros originales y las capturas se conservan fuera de esta edición. Los nombres y las direcciones de la [guía](firewall-policy.md) y el [mapa](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) son ilustrativos; **no son los valores originales de estas pruebas**.
 
 ## Qué se comprobó
 

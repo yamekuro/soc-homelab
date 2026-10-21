@@ -18,11 +18,13 @@ The minimum portfolio milestone remains track L plus P2. Designed capabilities a
 
 ## Read the project
 
+[Open the published documentation](https://yamekuro.github.io/soc-homelab/) to browse the interactive pages.
+
 - [Firewall policies](docs/firewall-policy.md): 34 manual rows, order, exceptions and reasons.
-- [Interactive firewall map](docs/firewall-policy-map.html): 18 explanatory cases; no live traffic.
+- [Interactive firewall map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html): 18 explanatory cases; no live traffic.
 - [Evidence summary](docs/evidence-summary.md): observed results and pending checks.
-- [Blueprint](docs/blueprint.html): curriculum, scenarios, dependencies and exit gates.
-- [Illustrative network plan](docs/network-plan.html): architecture and future phases, not an operational inventory.
+- [Blueprint](https://yamekuro.github.io/soc-homelab/blueprint.html): curriculum, scenarios, dependencies and exit gates.
+- [Illustrative network plan](https://yamekuro.github.io/soc-homelab/network-plan.html): architecture and future phases, not an operational inventory.
 - [Decision records](docs/decisions/README.md): choices, trade-offs and planning assumptions.
 - [Public operating method](docs/runbook.md), [milestones](docs/progress.md) and [inventory by role](infra/inventory.md).
 - [P0 write-up](writeups/p0-foundation.md) and [P1 readiness](infra/p1-preflight.md).
