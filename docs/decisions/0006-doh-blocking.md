@@ -1,5 +1,8 @@
 # 0006 · Blocking DNS over HTTPS
 
+> Public edition: internal addresses and roles are illustrative; historical observations refer to the original environment. Full operating records are kept separately. Values are not a current access inventory.
+
+
 - **Status:** Accepted
 - **Date:** 2026-10-01
 - **Phase:** P0

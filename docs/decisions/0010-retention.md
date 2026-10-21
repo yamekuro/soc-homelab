@@ -1,5 +1,8 @@
 # 0010 · Retention by data type
 
+> Public edition: internal addresses and roles are illustrative; historical observations refer to the original environment. Full operating records are kept separately. Values are not a current access inventory.
+
+
 - **Status:** Accepted (policy; implementation pending)
 - **Date:** 2026-10-08
 - **Accepted:** 2026-10-17, by the project owner in this working conversation
@@ -8,7 +11,7 @@
 
 ## Context
 
-The [blueprint decision register](https://github.com/yamekuro/soc-homelab/blob/4b97f8f6e28552f0c173c73bdf0841292c7d85e3/docs/blueprint.html#L1615) requires a retention decision before P1, based on available space, data type and investigation needs. Its Wazuh capability requires retention by data type, source coverage and ingestion health. The curriculum also preserves fixtures, normalised events and verifiable evidence.
+The [blueprint decision register](../blueprint.html) requires a retention decision before P1, based on available space, data type and investigation needs. Its Wazuh capability requires retention by data type, source coverage and ingestion health. The curriculum also preserves fixtures, normalised events and verifiable evidence.
 
 The blueprint does not prescribe retention days, events per second, average event size, disk percentages or an archive product. These remain design decisions. A searchable alert is not a complete record of all received activity.
 

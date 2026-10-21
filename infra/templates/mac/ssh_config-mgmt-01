@@ -1,8 +1,10 @@
-Host mgmt-01
-    HostName 192.168.0.41
-    Port 2222
-    User yamekuro
-    IdentityFile ~/.ssh/id_ed25519_soc-homelab
+# Illustrative example only; not the lab's operational access configuration.
+# Replace the fictitious DNS name, account and key before use.
+Host bastion-demo
+    HostName bastion.lab.example
+    User operator-demo
+    IdentityFile ~/.ssh/KEY_PLACEHOLDER
     IdentitiesOnly yes
     ServerAliveInterval 30
+    ServerAliveCountMax 3
     ExitOnForwardFailure yes

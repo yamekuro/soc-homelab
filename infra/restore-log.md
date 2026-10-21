@@ -1,13 +1,5 @@
-# Restore log
+# Recovery evidence · public summary
 
-Every restore test, with its starting point and how the result was checked. The procedures are in the [runbook](../docs/runbook.md).
+A configuration restore onto the same firewall installation was historically recorded, followed by reopening administration and checking the basic paths. This observation does not prove recovery onto a clean installation, every custom file, host firewall setting, hypervisor dependency or later service.
 
-| Date | What was restored | Starting point | Result | Checked with |
-|---|---|---|---|---|
-| 2026-10-01 | `fw-01` configuration, from its encrypted backup: all areas, with a reboot | Snapshot *antes de reglas MGMT 2026-10-01*: no MGMT rules, every test connection open | The rules, the aliases and the disabled anti-lockout rule came back | The verification battery gave the same results as before; the web GUI opened through R03 at 14:09 UTC |
-
-## Not tested yet
-
-- Restoring the backup onto a new installation of `fw-01`.
-- Console option 13, *Restore a backup*, from the local configuration history.
-- Rebuilding `mgmt-01` from the [templates](templates/README.md).
+Original snapshot labels, exact times, backup locations and access details remain in the private operating record. Encrypted backups are not committed to the repository. The [public recovery method](../docs/runbook.md) distinguishes backup, snapshot, application configuration and external dependencies. Further restore scenarios remain pending.
