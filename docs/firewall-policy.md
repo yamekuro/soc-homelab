@@ -2,7 +2,7 @@
 
 **Versión pública ilustrativa.** Las direcciones y los nombres internos se han sustituido para proteger el entorno original. Las redes de esta guía no son una captura de su configuración ni direcciones con las que se hayan ejecutado nuevas pruebas. Los resultados resumidos corresponden al laboratorio original, observado hasta el **20 de octubre de 2026**. Los puertos y los dominios públicos de prueba conservan su significado técnico.
 
-Esta guía explica **34 filas manuales documentadas**: 33 reglas de interfaz y una regla flotante. El [mapa interactivo](firewall-policy-map.html) permite recorrer 18 ejemplos; el [resumen de evidencia](evidence-summary.md) separa los resultados observados de las comprobaciones pendientes. Ninguna interacción modifica el firewall.
+Esta guía explica **34 filas manuales documentadas**: 33 reglas de interfaz y una regla flotante. El [mapa interactivo](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) permite recorrer 18 ejemplos; el [resumen de evidencia](evidence-summary.md) separa los resultados observados de las comprobaciones pendientes. Ninguna interacción modifica el firewall.
 
 ## Zonas y propósito
 
@@ -175,7 +175,7 @@ Los tres negativos se correlacionaron localmente por identificador de regla, dat
 
 También se contrastó el listado principal IPv4 de PF con las matrices. Sus líneas no se cuentan como filas GUI: protocolos y puertos producen expansiones. El listado no sustituye a una auditoría de estados, NAT, anchors o IPv6.
 
-Quedan pendientes las nuevas zonas, clientes y servicios; navegador USERS; concesiones y nombres internos; fallo controlado de DoT; agentes, R07 e ingesta; retención y recuperación. La fase P1 continúa abierta. La evidencia detallada y sus límites se resumen en [evidence-summary.md](evidence-summary.md); el [mapa](firewall-policy-map.html) distingue recorridos esperados de resultados ya observados.
+Quedan pendientes las nuevas zonas, clientes y servicios; navegador USERS; concesiones y nombres internos; fallo controlado de DoT; agentes, R07 e ingesta; retención y recuperación. La fase P1 continúa abierta. La evidencia detallada y sus límites se resumen en [evidence-summary.md](evidence-summary.md); el [mapa](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) distingue recorridos esperados de resultados ya observados.
 
 ## Tratamiento de la edición pública
 

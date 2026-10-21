@@ -26,6 +26,6 @@ OPNsense, with `vmxnet3` adapters (`vmx0`–`vmx6` in P0–P2; `vmx7` and `vmx8`
 
 ## Consequences
 
-- The rule set R01–R15 is documented in the [network plan](../network-plan.html), in evaluation order.
+- The rule set R01–R15 is documented in the [network plan](https://yamekuro.github.io/soc-homelab/network-plan.html), in evaluation order.
 - On the WAN interface, "Block private networks" must be disabled because the WAN uses `10.77.254.0/24`.
 - Familiarity with a commercial firewall can come later from a small, separate FortiGate VM exercise; it does not need to be the lab's firewall.

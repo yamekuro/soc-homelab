@@ -24,7 +24,7 @@ VMware Workstation Pro 26H1 on Windows 11.
 
 ## Consequences
 
-- Windows keeps 6–8 GB of RAM, so the budget is tight: only one on-demand machine can run at a time (see the RAM budget in the [network plan](../network-plan.html)).
+- Windows keeps 6–8 GB of RAM, so the budget is tight: only one on-demand machine can run at a time (see the RAM budget in the [network plan](https://yamekuro.github.io/soc-homelab/network-plan.html)).
 - Before building, check that Hyper-V and Memory Integrity are not forcing VMware into its slower mode.
 - Zones are VMware LAN segments; lab egress uses `VMnet8` (NAT).
 - The Windows 11 guest needs a virtual TPM, which Workstation only provides on an encrypted VM.

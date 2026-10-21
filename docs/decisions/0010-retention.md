@@ -11,7 +11,7 @@
 
 ## Context
 
-The [blueprint decision register](../blueprint.html) requires a retention decision before P1, based on available space, data type and investigation needs. Its Wazuh capability requires retention by data type, source coverage and ingestion health. The curriculum also preserves fixtures, normalised events and verifiable evidence.
+The [blueprint decision register](https://yamekuro.github.io/soc-homelab/blueprint.html) requires a retention decision before P1, based on available space, data type and investigation needs. Its Wazuh capability requires retention by data type, source coverage and ingestion health. The curriculum also preserves fixtures, normalised events and verifiable evidence.
 
 The blueprint does not prescribe retention days, events per second, average event size, disk percentages or an archive product. These remain design decisions. A searchable alert is not a complete record of all received activity.
 

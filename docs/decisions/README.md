@@ -1,6 +1,6 @@
 # Decision records
 
-Each decision the lab depends on is recorded here with its context, the options considered, the outcome and its consequences. The full list of open decisions, with their criteria and the phase they must be made before, is in the [blueprint](../blueprint.html) (Build tab).
+Each decision the lab depends on is recorded here with its context, the options considered, the outcome and its consequences. The full list of open decisions, with their criteria and the phase they must be made before, is in the [blueprint](https://yamekuro.github.io/soc-homelab/blueprint.html) (Build tab).
 
 | # | Decision | Status |
 |---|---|---|
