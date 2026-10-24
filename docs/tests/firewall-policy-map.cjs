@@ -125,8 +125,8 @@ const special = {
   canary: ['dns', '127.0.0.1', ''],
   'dns-google': ['dns', '127.0.0.1', ''],
   'dns-quad9': ['dns', '127.0.0.1', ''],
-  syslog: ['syslog', 'Origen local', 'wazuh'],
-  'same-zone': ['same', 'Fuera del recorrido', '']
+  syslog: ['syslog', 'Local source', 'wazuh'],
+  'same-zone': ['same', 'Outside the path', '']
 };
 const rowCounts = {mgmt: 8, users: 7, servers: 6, dmz: 7, soc: 5};
 const findCase = (id) => { const c = api.cases.find((entry) => entry.id === id); assert.ok(c, id); return c; };
@@ -155,7 +155,7 @@ function checkView(id) {
     assert.equal(get('global-rule').classList.contains('is-selected'), false);
     assert.equal(get('wires').innerHTML, '', id + ': no invented routed wires');
     assert.equal(get('fw-selected-ip').textContent, ip);
-    assert.match(get('rule-detail').innerHTML, /Sin regla de interfaz/);
+    assert.match(get('rule-detail').innerHTML, /No client interface rule/);
     return;
   }
   const [zone, key, rule, action] = decisions[id];
@@ -168,12 +168,12 @@ function checkView(id) {
   assert.match(get('wires').innerHTML, /<path/, id + ': zone topology restored');
   const activeWires = [...get('wires').innerHTML.matchAll(/class="active"/g)].length;
   assert.equal(activeWires, 1 + Number(Boolean(expectedTarget)), id + ': no stale wire selection');
-  assert.match(get('case-result').innerHTML, new RegExp((action === 'pass' ? 'Permitir' : 'Bloquear') + ' · ' + rule));
+  assert.match(get('case-result').innerHTML, new RegExp((action === 'pass' ? 'Allow' : 'Block') + ' · ' + rule));
   if (key === 'R01') {
     assert.equal(get('global-rule').classList.contains('is-selected'), true);
     assert.equal(pressed(ruleButtons).length, 0, 'R01 is not an interface row');
     assert.equal(rows.filter((el) => el.classList.contains('is-selected')).length, 0);
-    assert.match(get('rule-detail').innerHTML, /R01[\s\S]*Bloqueo flotante/);
+    assert.match(get('rule-detail').innerHTML, /R01[\s\S]*Floating block/);
   } else {
     assert.equal(get('global-rule').classList.contains('is-selected'), false);
     assert.deepEqual(pressed(ruleButtons).map((el) => el.dataset.rule), [key]);

@@ -1,23 +1,23 @@
-# Publicación y límites de privacidad
+# Publication and privacy limits
 
-La edición pública conserva el razonamiento, las políticas, sus pruebas resumidas y las capacidades del proyecto. Las direcciones internas y los equipos de los ejemplos son ilustrativos. No se reconstruyen registros ficticios con esos valores: los resultados históricos se describen por roles del entorno original.
+The public edition retains the reasoning, policies, summarised tests and project capabilities. Internal addresses and machines in the examples are illustrative. Fictional logs are not reconstructed with those values: historical results are described by roles in the original environment.
 
-Se han omitido la entrada administrativa real, los identificadores de equipos personales, MAC, ubicaciones de secretos, nombres de claves y transcripciones operativas. Los originales se conservan fuera de esta edición. Los puertos estándar de los servicios y las referencias públicas de proveedores pueden mantenerse por su valor técnico.
+The real administrative entry point, personal machine identifiers, MAC addresses, secret locations, key names and operational transcripts have been omitted. Originals are kept outside this edition. Standard service ports and public vendor references may be retained for their technical value.
 
-## Revisión realizada
+## Review performed
 
-Antes de preparar esta corrección se revisaron las dos ramas visibles: 33 commits —32 de las ramas y uno adicional referenciado por un despliegue antiguo—, 32 árboles únicos y 133 versiones únicas de archivos de texto. Sus contenidos se contrastaron con los identificadores Git de los blobs. También se inspeccionaron los mensajes de commit, el PR, los comentarios disponibles, las referencias de tags y las releases visibles. No había comentarios, tags ni releases en esa muestra. También se revisaron metadatos de 15 ejecuciones de GitHub Pages: no devolvían artefactos. Los logs de ejecución y la representación de la web desplegada no se inspeccionaron.
+Before preparing the privacy correction, both visible branches were reviewed: 33 commits—32 from the branches and one additional commit referenced by an old deployment—32 unique trees and 133 unique text-file versions. Their contents were checked against the Git blob identifiers. Commit messages, the pull request, available comments, tag references and visible releases were also inspected. That sample contained no comments, tags or releases. Metadata from 15 GitHub Pages runs was also reviewed: those runs returned no artifacts. Execution logs and the rendered deployed website were not inspected as part of that review.
 
-La revisión no identificó credenciales utilizables inequívocas con las comprobaciones empleadas. Sí encontró direcciones internas, cadena de administración, nombres de equipos, identidades y MAC en versiones actuales o históricas. Una búsqueda heurística no demuestra ausencia universal de secretos ni cubre copias externas o referencias que no se hayan enumerado.
+The review did not identify unequivocally usable credentials with the checks employed. It did find internal addresses, the administration chain, machine names, identities and MAC addresses in current or historical versions. A heuristic search does not prove universal absence of secrets or cover external copies or references that have not been enumerated.
 
-## Historial y ramas
+## History and branches
 
-Un commit normal modifica la versión actual de una rama, pero no retira sus versiones anteriores, otros branches, copias descargadas o cachés. Esta corrección se prepara en un PR borrador: no modifica por sí sola la rama principal ni reescribe el historial.
+A normal commit changes the current version of a branch but does not remove earlier versions, other branches, downloaded copies or caches. At the time of the review, the correction was being prepared in a draft pull request: preparing that pull request did not itself change the main branch or rewrite history.
 
-No se ha declarado una filtración de credenciales ni se presenta una reescritura del historial como necesaria por el solo hecho de encontrar IP privadas. Si se identificase un secreto utilizable, la primera medida sería revocarlo o rotarlo y después determinar el alcance de la retirada. GitHub explica los impactos y límites de ese procedimiento en su [guía oficial](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository).
+No credential leak has been declared, and a history rewrite is not presented as necessary solely because private IP addresses were found. If a usable secret were identified, the first step would be to revoke or rotate it and then determine the scope of removal. GitHub explains the impacts and limits of that procedure in its [official guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository).
 
-El tratamiento de la edición pública se inspira en la revisión de información interna al extraer o compartir registros descrita por [OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html#data-to-exclude). No es una certificación OWASP ni una auditoría completa del sistema.
+The treatment of the public edition is informed by the review of internal information when extracting or sharing logs described by [OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html#data-to-exclude). This is neither OWASP certification nor a complete security audit of the system.
 
-## Estado técnico
+## Technical status
 
-La [guía del firewall](firewall-policy.md) y el [resumen de evidencia](evidence-summary.md) mantienen sus límites: P1 sigue en validación, el receptor Wazuh está previsto y la revisión visual de los mapas e impresión real sigue pendiente. El saneado editorial no cambia la configuración del laboratorio ni ejecuta sus pruebas.
+The [firewall guide](firewall-policy.md) and [evidence summary](evidence-summary.md) retain their limits: P1 remains under validation, the Wazuh receiver is planned and, at the evidence cutoff, browser review of the maps and actual printing remained pending. Editorial sanitisation does not change the laboratory configuration or execute its tests.

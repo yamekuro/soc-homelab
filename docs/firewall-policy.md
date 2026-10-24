@@ -1,184 +1,184 @@
-# Políticas del firewall: diseño, motivos y evidencia
+# Firewall policies: design, rationale and evidence
 
-**Versión pública ilustrativa.** Las direcciones y los nombres internos se han sustituido para proteger el entorno original. Las redes de esta guía no son una captura de su configuración ni direcciones con las que se hayan ejecutado nuevas pruebas. Los resultados resumidos corresponden al laboratorio original, observado hasta el **20 de octubre de 2026**. Los puertos y los dominios públicos de prueba conservan su significado técnico.
+**Illustrative public edition.** Internal addresses and names have been replaced to protect the original environment. The networks in this guide are neither a snapshot of its configuration nor addresses used for new tests. The summarised results refer to the original laboratory, observed through **20 October 2026**. Public test domains and service ports retain their technical meaning.
 
-Esta guía explica **34 filas manuales documentadas**: 33 reglas de interfaz y una regla flotante. El [mapa interactivo](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) permite recorrer 18 ejemplos; el [resumen de evidencia](evidence-summary.md) separa los resultados observados de las comprobaciones pendientes. Ninguna interacción modifica el firewall.
+This guide explains **34 documented manual rows**: 33 interface rules and one floating rule. The [interactive map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) provides 18 examples; the [evidence summary](evidence-summary.md) separates observed results from outstanding checks. None of the interactions changes the firewall.
 
-## Zonas y propósito
+## Zones and purpose
 
-El laboratorio separa administración, clientes, servicios, DMZ y monitorización mediante segmentos LAN de VMware. No se presenta esta separación como una implementación de VLAN 802.1Q.
+The laboratory separates administration, clients, services, DMZ and monitoring using VMware LAN segments. This separation is not presented as an implementation of 802.1Q VLANs.
 
-| Zona | Red ilustrativa | Firewall ilustrativo | Función |
+| Zone | Illustrative network | Illustrative firewall | Role |
 |---|---|---|---|
-| MGMT, interfaz LAN | `10.77.10.0/24` | `10.77.10.1` | Administración mediante `bastion-demo` |
-| USERS | `10.77.20.0/24` | `10.77.20.1` | Clientes, navegación y DHCP |
-| SERVERS | `10.77.30.0/24` | `10.77.30.1` | Servicios internos |
-| DMZ | `10.77.40.0/24` | `10.77.40.1` | Servicio web separado |
-| SOC | `10.77.50.0/24` | `10.77.50.1` | Plataforma de monitorización prevista |
-| WAN | `10.77.254.0/24` | No se detalla | Salida mediante NAT |
+| MGMT, LAN interface | `10.77.10.0/24` | `10.77.10.1` | Administration through `bastion-demo` |
+| USERS | `10.77.20.0/24` | `10.77.20.1` | Clients, web browsing and DHCP |
+| SERVERS | `10.77.30.0/24` | `10.77.30.1` | Internal services |
+| DMZ | `10.77.40.0/24` | `10.77.40.1` | Separate web service |
+| SOC | `10.77.50.0/24` | `10.77.50.1` | Planned monitoring platform |
+| WAN | `10.77.254.0/24` | Not detailed | Outbound access through NAT |
 
-`fw-demo` representa el firewall. Los hosts previstos `server-demo`, `web-demo` y `soc-demo` se sitúan, respectivamente, en las direcciones ilustrativas `10.77.30.10`, `10.77.40.10` y `10.77.50.10`. El bastión ilustrativo es `10.77.10.10`.
+`fw-demo` represents the firewall. The planned hosts `server-demo`, `web-demo` and `soc-demo` use the illustrative addresses `10.77.30.10`, `10.77.40.10` and `10.77.50.10`, respectively. The illustrative bastion is `10.77.10.10`.
 
-La topología expresa funciones y relaciones. Una interfaz configurada, una regla de permiso y una aplicación disponible son hechos diferentes. La plataforma SOC y los nuevos endpoints todavía no constan desplegados en la evidencia resumida.
+The topology describes roles and relationships. A configured interface, an allow rule and an available application are different facts. The summarised evidence does not yet establish deployment of the SOC platform or the new endpoints.
 
-## Cómo leer una decisión
+## How to read a decision
 
-Las reglas de zona filtran conexiones nuevas a la entrada de la interfaz de origen. En las reglas manuales **Quick**, la primera coincidencia decide. Por eso el orden de las tablas importa más que la numeración de sus identificadores.
+Zone rules filter new connections as they enter the source interface. For manual **Quick** rules, the first match decides. The order in the tables therefore matters more than the numbering of their identifiers.
 
-El firewall mantiene estados: el retorno de una sesión admitida no equivale a una conexión nueva iniciada en sentido contrario. Además intervienen reglas automáticas, posibles anchors y traducciones NAT. El mapa es un modelo didáctico de la política manual, no una reproducción completa de PF. [Semántica de filtrado de OPNsense](https://docs.opnsense.org/manual/firewall.html).
+The firewall maintains state: return traffic for an admitted session is not equivalent to a new connection initiated in the opposite direction. Automatic rules, possible anchors and NAT translations also play a part. The map is a teaching model of the manual policy, not a complete reproduction of PF. [OPNsense filtering semantics](https://docs.opnsense.org/manual/firewall.html).
 
-El tráfico generado por el propio firewall —DNS upstream, sincronización horaria o futuro syslog— debe distinguirse del tráfico de un cliente que entra por una zona. Tampoco se supone que dos vecinos del mismo segmento atraviesen el firewall para comunicarse.
+Traffic generated by the firewall itself—upstream DNS, time synchronisation or future syslog—must be distinguished from client traffic entering a zone. Two neighbours on the same segment are not assumed to cross the firewall to communicate.
 
-## Objetos reutilizados
+## Reusable objects
 
-Los alias forman parte de la política: cambiar sus miembros modifica todas las reglas que los utilizan.
+Aliases are part of the policy: changing their members changes every rule that uses them.
 
-| Alias | Significado en esta versión ilustrativa |
+| Alias | Meaning in this illustrative edition |
 |---|---|
-| `LAB_NETS` | `10.77.0.0/16`; incluye más redes que las cinco zonas internas actuales |
-| `HOME_NETS` | `172.31.240.0/24`, `172.31.241.0/24`, `172.31.242.0/24`; representan redes ajenas protegidas |
-| `BASTION` | Host administrativo `bastion-demo` |
-| `SOC_WAZUH` | Receptor previsto `soc-demo` |
-| `LAB_WEB_SERVICES` | Los dos hosts previstos `server-demo` y `web-demo` |
-| `PUBLIC_DNS` | Conjunto de resolutores públicos conocidos; 24 IPv4 activas verificadas en el entorno original |
-| `RFC1918` | `10.0.0.0/8`, `172.16.0.0/12` y `192.168.0.0/16`; rangos privados estándar |
-| `ADMIN_PORTS` | TCP 22, 443 y 3389 |
-| `WEB_PORTS` | TCP 80 y 443 |
-| `WAZUH_AGENT_PORTS` | TCP 1514 y 1515 |
+| `LAB_NETS` | `10.77.0.0/16`; includes more networks than the five current internal zones |
+| `HOME_NETS` | `172.31.240.0/24`, `172.31.241.0/24`, `172.31.242.0/24`; represent protected networks outside the lab |
+| `BASTION` | Administrative host `bastion-demo` |
+| `SOC_WAZUH` | Planned receiver `soc-demo` |
+| `LAB_WEB_SERVICES` | The two planned hosts `server-demo` and `web-demo` |
+| `PUBLIC_DNS` | Set of known public resolvers; 24 active IPv4 addresses verified in the original environment |
+| `RFC1918` | `10.0.0.0/8`, `172.16.0.0/12` and `192.168.0.0/16`; standard private ranges |
+| `ADMIN_PORTS` | TCP 22, 443 and 3389 |
+| `WEB_PORTS` | TCP 80 and 443 |
+| `WAZUH_AGENT_PORTS` | TCP 1514 and 1515 |
 
-La tabla activa de `PUBLIC_DNS` coincidía con sus 24 miembros de diseño. Un intento HTTPS desde MGMT se correlacionó con su bloqueo R13a; las demás direcciones y zonas no quedan probadas por esa muestra.
+The active `PUBLIC_DNS` table matched its 24 designed members. An HTTPS attempt from MGMT was correlated with its R13a block; that sample does not test the other addresses or zones.
 
-## Matrices ordenadas
+## Ordered matrices
 
-Todas las reglas específicas siguientes son de entrada, IPv4 y Quick, con puerto de origen cualquiera y sin gateway de política elegido. R15 es el cierre manual de cada zona. La GUI mostraba comodines; la lectura de PF contrastó sus cláusulas IPv4.
+All specific rules below are inbound, IPv4 and Quick, with any source port and no selected policy gateway. R15 is each zone's manual final deny. The GUI displayed wildcards; the PF reading checked their IPv4 clauses.
 
-**Permitir** significa autorización configurada, no disponibilidad confirmada del servicio. “Log: Sí” indica registro de paquetes en esa regla, no una garantía de ingesta en el SOC.
+**Allow** means configured permission, not confirmed service availability. “Log: Yes” means packet logging on that rule, not a guarantee of SOC ingestion.
 
-### Regla flotante
+### Floating rule
 
-| Regla | Origen → destino | Servicio | Acción | Log |
+| Rule | Source → destination | Service | Action | Log |
 |---|---|---|---|---|
-| R01 | `LAB_NETS` → `HOME_NETS` | Cualquier protocolo IPv4 | Bloquear | Sí |
+| R01 | `LAB_NETS` → `HOME_NETS` | Any IPv4 protocol | Block | Yes |
 
-R01 precede a las reglas manuales de interfaz. Su objetivo es impedir conexiones nuevas hacia las redes ajenas declaradas, incluso si se amplían permisos internos. La evidencia confirma una muestra desde MGMT; no todos los estados, orígenes o destinos.
+R01 precedes the manual interface rules. Its purpose is to prevent new connections to the declared networks outside the lab, even if internal permissions are expanded. The evidence confirms one sample from MGMT, not every state, source or destination.
 
-### MGMT · interfaz LAN
+### MGMT · LAN interface
 
-| Orden | Regla | Origen → destino | Servicio | Acción | Log |
+| Order | Rule | Source → destination | Service | Action | Log |
 |---:|---|---|---|---|---|
-| 1 | R03 | `BASTION` → firewall de MGMT | TCP 443 | Permitir | Sí |
-| 2 | R05 DNS | MGMT → firewall de MGMT | TCP/UDP 53 | Permitir | No |
-| 3 | R05 NTP | MGMT → firewall de MGMT | UDP 123 | Permitir | No |
-| 4 | R13a | MGMT → `PUBLIC_DNS` | Cualquiera | Bloquear | Sí |
-| 5 | R13 | MGMT → `!RFC1918` | TCP `WEB_PORTS` | Permitir | No |
-| 6 | R04 | `BASTION` → `LAB_NETS` | TCP `ADMIN_PORTS` | Permitir | Sí |
-| 7 | R06, extensión | `BASTION` → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Permitir | No |
-| 8 | R15 | Cualquiera → cualquiera | Cualquiera | Bloquear | Sí |
+| 1 | R03 | `BASTION` → MGMT firewall | TCP 443 | Allow | Yes |
+| 2 | R05 DNS | MGMT → MGMT firewall | TCP/UDP 53 | Allow | No |
+| 3 | R05 NTP | MGMT → MGMT firewall | UDP 123 | Allow | No |
+| 4 | R13a | MGMT → `PUBLIC_DNS` | Any | Block | Yes |
+| 5 | R13 | MGMT → `!RFC1918` | TCP `WEB_PORTS` | Allow | No |
+| 6 | R04 | `BASTION` → `LAB_NETS` | TCP `ADMIN_PORTS` | Allow | Yes |
+| 7 | R06, extension | `BASTION` → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Allow | No |
+| 8 | R15 | Any → any | Any | Block | Yes |
 
 ### USERS
 
-| Orden | Regla | Origen → destino | Servicio | Acción | Log |
+| Order | Rule | Source → destination | Service | Action | Log |
 |---:|---|---|---|---|---|
-| 1 | R05 DNS | USERS → firewall de USERS | TCP/UDP 53 | Permitir | No |
-| 2 | R05 NTP | USERS → firewall de USERS | UDP 123 | Permitir | No |
-| 3 | R13a | USERS → `PUBLIC_DNS` | Cualquiera | Bloquear | Sí |
-| 4 | R13 | USERS → `!RFC1918` | TCP `WEB_PORTS` | Permitir | No |
-| 5 | R06 | USERS → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Permitir | No |
-| 6 | R08 | USERS → `LAB_WEB_SERVICES` | TCP `WEB_PORTS` | Permitir | No |
-| 7 | R15 | Cualquiera → cualquiera | Cualquiera | Bloquear | Sí |
+| 1 | R05 DNS | USERS → USERS firewall | TCP/UDP 53 | Allow | No |
+| 2 | R05 NTP | USERS → USERS firewall | UDP 123 | Allow | No |
+| 3 | R13a | USERS → `PUBLIC_DNS` | Any | Block | Yes |
+| 4 | R13 | USERS → `!RFC1918` | TCP `WEB_PORTS` | Allow | No |
+| 5 | R06 | USERS → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Allow | No |
+| 6 | R08 | USERS → `LAB_WEB_SERVICES` | TCP `WEB_PORTS` | Allow | No |
+| 7 | R15 | Any → any | Any | Block | Yes |
 
 ### SERVERS
 
-| Orden | Regla | Origen → destino | Servicio | Acción | Log |
+| Order | Rule | Source → destination | Service | Action | Log |
 |---:|---|---|---|---|---|
-| 1 | R05 DNS | SERVERS → firewall de SERVERS | TCP/UDP 53 | Permitir | No |
-| 2 | R05 NTP | SERVERS → firewall de SERVERS | UDP 123 | Permitir | No |
-| 3 | R13a | SERVERS → `PUBLIC_DNS` | Cualquiera | Bloquear | Sí |
-| 4 | R13 | SERVERS → `!RFC1918` | TCP `WEB_PORTS` | Permitir | No |
-| 5 | R06 | SERVERS → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Permitir | No |
-| 6 | R15 | Cualquiera → cualquiera | Cualquiera | Bloquear | Sí |
+| 1 | R05 DNS | SERVERS → SERVERS firewall | TCP/UDP 53 | Allow | No |
+| 2 | R05 NTP | SERVERS → SERVERS firewall | UDP 123 | Allow | No |
+| 3 | R13a | SERVERS → `PUBLIC_DNS` | Any | Block | Yes |
+| 4 | R13 | SERVERS → `!RFC1918` | TCP `WEB_PORTS` | Allow | No |
+| 5 | R06 | SERVERS → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Allow | No |
+| 6 | R15 | Any → any | Any | Block | Yes |
 
 ### DMZ
 
-| Orden | Regla | Origen → destino | Servicio | Acción | Log |
+| Order | Rule | Source → destination | Service | Action | Log |
 |---:|---|---|---|---|---|
-| 1 | R05 DNS | DMZ → firewall de DMZ | TCP/UDP 53 | Permitir | No |
-| 2 | R05 NTP | DMZ → firewall de DMZ | UDP 123 | Permitir | No |
-| 3 | R06 | DMZ → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Permitir | No |
-| 4 | R09 | DMZ → `LAB_NETS` | Cualquiera | Bloquear | Sí |
-| 5 | R13a | DMZ → `PUBLIC_DNS` | Cualquiera | Bloquear | Sí |
-| 6 | R13 | DMZ → `!RFC1918` | TCP `WEB_PORTS` | Permitir | No |
-| 7 | R15 | Cualquiera → cualquiera | Cualquiera | Bloquear | Sí |
+| 1 | R05 DNS | DMZ → DMZ firewall | TCP/UDP 53 | Allow | No |
+| 2 | R05 NTP | DMZ → DMZ firewall | UDP 123 | Allow | No |
+| 3 | R06 | DMZ → `SOC_WAZUH` | TCP `WAZUH_AGENT_PORTS` | Allow | No |
+| 4 | R09 | DMZ → `LAB_NETS` | Any | Block | Yes |
+| 5 | R13a | DMZ → `PUBLIC_DNS` | Any | Block | Yes |
+| 6 | R13 | DMZ → `!RFC1918` | TCP `WEB_PORTS` | Allow | No |
+| 7 | R15 | Any → any | Any | Block | Yes |
 
 ### SOC
 
-| Orden | Regla | Origen → destino | Servicio | Acción | Log |
+| Order | Rule | Source → destination | Service | Action | Log |
 |---:|---|---|---|---|---|
-| 1 | R05 DNS | SOC → firewall de SOC | TCP/UDP 53 | Permitir | No |
-| 2 | R05 NTP | SOC → firewall de SOC | UDP 123 | Permitir | No |
-| 3 | R13a | SOC → `PUBLIC_DNS` | Cualquiera | Bloquear | Sí |
-| 4 | R13 | SOC → `!RFC1918` | TCP `WEB_PORTS` | Permitir | No |
-| 5 | R15 | Cualquiera → cualquiera | Cualquiera | Bloquear | Sí |
+| 1 | R05 DNS | SOC → SOC firewall | TCP/UDP 53 | Allow | No |
+| 2 | R05 NTP | SOC → SOC firewall | UDP 123 | Allow | No |
+| 3 | R13a | SOC → `PUBLIC_DNS` | Any | Block | Yes |
+| 4 | R13 | SOC → `!RFC1918` | TCP `WEB_PORTS` | Allow | No |
+| 5 | R15 | Any → any | Any | Block | Yes |
 
-Son 8 + 7 + 6 + 7 + 5 filas de interfaz y R01: **34 filas manuales**. Los elementos automáticos, la dependencia heredada de acceso administrativo y las expansiones de PF se cuentan aparte.
+There are 8 + 7 + 6 + 7 + 5 interface rows plus R01: **34 manual rows**. Automatic elements, the inherited administrative-access dependency and PF expansions are counted separately.
 
-## Motivos y límites de las excepciones
+## Rationale and limits of the exceptions
 
-**R03 y R04 concentran la administración en el bastión.** R03 identifica el acceso a la GUI; R04 alcanza todo `LAB_NETS` en tres puertos administrativos. No debe describirse como permiso a una única máquina. Su presencia tampoco acredita exclusividad global de acceso: estados, NAT y reglas automáticas requieren revisión propia.
+**R03 and R04 concentrate administration on the bastion.** R03 identifies GUI access; R04 reaches all of `LAB_NETS` on three administrative ports. It must not be described as permission to a single machine. Its presence also does not establish globally exclusive access: states, NAT and automatic rules require their own review.
 
-**R05 centraliza DNS y tiempo.** Cada zona puede utilizar estos servicios en su propia dirección del firewall, sin recibir acceso general a sus demás servicios. Mantener TCP además de UDP para DNS permite las consultas que necesitan ese transporte.
+**R05 centralises DNS and time.** Each zone can use these services at its own firewall address without receiving general access to the firewall's other services. Retaining TCP as well as UDP for DNS supports queries that need that transport.
 
-**R06 limita agentes y enrolamiento a un receptor.** No abre toda SOC, la API de Wazuh ni otros servicios. La extensión MGMT se añadió explícitamente para recoger también la fuente bastión y autoriza únicamente ese host, no toda su subred. Su posición anterior a R15 es necesaria. El receptor sigue previsto.
+**R06 limits agents and enrolment to one receiver.** It does not open the whole SOC zone, the Wazuh API or other services. The MGMT extension was explicitly added to collect the bastion source as well and authorises only that host, not its entire subnet. Its position before R15 is necessary. The receiver remains planned.
 
-**R08 permite actividad web interna concreta.** USERS puede utilizar los dos servicios previstos para generar actividad legítima observable. El permiso no autoriza todos los destinos de SERVERS o DMZ ni sus puertos administrativos.
+**R08 permits specific internal web activity.** USERS can use the two planned services to generate observable legitimate activity. The permission does not authorise every SERVERS or DMZ destination or their administrative ports.
 
-**R09 contiene conexiones iniciadas desde DMZ.** Sus excepciones DNS, NTP y Wazuh deben preceder al bloqueo. No se bloquea por este motivo el retorno con estado de una sesión legítima admitida desde otra zona, ni el tráfico que permanezca entre vecinos de DMZ.
+**R09 contains connections initiated from DMZ.** Its DNS, NTP and Wazuh exceptions must precede the block. This does not block stateful return traffic for a legitimate session admitted from another zone, or traffic remaining between DMZ neighbours.
 
-**R13 permite salida web limitada por puerto y dirección.** `!RFC1918` excluye redes privadas; no es una lista de sitios aprobados ni una clasificación exhaustiva de direcciones públicas válidas. No hay inspección del contenido HTTPS. TCP 443 puede transportar protocolos distintos de navegación.
+**R13 permits outbound web access limited by port and address.** `!RFC1918` excludes private networks; it is neither an approved-site list nor an exhaustive classification of valid public addresses. HTTPS content is not inspected. TCP 443 can carry protocols other than web browsing.
 
-**R13a evita que resolutores conocidos aprovechen ese permiso web.** Bloquea todos los puertos y protocolos hacia sus IP, no solo DNS en 53. El alcance depende de una lista finita. DNS externo y DoT de clientes sin otra excepción terminan en R13a o R15; UDP 443 tampoco obtiene permiso mediante R13.
+**R13a prevents known resolvers from using that web permission.** It blocks all ports and protocols to their IP addresses, not just DNS on 53. Its scope depends on a finite list. External DNS and client DoT without another exception reach R13a or R15; UDP 443 is not permitted by R13 either.
 
-**R15 hace visible el cierre de cada zona.** Una excepción situada debajo quedaría sin efecto para conexiones nuevas ya bloqueadas por esa regla Quick. Los permisos específicos son IPv4; no se deduce de ellos una auditoría completa de IPv6.
+**R15 makes each zone's final deny explicit.** An exception placed below it would have no effect on new connections already blocked by that Quick rule. The specific permissions are IPv4; they do not imply a complete IPv6 audit.
 
-## DNS, nombres internos y control de DoH
+## DNS, internal names and DoH control
 
-Unbound atiende DNS en 53 y conserva DNSSEC. Su salida general utiliza servidores DoT de Quad9 y Cloudflare mediante TCP 853, con identidad de certificado configurada, sin Forward first ni uso de servidores DNS del sistema. Los clientes no heredan permiso directo a esos upstreams.
+Unbound serves DNS on 53 and retains DNSSEC. Its general outbound resolution uses Quad9 and Cloudflare DoT servers over TCP 853, with certificate identities configured and neither Forward first nor system nameservers enabled. Clients do not inherit direct permission to those upstreams.
 
-Las respuestas firmadas y el rechazo de un dominio deliberadamente inválido presentaron el comportamiento DNSSEC esperado. También se observó tráfico WAN hacia dos upstreams configurados en 853. Esto no demuestra por sí solo autenticación TLS de cada sesión ni ausencia de fallback bajo fallo. [Configuración de Unbound](https://docs.opnsense.org/manual/unbound.html).
+Signed responses and rejection of a deliberately invalid domain showed the expected DNSSEC behaviour. WAN traffic to two configured upstreams on 853 was also observed. This alone does not demonstrate TLS authentication for every session or absence of fallback under failure. [Unbound configuration](https://docs.opnsense.org/manual/unbound.html).
 
-Dnsmasq conserva DNS local en 53053. En el modelo publicado, Unbound le reenvía `lab.example` y la zona inversa de USERS. Dnsmasq no reenvía esas consultas a los DNS del sistema, evitando un bucle de retorno. Falta comprobar nombres A/PTR positivos de una concesión real.
+Dnsmasq retains local DNS on 53053. In the published model, Unbound forwards `lab.example` and the USERS reverse zone to it. Dnsmasq does not forward those queries to system nameservers, avoiding a forwarding loop. Positive A/PTR names from a real lease remain untested.
 
-Dos políticas de nombres complementan R13a: una para `use-application-dns.net` y otra con quince dominios exactos de servicios DoH conocidos. Están configuradas para devolver NXDOMAIN; solo algunos nombres tienen prueba individual. El canary orienta la activación automática de Firefox; no impone por sí solo una política cuando DoH se activa manualmente. Tampoco se promete cobertura de todos los resolutores, nombres alternativos o tipos de registro. [Alcance del canary según Mozilla](https://support.mozilla.org/en-US/kb/canary-domain-use-application-dnsnet).
+Two name policies complement R13a: one for `use-application-dns.net` and another containing fifteen exact domains of known DoH services. They are configured to return NXDOMAIN; only some names have individual tests. The canary guides Firefox's automatic activation; it does not by itself enforce a policy when DoH is enabled manually. Coverage of all resolvers, alternative names or record types is not promised. [Mozilla's canary scope](https://support.mozilla.org/en-US/kb/canary-domain-use-application-dnsnet).
 
-## DHCP, tiempo y futura telemetría
+## DHCP, time and future telemetry
 
-USERS tiene el único pool DHCP: `.100–.199`, con concesión de un día. Gateway y DNS corresponden al firewall de esa zona; la opción 42 ofrece NTP. Se observaron rango, arranque y configuración, pero faltan concesión, opciones recibidas, uso efectivo y ausencia de servicio fuera de USERS. [Integración Unbound/Dnsmasq](https://docs.opnsense.org/manual/dnsmasq.html#dhcpv4-with-dns-registration).
+USERS has the only DHCP pool: `.100–.199`, with a one-day lease. Its zone firewall provides the gateway and DNS; option 42 offers NTP. The range, startup and configuration were observed, but leases, received options, actual use and absence of service outside USERS remain unverified. [Unbound/Dnsmasq integration](https://docs.opnsense.org/manual/dnsmasq.html#dhcpv4-with-dns-registration).
 
-La sincronización horaria facilita correlacionar fuentes y validar certificados. El cliente MGMT confirmó sincronización con el firewall en una muestra; eso no acredita precisión sostenida, todas las zonas ni autenticación NTS.
+Time synchronisation helps correlate sources and validate certificates. The MGMT client confirmed synchronisation with the firewall in one sample; this does not establish sustained accuracy, coverage of every zone or NTS authentication.
 
-**R07 sigue pendiente:** se preparó un destino syslog UDP 514 hacia el futuro receptor SOC, deshabilitado según confirmación del propietario. Es salida local del firewall, no una regla de entrada de clientes duplicada. Deben comprobarse recepción, decodificación, indexado y salud cuando exista el receptor. UDP no garantiza entrega. [Logging de OPNsense](https://docs.opnsense.org/manual/settingsmenu.html#logging).
+**R07 remains pending:** a UDP 514 syslog destination was prepared for the future SOC receiver, disabled according to the owner's confirmation. This is local firewall output, not a duplicate client-ingress rule. Reception, decoding, indexing and health must be checked once the receiver exists. UDP does not guarantee delivery. [OPNsense logging](https://docs.opnsense.org/manual/settingsmenu.html#logging).
 
-## Qué se comprobó realmente
+## What was actually checked
 
-Los resultados siguientes se refieren a roles del entorno original. **No representan paquetes ejecutados con las direcciones ilustrativas anteriores.** Se omiten registros íntegros, identificadores originales y datos individuales de las conexiones.
+The following results refer to roles in the original environment. **They do not represent packets sent using the illustrative addresses above.** Full logs, original identifiers and individual connection details are omitted.
 
-| Comprobación | Resultado observado | Límite |
+| Check | Observed result | Limit |
 |---|---|---|
-| DNS desde bastión MGMT | Positivo ordinario y NXDOMAIN para canary y `dns.google`, por UDP y TCP | No prueba USERS ni comportamiento del navegador |
-| NTP desde bastión MGMT | Respuesta y estado de cliente sincronizado | Una muestra, sin estabilidad sostenida |
-| Control HTTPS desde MGMT | Certificado validado, TLS 1.3 y HTTP 200 | Sin log decisor exclusivo de R13 |
-| HTTPS a resolutor conocido desde MGMT | Bloqueo atribuido a R13a | Un destino y una conexión |
-| SSH externo desde MGMT | Bloqueo atribuido a R15 | Una conexión TCP |
-| Acceso desde MGMT a red ajena declarada | Bloqueo atribuido a R01 | Una red, un destino y TCP |
+| DNS from the MGMT bastion | Ordinary positive result and NXDOMAIN for the canary and `dns.google`, over UDP and TCP | Does not test USERS or browser behaviour |
+| NTP from the MGMT bastion | Response and synchronised client state | One sample, without sustained stability |
+| HTTPS control from MGMT | Validated certificate, TLS 1.3 and HTTP 200 | No log exclusively attributing the decision to R13 |
+| HTTPS to a known resolver from MGMT | Block attributed to R13a | One destination and one connection |
+| External SSH from MGMT | Block attributed to R15 | One TCP connection |
+| Access from MGMT to a declared network outside the lab | Block attributed to R01 | One network, one destination and TCP |
 
-Los tres negativos se correlacionaron localmente por identificador de regla, datos de conexión y tiempo. El timeout aislado no fue suficiente. Esta publicación conserva la conclusión y su alcance, no los valores privados que permitieron esa correlación.
+The three negative samples were correlated locally by rule identifier, connection details and time. A timeout alone was insufficient. This publication retains the conclusion and its scope, not the private values that enabled the correlation.
 
-También se contrastó el listado principal IPv4 de PF con las matrices. Sus líneas no se cuentan como filas GUI: protocolos y puertos producen expansiones. El listado no sustituye a una auditoría de estados, NAT, anchors o IPv6.
+The main IPv4 PF listing was also checked against the matrices. Its lines are not counted as GUI rows: protocols and ports produce expansions. The listing does not replace an audit of states, NAT, anchors or IPv6.
 
-Quedan pendientes las nuevas zonas, clientes y servicios; navegador USERS; concesiones y nombres internos; fallo controlado de DoT; agentes, R07 e ingesta; retención y recuperación. La fase P1 continúa abierta. La evidencia detallada y sus límites se resumen en [evidence-summary.md](evidence-summary.md); el [mapa](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) distingue recorridos esperados de resultados ya observados.
+The new zones, clients and services; USERS browser; leases and internal names; controlled DoT failure; agents, R07 and ingestion; retention and recovery remain pending. Phase P1 remains open. Detailed evidence and its limits are summarised in [evidence-summary.md](evidence-summary.md); the [map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) distinguishes expected paths from results already observed.
 
-## Tratamiento de la edición pública
+## Treatment of the public edition
 
-Se han omitido datos de acceso y registros operativos y se han sustituido los identificadores internos. El criterio se inspira en el tratamiento de información interna al extraer o compartir registros de la [guía de logging de OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html#data-to-exclude). No se afirma cumplimiento integral ni certificación OWASP. Las direcciones RFC1918 estándar y las referencias públicas de proveedores conservan su función didáctica.
+Access details and operational logs have been omitted and internal identifiers replaced. The approach is informed by the treatment of internal information when extracting or sharing logs in the [OWASP Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html#data-to-exclude). No claim of comprehensive compliance or OWASP certification is made. Standard RFC1918 addresses and public vendor references retain their teaching purpose.
 
-La revisión abarca esta edición local, no los archivos ni el historial publicados anteriormente. La revisión visual del mapa en navegador y de su impresión real sigue pendiente.
+The review covers this edition, not previously published files or history. At the evidence cutoff, browser review of the map and actual printing remained pending.

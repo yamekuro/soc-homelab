@@ -1,22 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
-<title id="title">P0 · representación conceptual por funciones</title>
-<desc id="desc">Funciones de la fundación: host de virtualización, firewall y bastión. La ilustración omite identificadores, direcciones y la cadena real de acceso. No es una transcripción ni acredita pruebas sobre elementos ilustrativos.</desc>
+<svg lang="en-GB" xml:lang="en-GB" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
+<title id="title">P0 · conceptual view by function</title>
+<desc id="desc">Foundation functions: virtualization host, firewall and bastion. This illustration omits identifiers, addresses and the actual access chain. It is not a transcript or evidence of tests on illustrative elements.</desc>
 <style>:root{color-scheme:light dark;--bg:Canvas;--ink:CanvasText;--line:GrayText}text{font-family:system-ui,sans-serif;fill:var(--ink)}.title{font-size:25px;font-weight:600}.label{font-size:18px;font-weight:600}.small{font-size:14px}rect{fill:var(--bg);stroke:var(--line);stroke-width:1.2}</style>
 <rect x="1" y="1" width="898" height="358" rx="5"/>
-<text x="30" y="45" class="title">P0 · Funciones de la fundación</text>
-<text x="30" y="74" class="small">Representación conceptual. Identidades y acceso operativo omitidos.</text>
+<text x="30" y="45" class="title">P0 · Foundation functions</text>
+<text x="30" y="74" class="small">Conceptual view. Identities and operational access are omitted.</text>
 <rect x="30" y="110" width="260" height="130" rx="4"/>
-<text x="48" y="145" class="label">Host de virtualización</text>
-<text x="48" y="178" class="small">Ejecuta los sistemas invitados</text>
-<text x="48" y="204" class="small">Dependencias de red y recursos</text>
+<text x="48" y="145" class="label">Virtualization host</text>
+<text x="48" y="178" class="small">Runs guest systems</text>
+<text x="48" y="204" class="small">Network and resource dependencies</text>
 <rect x="320" y="110" width="260" height="130" rx="4"/>
 <text x="338" y="145" class="label">Firewall</text>
-<text x="338" y="178" class="small">Reglas y servicios compartidos</text>
-<text x="338" y="204" class="small">Permisos concretos y cierre</text>
+<text x="338" y="178" class="small">Rules and shared services</text>
+<text x="338" y="204" class="small">Specific permissions and final deny</text>
 <rect x="610" y="110" width="260" height="130" rx="4"/>
-<text x="628" y="145" class="label">Bastión</text>
-<text x="628" y="178" class="small">Administración restringida</text>
-<text x="628" y="204" class="small">Privilegios y auditoría por verificar</text>
-<text x="30" y="287" class="small">No representa conexiones, entradas o direcciones reales.</text>
-<text x="30" y="316" class="small">Resultados y límites: docs/evidence-summary.md. P1 sigue en validación.</text>
+<text x="628" y="145" class="label">Bastion</text>
+<text x="628" y="178" class="small">Restricted administration</text>
+<text x="628" y="204" class="small">Privileges and auditing: unverified</text>
+<text x="30" y="287" class="small">Does not show actual connections, ingress or addresses.</text>
+<text x="30" y="316" class="small">Results and limits: docs/evidence-summary.md. P1 validation is ongoing.</text>
 </svg>
+
