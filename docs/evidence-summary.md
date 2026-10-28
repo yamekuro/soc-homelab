@@ -1,6 +1,6 @@
 # Firewall tests: results and scope
 
-This document summarises the checks available through **20 October 2026**. Original logs and screenshots are kept outside this edition. Names and addresses in the [guide](firewall-policy.md) and [map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) are illustrative; **they are not the original values used in these tests**.
+This document summarises the checks available through **20 October 2026**. The firewall results retain that cutoff. A separate [28 October Wazuh validation](wazuh-first-agent-validation.md) records central deployment, first-agent events and interruption/recovery. Original logs and screenshots are kept outside this edition. Names and addresses in the [guide](firewall-policy.md) and [map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) are illustrative; **they are not the original values used in these tests**.
 
 ## What was checked
 
@@ -30,7 +30,7 @@ This edition publishes the method and conclusion. It omits original identifiers,
 
 - A real USERS client: DHCP lease and options received and used; A/PTR resolution; Firefox and DoH behaviour.
 - Allowed and blocked flows from SERVERS, DMZ and SOC, with their logs and destination services.
-- Wazuh reception and enrolment; activation of R07 only once its receiver exists; decoding, indexing and ingestion health.
+- Additional Wazuh sources and sustained ingestion health. First-agent onboarding, event indexing and communication-loss recovery were demonstrated on 28 October; see the separate validation. R07 still requires its own syslog receiver, activation and receipt/decode/index/health checks.
 - Individual coverage of the other blocked names; controlled upstream failure, DoT authentication and absence of unwanted fallback.
 - States, NAT, automatic rules, anchors and IPv6; manual-rule filtering does not cover all those layers.
 - Sustained time and resource stability, backup restoration and recovery of external configuration.

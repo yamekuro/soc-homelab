@@ -10,8 +10,10 @@ Five internal zones were assigned. The principal IPv4 rule order and active 24-m
 
 MGMT has scoped DNS and time observations, a valid HTTPS control and three firewall-correlated TCP negatives. The [evidence summary](../docs/evidence-summary.md) states exactly what those samples establish. Other clients, DHCP offers and positive local names, browser behavior, complete DoT failure behavior and full state/NAT/IPv6 review remain pending.
 
-## Next deployment
+## Deployment update — 28 October 2026
 
-Wazuh and new sources remain planned. The all-in-one design is 4 vCPU, 8 GiB memory and 300 GiB disk on the SOC segment. Its installation image, software version and integrity checks must be recorded at deployment. R07 is prepared but disabled by owner report; activation waits for a working receiver and subsequent receipt, decoding, indexing and health checks.
+The central Wazuh stack is deployed on an Ubuntu Server VM in SOC, with 4 vCPU, 8 GiB allocated memory and a 300 GB virtual disk as displayed by the hypervisor. The installation image check and package versions are retained in the private deployment record. The first Debian bastion agent is enrolled. A benign source event reached the searchable dashboard; orderly stop/start, scheduled service restart, network-path loss, reconnection and fresh post-restoration delivery were observed. The temporary endpoint filter was removed and its rollback timer is inactive. See the [first-agent validation](../docs/wazuh-first-agent-validation.md) for methods, results and limits.
+
+This is one agent, not general telemetry coverage. Additional sources remain pending. R07 remains prepared and disabled by the last owner report: the agent receiver does not establish that a syslog listener is configured. Activation still waits for a working syslog receiver and subsequent receipt, decoding, indexing and health checks.
 
 The public network addresses are illustrations, not operating instructions or the addresses of the original tests. P1 remains open; see [readiness](p1-preflight.md), [capacity](../docs/decisions/0009-capacity.md) and [retention](../docs/decisions/0010-retention.md).
