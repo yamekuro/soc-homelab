@@ -7,6 +7,7 @@ Public portfolio edition: internal addressing and machine labels are illustrativ
 - [Firewall policy guide](firewall-policy.md): implemented policies, their rationale, order, evidence and limits.
 - [Interactive firewall map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html): zones, ordered rules and explanatory paths; distinguishes configuration, tests and pending work.
 - [Evidence summary](evidence-summary.md): scoped results and remaining tests.
+- [First Wazuh agent validation](wazuh-first-agent-validation.md): deployment, event delivery, interruption, recovery and limits.
 - [Lab milestones](progress.md): historical lessons and pending P1 gates.
 - [Operating method](runbook.md): general dependencies, backup, recovery and verification; operational access omitted.
 - [Illustrative P0 roles](diagrams/p0-as-built.svg): reconstruction with example identifiers, not a tested endpoint list.

@@ -4,6 +4,8 @@
 
 This guide explains **34 documented manual rows**: 33 interface rules and one floating rule. The [interactive map](https://yamekuro.github.io/soc-homelab/firewall-policy-map.html) provides 18 examples; the [evidence summary](evidence-summary.md) separates observed results from outstanding checks. None of the interactions changes the firewall.
 
+**Later deployment update — 28 October 2026:** the central Wazuh stack and first bastion agent are now deployed, with scoped event delivery and interruption/recovery verified. See the [separate validation](wazuh-first-agent-validation.md). References to planned deployment below describe this guide's 20 October evidence snapshot; other-zone reception and R07 syslog remain unverified.
+
 ## Zones and purpose
 
 The laboratory separates administration, clients, services, DMZ and monitoring using VMware LAN segments. This separation is not presented as an implementation of 802.1Q VLANs.

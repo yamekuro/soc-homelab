@@ -17,6 +17,6 @@ Historical P0 samples covered administrative access, selected positive and negat
 
 ## Next phase
 
-P1 segmentation is documented and remains in validation. Wazuh, new source deployment, R07 receipt and complete recovery and resource gates are pending. The project does not present planned telemetry, universal isolation or a fully audited administrative boundary as completed results.
+P1 segmentation is documented and remains in validation. The central Wazuh stack and first Debian agent are now deployed; scoped event delivery and interruption/recovery are recorded in the [28 October validation](../docs/wazuh-first-agent-validation.md). Additional sources, R07 receipt and complete recovery, retention and resource gates remain pending. The project does not present planned telemetry, universal isolation or a fully audited administrative boundary as completed results.
 
 Portfolio summary: built and documented a segmented foundation, investigated host-filtering and recovery dependencies, and reported the practical limits of its tests.

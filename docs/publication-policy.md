@@ -20,4 +20,4 @@ The treatment of the public edition is informed by the review of internal inform
 
 ## Technical status
 
-The [firewall guide](firewall-policy.md) and [evidence summary](evidence-summary.md) retain their limits: P1 remains under validation, the Wazuh receiver is planned and, at the evidence cutoff, browser review of the maps and actual printing remained pending. Editorial sanitisation does not change the laboratory configuration or execute its tests.
+The [firewall guide](firewall-policy.md) and firewall [evidence summary](evidence-summary.md) preserve their 20 October test cutoff. The [28 October first-agent validation](wazuh-first-agent-validation.md) separately records the central Wazuh deployment and scoped agent delivery, interruption and recovery results. It omits operating addresses, account names, exact event times, private markers and complete records; originals remain private. The interactive firewall map is a dated teaching snapshot, not a live deployment inventory. Actual printing is not established by controller tests. P1 remains under validation. Editorial sanitisation does not change the laboratory configuration or execute its tests.
